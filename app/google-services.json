@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "12835915973",
+    "project_id": "tfg-prediccion-70e66",
+    "storage_bucket": "tfg-prediccion-70e66.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12835915973:android:90ca5dea49b4a771d248ac",
+        "android_client_info": {
+          "package_name": "com.lhc.tfg_prediccion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwyOC5Srs4jJdyCcgVJ9529kOrsMUBq8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

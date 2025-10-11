@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- encabezado titulo historial -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="50dp"
+        android:background="#417f9a"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Historial de predicciones"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- layout de filtros -->
+    <LinearLayout
+        android:id="@+id/filtros2"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginTop="130dp"
+        android:background="#b1d3e2"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Ordenar por:   "
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="50dp">
+            <Spinner
+                android:id="@+id/order_spinner"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:background="@drawable/camposform"
+                android:popupBackground="@drawable/camposform" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:src="@drawable/arrow_down_ic"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- contenedor tabla -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filtros2"
+        app:layout_constraintVertical_bias="0.184"
+        tools:layout_editor_absoluteX="0dp">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"> <!-- margen a los lados -->
+
+            <TableLayout
+                android:id="@+id/tabla_historial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="2dp"
+                android:stretchColumns="*">
+
+                <!-- encabezado tabla -->
+                <TableRow
+                    android:background="@color/material_dynamic_primary50"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerPadding="2dp"
+                    android:padding="2dp"
+                    android:showDividers="middle">
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Edad"
+                        android:textColor="@color/white"
+                        android:textColorLink="@color/material_dynamic_primary10"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Fem"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Capnometría"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Causa cardiaca"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Cardiocompresión"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Rec Pulso"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Resultado"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Informe"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@color/material_dynamic_primary30"
+                        android:padding="12dp"
+                        android:text="Eliminar"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                </TableRow>
+            </TableLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="10dp">
+
+        <Button
+            android:id="@+id/btn_volver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#fcfe82"
+            android:text="Volver"
+            android:textColor="@color/material_dynamic_primary10" />
+
+        <Button
+            android:id="@+id/btn_csv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#fcfe82"
+            android:text="Exportar"
+            android:textColor="@color/material_dynamic_primary10" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

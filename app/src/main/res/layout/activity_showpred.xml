@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- titulo Historial -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="50dp"
+        android:background="#417f9a"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Historial de predicciones"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- layout de filtros -->
+    <LinearLayout
+        android:id="@+id/filtros"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginTop="130dp"
+        android:background="#b1d3e2"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Ordenar por:   "
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="50dp">
+            <Spinner
+                android:id="@+id/order_spinner"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:background="@drawable/camposform"
+                android:popupBackground="@drawable/camposform" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:src="@drawable/arrow_down_ic"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- contenedor tabla -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filtros"
+        app:layout_constraintVertical_bias="0.114"
+        tools:layout_editor_absoluteX="0dp">
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <TableLayout
+                android:id="@+id/tabla_historial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="2dp"
+                android:stretchColumns="*">
+
+                <!-- encabezado tabla -->
+                <TableRow
+                    android:background="#CCCCCC"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerPadding="2dp"
+                    android:padding="2dp"
+                    android:showDividers="middle">
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="N"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="Edad"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="F"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="Cap"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="CauCard"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="Cardiocomp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="RecP"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:background="@android:color/white"
+                        android:padding="8dp"
+                        android:text="Res"
+                        android:textStyle="bold" />
+                </TableRow>
+            </TableLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/buttonBackToMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="600dp"
+        android:text="Volver al menú principal"
+        android:textColor="#042939"
+        app:backgroundTint="#fcfe82"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.693" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
