@@ -18,7 +18,7 @@ import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityMainBinding
 import com.lhc.tfg_prediccion.ui.edit.EditProfileActivity
 import com.lhc.tfg_prediccion.ui.login.LoginActivity
-import com.lhc.tfg_prediccion.ui.prediction.PredictionActivity
+import com.lhc.tfg_prediccion.ui.prediction.PredictionModeActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.ui.historial.HistorialActivity
 // grafica pie chart
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // boton prediccion
         val boton = findViewById<Button>(R.id.btn_prediction)
         boton.setOnClickListener{
-            val intent2 = Intent(this, PredictionActivity::class.java)
+            val intent2 = Intent(this, PredictionModeActivity::class.java)
             intent2.putExtra("userName", name)
             intent2.putExtra("userUid", userUid)
             startActivity(intent2)

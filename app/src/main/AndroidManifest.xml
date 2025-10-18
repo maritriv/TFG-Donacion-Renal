@@ -51,6 +51,9 @@
         <activity
             android:name=".ui.prediction.ImportActivity"
             android:exported="false"/>
+        <activity
+            android:name=".ui.prediction.PredictionModeActivity"
+            android:exported="false"/>
 
 
     </application>

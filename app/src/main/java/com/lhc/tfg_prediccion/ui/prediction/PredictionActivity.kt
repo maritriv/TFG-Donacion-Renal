@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.lhc.tfg_prediccion.ui.main.MainActivity
 
+
 const val VALOR_FIJO = 7.5
 const val COEFICIENTE_EDAD = -0.096
 const val COEFICIENTE_SEXO_FEMENINO = -1.013
@@ -31,6 +32,20 @@ class PredictionActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPredictionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val rawMode = intent.getStringExtra(PredictionModeActivity.EXTRA_MODE)
+            ?: PredictionModeActivity.MODE_AFTER
+
+        Log.d("PRED", "mode recibido (raw) = $rawMode")
+        Toast.makeText(this, "mode = $rawMode", Toast.LENGTH_SHORT).show()
+
+        val modeShort = when (rawMode) {
+            PredictionModeActivity.MODE_BEFORE -> "before"
+            PredictionModeActivity.MODE_MID    -> "mid"
+            else                               -> "after"
+        }
+        Log.d("PRED", "modeShort = $modeShort")
+
 
         // spinner de si o no
         val opcionesSiNo = arrayOf("Si", "No")
@@ -95,7 +110,7 @@ class PredictionActivity: AppCompatActivity() {
                 (cardio_man * COEFICIENTE_CARDIOCOMPRESION) +
                 (rec * COEFICIENTE_RECUPERACION_CIRCULACION)
 
-        val esValido = resultado >= CORTE
+        val esValido = resultado >= CORTE 
         Log.d("PRED", "calc -> resultado=$resultado corte=$CORTE esValido=$esValido")
         if(esValido) {
             actualizarNumeroPredicciones(esValido) {
