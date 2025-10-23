@@ -13,9 +13,9 @@ class PredictionModeActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_MODE = "prediction_mode"
-        const val MODE_BEFORE = "BEFORE_RCP"
-        const val MODE_MID    = "MID_RCP"
-        const val MODE_AFTER  = "AFTER_RCP"
+        const val MODE_BEFORE = "Antes de la RCP"
+        const val MODE_MID    = " Durante la RCP (20 min)"
+        const val MODE_AFTER  = "Después de la RCP"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -36,8 +36,8 @@ class PredictionActivity: AppCompatActivity() {
         val rawMode = intent.getStringExtra(PredictionModeActivity.EXTRA_MODE)
             ?: PredictionModeActivity.MODE_AFTER
 
-        Log.d("PRED", "mode recibido (raw) = $rawMode")
-        Toast.makeText(this, "mode = $rawMode", Toast.LENGTH_SHORT).show()
+        Log.d("PRED", "modo recibido (raw) = $rawMode")
+        Toast.makeText(this, "Modo seleccionado: $rawMode", Toast.LENGTH_SHORT).show()
 
         val modeShort = when (rawMode) {
             PredictionModeActivity.MODE_BEFORE -> "before"

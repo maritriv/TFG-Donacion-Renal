@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/tvTitle"
-        android:text="¿Cuándo quieres predecir?"
+        android:text="¿En qué punto quieres realizar la predicción?"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="28dp"
@@ -19,7 +19,7 @@
 
     <Button
         android:id="@+id/btnBefore"
-        android:text="Antes de RCP"
+        android:text="Antes de la RCP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -29,7 +29,7 @@
 
     <Button
         android:id="@+id/btnMid"
-        android:text="En punto medio"
+        android:text="A los 20 minutos de inciada la RCP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -39,7 +39,7 @@
 
     <Button
         android:id="@+id/btnAfter"
-        android:text="Después de RCP"
+        android:text="Después de la RCP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
