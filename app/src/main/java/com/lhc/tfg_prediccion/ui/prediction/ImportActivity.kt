@@ -23,6 +23,8 @@ import com.lhc.tfg_prediccion.ui.main.MainActivity
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
+import com.lhc.tfg_prediccion.ui.prediction.calcularIndiceYValidez
 
 
 class ImportActivity: AppCompatActivity() {
@@ -32,11 +34,12 @@ class ImportActivity: AppCompatActivity() {
     private var name: String? = null
     private var fecha = Timestamp.now()
     private var esValido: Boolean? = null
+    private val importMode: String = MODE_AFTER
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityImportBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_import)
+        setContentView(binding.root)
 
         // cojo valores intent
         userUid = intent.getStringExtra("userUid")
@@ -108,63 +111,70 @@ class ImportActivity: AppCompatActivity() {
             var contadorNoValidas = 0
 
             // importo en la base de datos cada prediccion
+            // importo en la base de datos cada prediccion
             lista.forEachIndexed { index, fila ->
-                if(fila.size == 6){ // 6 valores iguales que los del formulario
-                    if(!primera) { // la primera linea no se procesa
-                        val edad = fila[0].toIntOrNull()
-                        val capnometria = fila[1].toIntOrNull()
-                        val femenino = fila[2].toIntOrNull()
-                        val cardiomanual = fila[3].toIntOrNull()
-                        val recuperacionPulso = fila[4].toIntOrNull()
-                        val causacardiaca = fila[5].toIntOrNull()
-                        val valido = calcularResultado(
-                            edad!!,
-                            femenino!!,
-                            capnometria!!,
-                            causacardiaca!!,
-                            cardiomanual!!,
-                            recuperacionPulso!!
-                        )
-                        runOnUiThread {
-                            barraProgreso.progress = index + 1
+                if (fila.size == 6) { // 6 valores iguales que los del formulario
+                    if (!primera) { // la primera linea (cabecera) no se procesa
+
+                        val edad            = fila[0].toIntOrNull()
+                        val capno           = fila[1].toIntOrNull()
+                        val fem             = fila[2].toIntOrNull()   // 0/1 en CSV
+                        val cardio          = fila[3].toIntOrNull()   // 0/1
+                        val rec             = fila[4].toIntOrNull()   // 0/1
+                        val causa           = fila[5].toIntOrNull()   // 0/1
+
+                        // Validación básica de nulos
+                        if (edad == null || capno == null || fem == null || cardio == null || rec == null || causa == null) {
+                            Toast.makeText(this, "Fila ${index + 1}: valores inválidos", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // 1) Calcular índice y validez con el "motor" común
+                            val (valido, indice) = calcularIndiceYValidez(
+                                mode = importMode,     // AFTER_RCP fijo en importación
+                                edad = edad,
+                                femenino = fem,        // 0/1
+                                capnometria = capno,
+                                causacardiaca = causa, // 0/1
+                                cardiomanual = cardio, // 0/1
+                                recuperacion = rec,    // 0/1
+                                tiempoMin = 0
+                            )
+                            esValido = valido
+
+                            // 2) Actualizar contadores
+                            contadorPredicciones++
+                            if (valido) contadorValidas++ else contadorNoValidas++
+
+                            // 3) Convertir a "Si"/"No" para guardarlo como antes
+                            val femTxt   = if (fem == 1) "Si" else "No"
+                            val cardioTxt= if (cardio == 1) "Si" else "No"
+                            val recTxt   = if (rec == 1) "Si" else "No"
+                            val causaTxt = if (causa == 1) "Si" else "No"
+
+                            // 4) Guardar en Firestore con indice + prediction_mode
+                            guardarPrediccion(
+                                edad = edad.toString(),
+                                femenino = femTxt,
+                                capnometria = capno.toString(),
+                                causa_cardiaca = causaTxt,
+                                cardio_manual = cardioTxt,
+                                recuperacionPulso = recTxt,
+                                indice = indice,
+                                mode = importMode
+                            )
                         }
 
-                        // actualizo contador de si la prediccion es valida o no
-                        contadorPredicciones++;
-                        if(valido) contadorValidas++;
-                        else contadorNoValidas++;
-
-                        // cambio al formato de la base de datos
-                        var fem: String
-                        if (femenino == 1)fem = "Si"
-                        else fem = "No"
-
-                        var card: String
-                        if (cardiomanual == 1) card = "Si"
-                        else card = "No"
-
-                        var rec: String
-                        if (recuperacionPulso == 1) rec = "Si"
-                        else rec = "No"
-
-                        var causa: String
-                        if (causacardiaca == 1) causa = "Si"
-                        else causa = "No"
-
-                        // guardo prediccion en la base de datos
-                        guardarPrediccion(edad.toString(), fem, capnometria.toString(), causa, card, rec)
-
-                        // actualizo barra progreso
-                        runOnUiThread{
+                        // Barra de progreso
+                        runOnUiThread {
+                            barraProgreso.progress = index + 1
                             binding.barraProgreso.progress = contadorPredicciones
                         }
                     }
-                }
-                else{
+                } else {
                     Toast.makeText(this, "Formato incorrecto. Se necesitan 6 columnas", Toast.LENGTH_SHORT).show()
                 }
                 primera = false
             }
+
             actualizarNumeroPredicciones(contadorPredicciones, contadorValidas, contadorNoValidas){
                 Toast.makeText(this, "Actualizando número de predicciones...", Toast.LENGTH_SHORT).show()
             }
@@ -178,22 +188,6 @@ class ImportActivity: AppCompatActivity() {
             Toast.makeText(this, "Error al leer el archivo CSV", Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun calcularResultado(
-        edad: Int, femenino: Int, capnometria: Int, causacardiaca: Int, cardiomanual: Int,
-        recuperacionPulso: Int
-    ): Boolean{
-        val resultado = VALOR_FIJO +
-                (edad * COEFICIENTE_EDAD) +
-                (femenino * COEFICIENTE_SEXO_FEMENINO) +
-                (capnometria * COEFICIENTE_CAPNOMETRIA) +
-                (causacardiaca * COEFICIENTE_CAUSA_CARDIACA) +
-                (cardiomanual * COEFICIENTE_CARDIOCOMPRESION) +
-                (recuperacionPulso * COEFICIENTE_RECUPERACION_CIRCULACION)
-        esValido = resultado >= CORTE
-        return resultado >= CORTE
-    }
-
 
     private fun actualizarNumeroPredicciones(numeroTotal: Int, numeroValidas: Int, numeroNoValidas: Int, callback: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
@@ -215,8 +209,9 @@ class ImportActivity: AppCompatActivity() {
     }
 
     private fun guardarPrediccion(
-        edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String
+        edad: String, femenino: String, capnometria: String,
+        causa_cardiaca: String, cardio_manual: String, recuperacionPulso: String,
+        indice: Double, mode: String
     ){
         var valido: String
         if (esValido!!) valido = "Si"
@@ -235,6 +230,8 @@ class ImportActivity: AppCompatActivity() {
             "rec_pulso" to recuperacionPulso,
             "fecha" to fecha,
             "valido" to valido,
+            "indice" to indice,
+            "prediction_mode" to mode,
             "modelos" to mutableListOf<String>(), // lista vacia para añadir los modelos de IA
             "no_modelos" to mutableListOf("Modelo1", "Modelo2", "Modelo3", "Modelo4") // lista de los modelos en los que NO esta la prediccion
         )
