@@ -49,6 +49,16 @@ class ValidActivity: AppCompatActivity() {
         val recuperacionPulso = intent.getStringExtra("rec_pulso")
         val userUid = intent.getStringExtra("userUid")
         val name = intent.getStringExtra("username")
+        val modeCode = intent.getStringExtra("prediction_mode") ?: "AFTER_RCP"
+        val indice = intent.getDoubleExtra("indice", Double.NaN)
+
+        // Lo convertimos a un texto legible para el PDF
+        val momentoPrediccion = when (modeCode) {
+            "BEFORE_RCP" -> "Antes del procedimiento de RCP"
+            "MID_RCP"    -> "A los 20 minutos de iniciada la RCP"
+            "AFTER_RCP"  -> "Después del procedimiento de RCP"
+            else         -> "No especificado"
+        }
 
         // cambio a si o no el valor femenino
         val femenino: String
@@ -61,7 +71,9 @@ class ValidActivity: AppCompatActivity() {
 
 
         // guardo la prediccion en la base de datos
-        guardarPrediccion(edad!!, femenino!!, capnometria!!, causa_cardiaca!!, cardio_manual!!, recuperacionPulso!!, userUid!!, name!!)
+        guardarPrediccion(edad!!, femenino!!, capnometria!!, causa_cardiaca!!,
+            cardio_manual!!, recuperacionPulso!!, userUid!!, name!!,
+            modeCode, if (indice.isNaN()) null else indice )
 
         // boton volver al menu principal
         binding.buttonBackToMenu.setOnClickListener {
@@ -83,14 +95,22 @@ class ValidActivity: AppCompatActivity() {
                 Toast.makeText(this, "Necesita una versión Android igual o superior a 10", Toast.LENGTH_SHORT).show()
             }
             else{
-                generarPDF(edad, femenino, capnometria, causa_cardiaca, cardio_manual, recuperacionPulso, name)
+                generarPDF(edad, femenino, capnometria, causa_cardiaca, cardio_manual, recuperacionPulso, name, momentoPrediccion, if (indice.isNaN()) null else indice)
             }
         }
     }
 
     private fun guardarPrediccion(
-        edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String, userUid: String, name: String
+        edad: String,
+        femenino: String,
+        capnometria: String,
+        causa_cardiaca: String,
+        cardio_manual: String,
+        recuperacionPulso: String,
+        userUid: String,
+        name: String,
+        predictionMode: String,
+        indice: Double?
     ){
         val fecha = Timestamp.now() // cojo fecha para incluirla en la base de datos
         val db = FirebaseFirestore.getInstance()
@@ -105,9 +125,18 @@ class ValidActivity: AppCompatActivity() {
             "rec_pulso" to recuperacionPulso,
             "fecha" to fecha,
             "valido" to "Si",
+            "prediction_mode" to predictionMode,
+            "momento_prediccion_legible" to when (predictionMode) { // 👈 aquí lo añadimos
+                "BEFORE_RCP" -> "Antes del procedimiento de RCP"
+                "MID_RCP"    -> "A los 20 minutos de iniciada la RCP"
+                "AFTER_RCP"  -> "Después del procedimiento de RCP"
+                else         -> "No especificado"
+            },
             "modelos" to mutableListOf<String>(), // lista vacia para añadir los modelos de IA
             "no_modelos" to mutableListOf("Modelo1", "Modelo2", "Modelo3", "Modelo4") // lista de los modelos en los que NO esta la prediccion
         )
+
+        indice?.let { prediccion["indice"] = it }
 
         db.collection("predicciones")
             .add(prediccion)
@@ -121,7 +150,7 @@ class ValidActivity: AppCompatActivity() {
 
     private fun generarPDF(
         edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String, name: String
+        cardio_manual: String, recuperacionPulso: String, name: String, momentoPrediccion: String, indice: Double?
     ) {
         try {
             // Crear el archivo PDF en el almacenamiento privado
@@ -162,22 +191,19 @@ class ValidActivity: AppCompatActivity() {
                         .setFontSize(14f)
                     document.add(donorInfo)
 
+                    document.add(Paragraph("Momento de la predicción: $momentoPrediccion").setTextAlignment(TextAlignment.LEFT))
                     document.add(Paragraph("Edad: $edad").setTextAlignment(TextAlignment.LEFT))
-                    document.add(
-                        Paragraph("Sexo femenino: $femenino").setTextAlignment(
-                            TextAlignment.LEFT))
-                    document.add(
-                        Paragraph("Capnometría: $capnometria").setTextAlignment(
-                            TextAlignment.LEFT))
-                    document.add(
-                        Paragraph("Causa cardiaca: $causa_cardiaca").setTextAlignment(
-                            TextAlignment.LEFT))
-                    document.add(
-                        Paragraph("Cardiocompresión extrahospitalaria manual: $cardio_manual").setTextAlignment(
-                            TextAlignment.LEFT))
-                    document.add(
-                        Paragraph("Recuperación circulación: $recuperacionPulso").setTextAlignment(
-                            TextAlignment.LEFT))
+                    document.add(Paragraph("Sexo femenino: $femenino").setTextAlignment(TextAlignment.LEFT))
+                    document.add(Paragraph("Capnometría: $capnometria").setTextAlignment(TextAlignment.LEFT))
+                    document.add(Paragraph("Causa cardiaca: $causa_cardiaca").setTextAlignment(TextAlignment.LEFT))
+                    document.add(Paragraph("Cardiocompresión extrahospitalaria manual: $cardio_manual").setTextAlignment(TextAlignment.LEFT))
+                    document.add(Paragraph("Recuperación circulación: $recuperacionPulso").setTextAlignment(TextAlignment.LEFT))
+                    indice?.let {
+                        document.add(
+                            Paragraph("Índice calculado: " + String.format(Locale.getDefault(), "%.3f", it))
+                                .setTextAlignment(TextAlignment.LEFT)
+                        )
+                    }
 
                     // Resultado predicción
                     val prediction = Paragraph("PREDICCIÓN: VÁLIDO")
