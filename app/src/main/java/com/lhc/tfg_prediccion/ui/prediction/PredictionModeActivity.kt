@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.lhc.tfg_prediccion.databinding.ActivityPredictionModeBinding
+import com.lhc.tfg_prediccion.ui.main.MainActivity
 
 class PredictionModeActivity : AppCompatActivity() {
 
@@ -38,6 +39,16 @@ class PredictionModeActivity : AppCompatActivity() {
         binding.btnBefore.setOnClickListener { goToPrediction(MODE_BEFORE) }
         binding.btnMid.setOnClickListener    { goToPrediction(MODE_MID) }
         binding.btnAfter.setOnClickListener  { goToPrediction(MODE_AFTER) }
+
+        // Botón para volver al menú principal
+        binding.btnBackToMain.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("userName", name)
+            intent.putExtra("userUid", userUid)
+            startActivity(intent)
+            finish() // opcional: evita volver atrás a esta pantalla
+        }
+
     }
 }
 

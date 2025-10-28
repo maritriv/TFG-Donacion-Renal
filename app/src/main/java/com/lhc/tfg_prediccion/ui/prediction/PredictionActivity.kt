@@ -59,10 +59,11 @@ class PredictionActivity : AppCompatActivity() {
 
         // Botón volver
         binding.btnBack.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, PredictionModeActivity::class.java)
             intent.putExtra("userName", name)
             intent.putExtra("userUid", userUid)
             startActivity(intent)
+            finish() // opcional: evita que al pulsar atrás vuelva al formulario
         }
 
         // Botón realizar predicción
