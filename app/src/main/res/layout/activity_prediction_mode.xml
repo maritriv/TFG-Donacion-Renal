@@ -2,55 +2,71 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:padding="24dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f9f7f7">
+    android:background="#417f9a"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
 
+    <!-- Título al estilo de "FORMULARIO" -->
     <TextView
         android:id="@+id/tvTitle"
-        android:text="¿En qué punto quieres realizar la predicción?"
-        android:textSize="22sp"
-        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="28dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:fontFamily="sans-serif-condensed-medium"
+        android:gravity="center"
+        android:text="¿EN QUÉ PUNTO QUIERES REALIZAR LA PREDICCIÓN?"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
-    <Button
+    <!-- Botones de opción -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBefore"
-        android:text="Antes de la RCP"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:text="ANTES DE LA RCP"
+        android:textColor="#042939"
+        android:textSize="16sp"
+        app:backgroundTint="#fcfe82" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="14dp" />
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnMid"
-        android:text="A los 20 minutos de inciada la RCP"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="60dp"
+        android:layout_marginTop="12dp"
+        android:text="A LOS 20 MINUTOS DE INICIADA LA RCP"
+        android:textColor="#042939"
+        android:textSize="15sp"
+        android:lines="2"
+        app:backgroundTint="#fcfe82" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAfter"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="12dp"
+        android:text="DESPUÉS DE LA RCP"
+        android:textColor="#042939"
+        android:textSize="16sp"
+        app:backgroundTint="#fcfe82" />
+
+    <!-- Separación -->
     <Space
         android:layout_width="match_parent"
-        android:layout_height="14dp" />
+        android:layout_height="32dp" />
 
-    <Button
-        android:id="@+id/btnAfter"
-        android:text="Después de la RCP"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+    <!-- Botón volver -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBackToMain"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_marginTop="32dp"
         android:layout_gravity="center_horizontal"
-        android:text="VOLVER AL MENÚ INICIAL"
+        android:text="VOLVER AL MENÚ"
         android:textColor="#042939"
         android:textSize="18sp"
         app:backgroundTint="#fcfe82" />
