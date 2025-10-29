@@ -11,5 +11,8 @@ data class Prediccion(
     val rec_pulso: String= "",
     val valido: String = "",
     val uid_medico: String = "",
-    val fecha: Timestamp = Timestamp.now()
+    val fecha: Timestamp = Timestamp.now(),
+    val prediction_mode: String? = null,              // "BEFORE_RCP" | "MID_RCP" | "AFTER_RCP"
+    val momento_prediccion_legible: String? = null,   // texto
+    val indice: Double? = null
 )

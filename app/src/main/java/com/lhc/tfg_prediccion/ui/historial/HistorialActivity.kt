@@ -50,6 +50,13 @@ class HistorialActivity: AppCompatActivity() {
     private var name: String? = null
     private val db = FirebaseFirestore.getInstance()
 
+    private fun modeToLabel(mode: String?): String = when (mode) {
+        "BEFORE_RCP" -> "Antes de la RCP"
+        "MID_RCP"    -> "A los 20 min de iniciada la RCP"
+        "AFTER_RCP"  -> "Después de la RCP"
+        else         -> "Después de la RCP" // por defecto para registros antiguos
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHistorialBinding.inflate(layoutInflater)
@@ -73,7 +80,7 @@ class HistorialActivity: AppCompatActivity() {
         }
 
         // configuracion spinner
-        val opciones = arrayOf("Fecha", "Edad", "Capnometría")
+        val opciones = arrayOf("Fecha", "Edad", "Capnometría", "Momento")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, opciones)
         binding.orderSpinner.adapter = adapter
         val spinner = findViewById<Spinner>(R.id.order_spinner)
@@ -103,7 +110,19 @@ class HistorialActivity: AppCompatActivity() {
         params.setMargins(8, 16, 8, 16)
 
         // Lista de encabezados
-        val encabezados = listOf("", "Edad", "Fem", "Capnometría", "Causa cardiaca", "Cardiocompresión", "RecPulso", "Resultado", "Informe", "Eliminar")
+        val encabezados = listOf(
+            "",
+            "Edad",
+            "Fem",
+            "Capnometría",
+            "Causa cardiaca",
+            "Cardiocompresión",
+            "RecPulso",
+            "Momento",
+            "Resultado",
+            "Informe",
+            "Eliminar"
+        )
         for (titulo in encabezados) {
             val celda = TextView(this)
             celda.text = titulo
@@ -134,6 +153,26 @@ class HistorialActivity: AppCompatActivity() {
                         "Fecha" -> listaPredicciones.sortedBy { it.fecha }
                         "Edad" -> listaPredicciones.sortedBy { it.edad.toIntOrNull() ?: 0 }
                         "Capnometría" -> listaPredicciones.sortedBy { it.capnometria.toIntOrNull() ?: 0 }
+                        "Momento"      -> listaPredicciones.sortedBy {
+                            // 1) Intentamos usar el código de modo si existe
+                            when (it.prediction_mode) {
+                                "BEFORE_RCP"        -> 0
+                                "MID_RCP"           -> 1
+                                "AFTER_RCP", null   -> 2
+                                else                -> 3
+                            }.let { rankFromMode ->
+                                // 2) Si no había modo y sólo tenemos el texto legible, calculamos un rank por texto
+                                if (it.prediction_mode == null) {
+                                    val texto = it.momento_prediccion_legible ?: modeToLabel(null)
+                                    when (texto) {
+                                        "Antes de la RCP"                      -> 0
+                                        "A los 20 min de iniciada la RCP"     -> 1
+                                        "Después de la RCP"                    -> 2
+                                        else                                   -> 3
+                                    }
+                                } else rankFromMode
+                            }
+                        }
                         else -> listaPredicciones
                     }
 
@@ -260,6 +299,19 @@ class HistorialActivity: AppCompatActivity() {
         rec.layoutParams = params
         fila.addView(rec)
 
+        // Momento de tiempo de la predicción
+        val momento = pred.momento_prediccion_legible ?: modeToLabel(pred.prediction_mode)
+        val tvMomento = TextView(this).apply {
+            text = momento
+            textSize = 16f
+            setPadding(16, 24, 16, 24)
+            gravity = Gravity.CENTER
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            typeface = Typeface.create("sans-serif-condensed", Typeface.NORMAL)
+            layoutParams = params
+        }
+        fila.addView(tvMomento)
+
         // resultado
         val resultado = TextView(this)
         resultado.text = pred.valido
@@ -281,6 +333,9 @@ class HistorialActivity: AppCompatActivity() {
         } // altura y anchura icono + posicion en la celda
         informe.layoutParams = params_icono
         informe.setOnClickListener {
+
+            val momentoTexto = pred.momento_prediccion_legible ?: modeToLabel(pred.prediction_mode)
+
             generarPDF(
                 pred.edad,
                 pred.femenino,
@@ -290,7 +345,8 @@ class HistorialActivity: AppCompatActivity() {
                 pred.rec_pulso,
                 name?: "Desconocido",
                 pred.fecha,
-                pred.valido
+                pred.valido,
+                momentoTexto
             )
         }
         fila.addView(informe)
@@ -328,7 +384,7 @@ class HistorialActivity: AppCompatActivity() {
 
     private fun generarPDF(
         edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String, name: String, fecha: Timestamp, valido: String
+        cardio_manual: String, recuperacionPulso: String, name: String, fecha: Timestamp, valido: String, momento: String
     ) {
         try {
             // creo el archivo PDF en el almacenamiento privado
@@ -369,6 +425,7 @@ class HistorialActivity: AppCompatActivity() {
                         .setFontSize(14f)
                     document.add(donorInfo)
 
+                    document.add(Paragraph("Momento de la predicción: $momento").setTextAlignment(TextAlignment.LEFT))
                     document.add(Paragraph("Edad: $edad").setTextAlignment(TextAlignment.LEFT))
                     document.add(
                         Paragraph("Sexo femenino: $femenino").setTextAlignment(
@@ -527,10 +584,14 @@ class HistorialActivity: AppCompatActivity() {
                                 val writer = OutputStreamWriter(outputStream, Charsets.UTF_8)
 
                                 // encabezado en la primera fila
-                                writer.write("Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual,Recuperacion_pulso,Valido,UID_medico,Fecha\n")
+                                writer.write("Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual,Recuperacion_pulso,Momento,Valido,UID_medico,Fecha\n")
 
                                 // contenido
                                 for (pred in listaPredicciones) {
+
+                                    val momento = pred.momento_prediccion_legible
+                                        ?: modeToLabel(pred.prediction_mode)
+
                                     val row = listOf(
                                         pred.edad,
                                         pred.femenino,
@@ -538,6 +599,7 @@ class HistorialActivity: AppCompatActivity() {
                                         pred.causa_cardiaca,
                                         pred.cardio_manual,
                                         pred.rec_pulso,
+                                        momento,
                                         pred.valido,
                                         pred.uid_medico,
                                         getFormattedDate(pred.fecha)

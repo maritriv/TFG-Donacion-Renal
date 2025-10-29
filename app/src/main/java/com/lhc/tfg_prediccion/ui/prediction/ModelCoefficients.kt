@@ -12,16 +12,16 @@ data class ModelCoefficients(
     val corte: Double
 )
 
-// Modos estándar (en inglés para evitar acentos/espacios en claves técnicas)
+// Modos estándar
 const val MODE_BEFORE = "BEFORE_RCP"
 const val MODE_MID    = "MID_RCP"
 const val MODE_AFTER  = "AFTER_RCP"
 
-// Coeficientes por modo (según tu Excel)
+// Coeficientes por modo
 val COEFS_BEFORE = ModelCoefficients(
     intercepto = 7.5,
     edad = -0.1058,
-    sexoFemenino = -0.61867,
+    sexoFemenino = -0.6187,
     capnometria = 0.0663,
     causaCardiaca = -0.2247,
     cardioManual = -2.8363,
