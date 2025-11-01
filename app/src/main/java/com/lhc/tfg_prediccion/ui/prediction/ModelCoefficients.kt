@@ -86,3 +86,36 @@ fun calcularIndiceYValidez(
     val esValido = indice >= c.corte
     return esValido to indice
 }
+
+// ===================== Etiquetas canónicas para "Momento" =====================
+const val LBL_BEFORE = "Antes del procedimiento de RCP"
+const val LBL_MID    = "A los 20 minutos de iniciada la RCP"
+const val LBL_AFTER  = "Después del procedimiento de RCP"
+
+/** CÓDIGO -> frase canónica */
+fun modeToLabel(mode: String?): String = when (mode) {
+    MODE_BEFORE -> LBL_BEFORE
+    MODE_MID    -> LBL_MID
+    MODE_AFTER  -> LBL_AFTER
+    else        -> LBL_AFTER // compatibilidad
+}
+
+/** Texto libre (CSV/antiguo) -> CÓDIGO (parser tolerante) */
+fun modeFromLabelLoose(label: String?): String {
+    val s = (label ?: "").trim().lowercase()
+    return when {
+        // ANTES
+        "Antes" in s -> MODE_BEFORE
+
+        // 20 MIN / MEDIO
+        "20" in s || "min" in s || "medio" in s || "mitad" in s || "punto medio" in s -> MODE_MID
+
+        // DESPUÉS
+        "Después" in s -> MODE_AFTER
+
+        else -> MODE_AFTER
+    }
+}
+
+/** Cualquier texto viejo -> frase canónica */
+fun normalizeLabel(anyText: String?): String = modeToLabel(modeFromLabelLoose(anyText))

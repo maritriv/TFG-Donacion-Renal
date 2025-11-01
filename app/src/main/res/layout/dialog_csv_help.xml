@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/loginbox"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Formato del CSV"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"/>
+
+        <ImageButton
+            android:id="@+id/btnCloseHelp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@android:color/white"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:text="Puedes importar:\n\n• CSV exportado por la app (cabeceras y comas):\nEdad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual,Recuperacion_pulso,Momento,Valido,UID_medico,Fecha\n\n• CSV clásico (punto y coma):\nEdad;Capn;Femenino;Cardiocomp;RecPulso;CausaCardiaca;[Momento]\n\nEjemplo clásico:\n23;35;1;1;0;1;Después de la RCP\n\nNotas:\n• “Momento” es opcional; si falta, se asume “Después de la RCP”.\n• Valores 0/1: 1=Sí, 0=No."
+        android:paddingTop="12dp"/>
+</LinearLayout>

@@ -125,7 +125,7 @@ class NonValidActivity: AppCompatActivity() {
             "fecha" to fecha,
             "valido" to "No",
             "prediction_mode" to predictionMode,
-            "momento_prediccion_legible" to when (predictionMode) { // 👈 aquí lo añadimos
+            "momento_prediccion_legible" to when (predictionMode) {
                 "BEFORE_RCP" -> "Antes del procedimiento de RCP"
                 "MID_RCP"    -> "A los 20 minutos de iniciada la RCP"
                 "AFTER_RCP"  -> "Después del procedimiento de RCP"
