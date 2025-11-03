@@ -20,7 +20,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-// ====================== Nombre completo (utils) ======================
+// ====================== Nombre completo ======================
 object UserUtils {
     /**
      * Carga el nombre completo desde Firestore con los mismos campos que usas:

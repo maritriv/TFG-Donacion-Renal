@@ -17,13 +17,10 @@ import com.lhc.tfg_prediccion.util.PdfPrediction
 import com.lhc.tfg_prediccion.util.generatePredictionPdf
 import com.lhc.tfg_prediccion.util.UserUtils
 
-// Frases canónicas para el “Momento”
-import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
-
 class NonValidActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNonvalidBinding
-    private var fullName: String? = null  // ← nombre + apellidos cuando esté disponible
+    private var fullName: String? = null  // nombre + apellidos cuando esté disponible
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +55,7 @@ class NonValidActivity : AppCompatActivity() {
         val momentoCanonico = modeToLabel(modeCode)
         val femenino = if (auxFem == "Mujer") "Si" else "No"
 
-        // Guardar predicción en Firestore (NO válida)
+        // Guardar predicción en Firestore (NO válida) — usa fullName si ya llegó; si no, name
         guardarPrediccion(
             edad, femenino, capnometria, causa_cardiaca,
             cardio_manual, recuperacionPulso, userUid, (fullName ?: name),
@@ -75,7 +72,7 @@ class NonValidActivity : AppCompatActivity() {
                 putExtra("cardio_manual", cardio_manual)
                 putExtra("rec_pulso", recuperacionPulso)
                 putExtra("userUid", userUid)
-                putExtra("userName", fullName ?: name) // ← pasa nombre completo si lo tenemos
+                putExtra("userName", fullName ?: name) // pasa nombre completo si lo tenemos
             })
         }
 
@@ -91,7 +88,7 @@ class NonValidActivity : AppCompatActivity() {
                 causaCardiaca = causa_cardiaca,
                 cardioManual = cardio_manual,
                 recPulso = recuperacionPulso,
-                valido = false,   // ← NO válido
+                valido = false,   // NO válido
                 indice = indice
             )
             generatePredictionPdf(this, pdfData)
@@ -106,14 +103,14 @@ class NonValidActivity : AppCompatActivity() {
         cardio_manual: String,
         recuperacionPulso: String,
         userUid: String,
-        nameOrFullName: String, // ← nombre completo si está
+        nameOrFullName: String, // nombre completo si está
         predictionMode: String,
         indice: Double?
     ) {
         val fecha = Timestamp.now()
         val db = FirebaseFirestore.getInstance()
         val prediccion = hashMapOf(
-            "nombre_medico" to nameOrFullName, // ← guardamos nombre completo
+            "nombre_medico" to nameOrFullName, // guardamos nombre completo
             "uid_medico" to userUid,
             "edad" to edad,
             "femenino" to femenino,

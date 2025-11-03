@@ -18,7 +18,6 @@ import com.lhc.tfg_prediccion.ui.main.MainAdmin
 
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditprofileBinding
-
     private lateinit var nameEditText: TextInputEditText
     private lateinit var lastnameEditText: TextInputEditText
     private lateinit var birthdateEditText: TextInputEditText

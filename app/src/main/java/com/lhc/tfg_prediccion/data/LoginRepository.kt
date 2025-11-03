@@ -32,7 +32,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
             if (result is Result.Success) {
                 setLoggedInUser(result.data)
             }
-            callback(result) // Enviamos el resultado de vuelta
+            callback(result)
         }
     }
 

@@ -17,14 +17,11 @@ import com.lhc.tfg_prediccion.util.PdfPrediction
 import com.lhc.tfg_prediccion.util.generatePredictionPdf
 import com.lhc.tfg_prediccion.util.UserUtils
 
-// Frases canónicas para el “Momento”
-import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
-
 class ValidActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityValidBinding
 
-    // 💡 Necesaria para guardar/mostrar nombre + apellidos
+    // Nombre + apellidos (se rellena asíncronamente)
     private var fullName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,27 +42,35 @@ class ValidActivity : AppCompatActivity() {
         val recuperacionPulso = intent.getStringExtra("rec_pulso") ?: ""
         val userUid           = intent.getStringExtra("userUid") ?: ""
         val name              = intent.getStringExtra("username") ?: "Desconocido"
+        val modeCode          = intent.getStringExtra("prediction_mode") ?: "AFTER_RCP"
+        val indiceExtra       = intent.getDoubleExtra("indice", Double.NaN)
+        val indice: Double?   = if (indiceExtra.isNaN()) null else indiceExtra
 
-        // Cargar nombre completo de Firestore (asíncrono, con fallback al name del intent)
+        // Carga del nombre completo (asíncrono, con fallback al name del intent)
         UserUtils.cargarNombreCompleto(
-            FirebaseFirestore.getInstance(),
-            userUid,
-            name
-        ) { full -> fullName = full }
-
-        val modeCode    = intent.getStringExtra("prediction_mode") ?: "AFTER_RCP"
-        val indiceExtra = intent.getDoubleExtra("indice", Double.NaN)
-        val indice: Double? = if (indiceExtra.isNaN()) null else indiceExtra
+            db = FirebaseFirestore.getInstance(),
+            uid = userUid,
+            nameFallback = name
+        ) { full ->
+            fullName = full
+        }
 
         // Momento canónico y femenino normalizado
         val momentoCanonico = modeToLabel(modeCode)
         val femenino = if (auxFem == "Mujer") "Si" else "No"
 
-        // Guardar predicción en Firestore
+        // Guardar predicción en Firestore (usa fullName si ya llegó; si no, name)
         guardarPrediccion(
-            edad, femenino, capnometria, causa_cardiaca,
-            cardio_manual, recuperacionPulso, userUid, (fullName ?: name),
-            modeCode, indice
+            edad = edad,
+            femenino = femenino,
+            capnometria = capnometria,
+            causa_cardiaca = causa_cardiaca,
+            cardio_manual = cardio_manual,
+            recuperacionPulso = recuperacionPulso,
+            userUid = userUid,
+            nameOrFullName = (fullName ?: name),
+            predictionMode = modeCode,
+            indice = indice
         )
 
         // Volver a menú
@@ -78,24 +83,24 @@ class ValidActivity : AppCompatActivity() {
                 putExtra("cardio_manual", cardio_manual)
                 putExtra("rec_pulso", recuperacionPulso)
                 putExtra("userUid", userUid)
-                putExtra("userName", fullName ?: name) // ← pasa nombre completo si lo tenemos
+                putExtra("userName", fullName ?: name) // nombre completo si ya lo tenemos
             })
         }
 
-        // Descargar PDF (usa nombre completo si ya está cargado; si no, usa 'name')
+        // Descargar PDF (usa fullName si ya cargó; si no, fallback a name)
         binding.downloadPDF.setOnClickListener {
             val pdfData = PdfPrediction(
-                doctorName = (fullName ?: name),
-                fecha = Timestamp.now(),
+                doctorName     = (fullName ?: name),
+                fecha          = Timestamp.now(),
                 momentoCanonico = momentoCanonico,
-                edad = edad,
-                femenino = femenino,
-                capnometria = capnometria,
-                causaCardiaca = causa_cardiaca,
-                cardioManual = cardio_manual,
-                recPulso = recuperacionPulso,
-                valido = true,
-                indice = indice
+                edad           = edad,
+                femenino       = femenino,
+                capnometria    = capnometria,
+                causaCardiaca  = causa_cardiaca,
+                cardioManual   = cardio_manual,
+                recPulso       = recuperacionPulso,
+                valido         = true,
+                indice         = indice
             )
             generatePredictionPdf(this, pdfData)
         }
@@ -109,14 +114,14 @@ class ValidActivity : AppCompatActivity() {
         cardio_manual: String,
         recuperacionPulso: String,
         userUid: String,
-        nameOrFullName: String,  // ← ahora aceptamos nombre completo si está
+        nameOrFullName: String,  // nombre completo si está disponible
         predictionMode: String,
         indice: Double?
     ) {
         val fecha = Timestamp.now()
         val db = FirebaseFirestore.getInstance()
         val prediccion = hashMapOf(
-            "nombre_medico" to nameOrFullName, // ← guardamos nombre completo
+            "nombre_medico" to nameOrFullName, // guardamos nombre completo
             "uid_medico" to userUid,
             "edad" to edad,
             "femenino" to femenino,

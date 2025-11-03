@@ -97,7 +97,7 @@ fun modeToLabel(mode: String?): String = when (mode) {
     MODE_BEFORE -> LBL_BEFORE
     MODE_MID    -> LBL_MID
     MODE_AFTER  -> LBL_AFTER
-    else        -> LBL_AFTER // compatibilidad
+    else        -> LBL_AFTER
 }
 
 /** Texto libre (CSV/antiguo) -> CÓDIGO (parser tolerante) */
@@ -116,6 +116,3 @@ fun modeFromLabelLoose(label: String?): String {
         else -> MODE_AFTER
     }
 }
-
-/** Cualquier texto viejo -> frase canónica */
-fun normalizeLabel(anyText: String?): String = modeToLabel(modeFromLabelLoose(anyText))
