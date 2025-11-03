@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.io.OutputStreamWriter
 
-// *** Importa las utilidades canónicas ***
+// Utilidades canónicas de modos
 import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
 import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
 import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
@@ -50,6 +50,7 @@ class HistorialActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHistorialBinding
     private var userUid: String? = null
     private var name: String? = null
+    private var fullName: String? = null
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,10 +61,13 @@ class HistorialActivity : AppCompatActivity() {
         userUid = intent.getStringExtra("userUid")
         name = intent.getStringExtra("userName")
 
+        // Cargar nombre completo (si no vino ya en el intent)
+        cargarNombreCompleto()
+
         // Volver
         findViewById<TextView>(R.id.btn_volver).setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java).apply {
-                putExtra("userName", name)
+                putExtra("userName", fullName ?: name)
                 putExtra("userUid", userUid)
             })
         }
@@ -84,6 +88,21 @@ class HistorialActivity : AppCompatActivity() {
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
+    }
+
+    /** Intenta construir "Nombre Apellidos" desde Firestore si no vino en el intent. */
+    private fun cargarNombreCompleto() {
+        val uid = userUid ?: return
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { doc ->
+                val n = doc.getString("name") ?: name ?: ""
+                val ap = doc.getString("lastname")
+                    ?: ""
+                fullName = listOf(n, ap).filter { it.isNotBlank() }.joinToString(" ").ifBlank { n }
+            }
+            .addOnFailureListener {
+                fullName = name
+            }
     }
 
     private fun cargarHistorial(orden: String) {
@@ -127,14 +146,13 @@ class HistorialActivity : AppCompatActivity() {
                     "Edad" -> lista.sortedBy { it.edad.toIntOrNull() ?: 0 }
                     "Capnometría" -> lista.sortedBy { it.capnometria.toIntOrNull() ?: 0 }
                     "Momento" -> lista.sortedBy {
-                        // Normaliza a modo canónico
                         val mode = it.prediction_mode
                             ?: modeFromLabelLoose(it.momento_prediccion_legible ?: "")
                         when (mode) {
                             MODE_BEFORE -> 0
                             MODE_MID    -> 1
-                            MODE_AFTER   -> 2
-                            else         -> 3
+                            MODE_AFTER  -> 2
+                            else        -> 3
                         }
                     }
                     else -> lista
@@ -149,7 +167,11 @@ class HistorialActivity : AppCompatActivity() {
                         layoutParams = TableRow.LayoutParams(
                             TableRow.LayoutParams.MATCH_PARENT, 1
                         ).apply { setMargins(8, 4, 8, 4) }
-                        setBackgroundColor(ContextCompat.getColor(this@HistorialActivity, android.R.color.darker_gray))
+                        setBackgroundColor(
+                            ContextCompat.getColor(
+                                this@HistorialActivity, android.R.color.darker_gray
+                            )
+                        )
                         tabla.addView(this)
                     }
                     contador++
@@ -189,7 +211,7 @@ class HistorialActivity : AppCompatActivity() {
         }
 
         // # (contador)
-        addCell(contador.toString(), center = true).also { }
+        addCell(contador.toString(), center = true)
 
         // Edad, Femenino, Capno, Causa, Cardio, Rec
         addCell(pred.edad)
@@ -217,7 +239,7 @@ class HistorialActivity : AppCompatActivity() {
             setOnClickListener {
                 generarPDF(
                     pred.edad, pred.femenino, pred.capnometria, pred.causa_cardiaca,
-                    pred.cardio_manual, pred.rec_pulso, name ?: "Desconocido",
+                    pred.cardio_manual, pred.rec_pulso, fullName ?: "Desconocido",
                     pred.fecha, pred.valido, canonicalMoment
                 )
             }
@@ -250,11 +272,11 @@ class HistorialActivity : AppCompatActivity() {
 
     private fun generarPDF(
         edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String, name: String,
+        cardio_manual: String, recuperacionPulso: String, nombre: String,
         fecha: Timestamp, valido: String, momentoCanonico: String
     ) {
         try {
-            val fileName = "Reporte_${fecha}.pdf"
+            val fileName = "Reporte_${fecha}_médico_${nombre}.pdf"
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
@@ -273,7 +295,7 @@ class HistorialActivity : AppCompatActivity() {
                     document.add(title)
 
                     val fechaLegible = getFormattedDate(fecha)
-                    val doctorInfo = Paragraph("Nombre médico: $name\nFecha: $fechaLegible")
+                    val doctorInfo = Paragraph("Nombre médico: $nombre\nFecha: $fechaLegible")
                         .setTextAlignment(TextAlignment.LEFT).setFontSize(12f)
                     document.add(doctorInfo)
                     document.add(Paragraph("\n"))
@@ -361,7 +383,7 @@ class HistorialActivity : AppCompatActivity() {
                     Toast.makeText(this, "Contadores actualizados", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, HistorialActivity::class.java).apply {
                         putExtra("userUid", userUid)
-                        putExtra("userName", name)
+                        putExtra("userName", fullName ?: name)
                     })
                 }
                 .addOnFailureListener {
@@ -377,7 +399,12 @@ class HistorialActivity : AppCompatActivity() {
                 val lista = snap.map { it.toObject(Prediccion::class.java) }
 
                 try {
-                    val fileName = "historialPredicciones_${name}_${System.currentTimeMillis()}.csv"
+                    // Nombre del archivo con nombre y apellidos si están disponibles
+                    val displayName = (fullName ?: name ?: "medico")
+                        .replace('/', '-')
+                        .replace('\\', '-')
+                    val fileName = "historialPredicciones_${displayName}_${System.currentTimeMillis()}.csv"
+
                     val contentValues = ContentValues().apply {
                         put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                         put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
@@ -390,10 +417,10 @@ class HistorialActivity : AppCompatActivity() {
                         resolver.openOutputStream(it)?.use { outputStream ->
                             val writer = OutputStreamWriter(outputStream, Charsets.UTF_8)
 
-                            // Cabecera
+                            // Cabecera (formato app, re-importable)
                             writer.write("Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual,Recuperacion_pulso,Momento,Valido,UID_medico,Fecha\n")
 
-                            // Filas con momento canónico siempre
+                            // Filas con Momento canónico
                             lista.forEach { pred ->
                                 val canonicalMoment = modeToLabel(
                                     pred.prediction_mode ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")

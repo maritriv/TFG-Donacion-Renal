@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.databinding.ActivityImportBinding
 import com.lhc.tfg_prediccion.ui.main.MainActivity
+import androidx.documentfile.provider.DocumentFile
 
 class ImportActivity : AppCompatActivity() {
 
@@ -94,11 +95,16 @@ class ImportActivity : AppCompatActivity() {
         val uri = result.data?.data ?: return@registerForActivityResult
 
         currentCsvUri = uri
-        val name = uri.lastPathSegment?.substringAfterLast('/') ?: "CSV seleccionado"
-        binding.tvFileName.text = name
-        // La X siempre visible tras elegir algo
+
+        // Obtener nombre real del archivo
+        val docFile = DocumentFile.fromSingleUri(this, uri)
+        val displayName = docFile?.name ?: "Archivo CSV seleccionado"
+        binding.tvFileName.text = displayName
+
+        // Mostrar botón "X" para deseleccionar
         binding.btnClearFile.visibility = View.VISIBLE
 
+        // Validar y parsear CSV
         validarYParsearCSV(uri)
     }
 
