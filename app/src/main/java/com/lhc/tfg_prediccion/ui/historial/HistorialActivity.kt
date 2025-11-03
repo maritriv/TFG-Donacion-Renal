@@ -3,7 +3,6 @@ package com.lhc.tfg_prediccion.ui.historial
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -21,36 +20,33 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.itextpdf.kernel.geom.PageSize
-import com.itextpdf.kernel.pdf.PdfDocument
-import com.itextpdf.kernel.pdf.PdfWriter
-import com.itextpdf.layout.Document
-import com.itextpdf.layout.element.Paragraph
-import com.itextpdf.layout.properties.TextAlignment
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.data.model.Prediccion
 import com.lhc.tfg_prediccion.databinding.ActivityHistorialBinding
 import com.lhc.tfg_prediccion.ui.main.MainActivity
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.io.OutputStreamWriter
 
-// Utilidades canónicas de modos
+// Modos canónicos
 import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
 import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
 import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
 import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
 import com.lhc.tfg_prediccion.ui.prediction.modeFromLabelLoose
 
+// Utilidades PDF + nombre completo
+import com.lhc.tfg_prediccion.util.PdfPrediction
+import com.lhc.tfg_prediccion.util.generatePredictionPdf
+import com.lhc.tfg_prediccion.util.formatDisplayDate
+import com.lhc.tfg_prediccion.util.UserUtils
+
 class HistorialActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistorialBinding
     private var userUid: String? = null
-    private var name: String? = null
-    private var fullName: String? = null
+    private var name: String? = null           // fallback (lo que venía por intent)
+    private var fullName: String? = null       // nombre + apellidos desde Firestore
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +57,10 @@ class HistorialActivity : AppCompatActivity() {
         userUid = intent.getStringExtra("userUid")
         name = intent.getStringExtra("userName")
 
-        // Cargar nombre completo (si no vino ya en el intent)
-        cargarNombreCompleto()
+        // Cargar nombre completo usando util (asíncrono)
+        UserUtils.cargarNombreCompleto(db, userUid, name) { full ->
+            fullName = full
+        }
 
         // Volver
         findViewById<TextView>(R.id.btn_volver).setOnClickListener {
@@ -90,21 +88,6 @@ class HistorialActivity : AppCompatActivity() {
         }
     }
 
-    /** Intenta construir "Nombre Apellidos" desde Firestore si no vino en el intent. */
-    private fun cargarNombreCompleto() {
-        val uid = userUid ?: return
-        db.collection("users").document(uid).get()
-            .addOnSuccessListener { doc ->
-                val n = doc.getString("name") ?: name ?: ""
-                val ap = doc.getString("lastname")
-                    ?: ""
-                fullName = listOf(n, ap).filter { it.isNotBlank() }.joinToString(" ").ifBlank { n }
-            }
-            .addOnFailureListener {
-                fullName = name
-            }
-    }
-
     private fun cargarHistorial(orden: String) {
         val tabla = findViewById<TableLayout>(R.id.tabla_historial)
         tabla.removeAllViews()
@@ -127,7 +110,7 @@ class HistorialActivity : AppCompatActivity() {
                 text = titulo
                 textSize = 16f
                 setPadding(16, 24, 16, 24)
-                typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD)
+                typeface = android.graphics.Typeface.create("sans-serif-condensed", android.graphics.Typeface.BOLD)
                 layoutParams = params
                 filaEncabezado.addView(this)
             }
@@ -201,9 +184,9 @@ class HistorialActivity : AppCompatActivity() {
                 setPadding(16, 24, 16, 24)
                 gravity = if (center) Gravity.CENTER else Gravity.START
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
-                typeface = Typeface.create(
+                typeface = android.graphics.Typeface.create(
                     "sans-serif-condensed",
-                    if (bold) Typeface.BOLD else Typeface.NORMAL
+                    if (bold) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL
                 )
                 layoutParams = params
                 fila.addView(this)
@@ -230,17 +213,28 @@ class HistorialActivity : AppCompatActivity() {
         // Resultado
         addCell(pred.valido)
 
-        // Informe (PDF)
+        // Informe (PDF) — usa la utilidad común
         ImageView(this).apply {
             isClickable = true
             isFocusable = true
             setImageResource(R.drawable.download)
             layoutParams = TableRow.LayoutParams(55, 55).apply { gravity = Gravity.CENTER }
             setOnClickListener {
-                generarPDF(
-                    pred.edad, pred.femenino, pred.capnometria, pred.causa_cardiaca,
-                    pred.cardio_manual, pred.rec_pulso, fullName ?: "Desconocido",
-                    pred.fecha, pred.valido, canonicalMoment
+                generatePredictionPdf(
+                    this@HistorialActivity,
+                    PdfPrediction(
+                        doctorName = fullName ?: name ?: "Desconocido",
+                        fecha = pred.fecha,
+                        momentoCanonico = canonicalMoment,
+                        edad = pred.edad,
+                        femenino = pred.femenino,
+                        capnometria = pred.capnometria,
+                        causaCardiaca = pred.causa_cardiaca,
+                        cardioManual = pred.cardio_manual,
+                        recPulso = pred.rec_pulso,
+                        valido = pred.valido == "Si",
+                        indice = pred.indice
+                    )
                 )
             }
             fila.addView(this)
@@ -270,80 +264,8 @@ class HistorialActivity : AppCompatActivity() {
         tabla.addView(fila)
     }
 
-    private fun generarPDF(
-        edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String, nombre: String,
-        fecha: Timestamp, valido: String, momentoCanonico: String
-    ) {
-        try {
-            val sdf = SimpleDateFormat("dd-MM-yyyy_HH-mm", Locale.getDefault())
-            val fechaLegible = sdf.format(fecha.toDate())
-            val nombreLimpio = nombre.replace(" ", "_")  // quita espacios para que no dé problemas
-            val fileName = "Reporte_${fechaLegible}_$nombreLimpio.pdf"
-
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-            }
-            val resolver = contentResolver
-            val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-
-            uri?.let {
-                resolver.openOutputStream(it)?.use { outputStream ->
-                    val pdfDocument = PdfDocument(PdfWriter(outputStream))
-                    val document = Document(pdfDocument, PageSize.A4)
-
-                    val title = Paragraph("RESULTADOS PREDICCIÓN DONANTE DE RIÑÓN")
-                        .setBold().setTextAlignment(TextAlignment.CENTER).setFontSize(16f)
-                    document.add(title)
-
-                    val fechaLegible = getFormattedDate(fecha)
-                    val doctorInfo = Paragraph("Nombre médico: $nombre\nFecha: $fechaLegible")
-                        .setTextAlignment(TextAlignment.LEFT).setFontSize(12f)
-                    document.add(doctorInfo)
-                    document.add(Paragraph("\n"))
-
-                    val donorInfo = Paragraph("DATOS POSIBLE DONANTE:")
-                        .setBold().setTextAlignment(TextAlignment.LEFT).setFontSize(14f)
-                    document.add(donorInfo)
-
-                    document.add(Paragraph("Momento de la predicción: $momentoCanonico"))
-                    document.add(Paragraph("Edad: $edad"))
-                    document.add(Paragraph("Sexo femenino: $femenino"))
-                    document.add(Paragraph("Capnometría: $capnometria"))
-                    document.add(Paragraph("Causa cardiaca: $causa_cardiaca"))
-                    document.add(Paragraph("Cardiocompresión extrahospitalaria manual: $cardio_manual"))
-                    document.add(Paragraph("Recuperación circulación: $recuperacionPulso"))
-
-                    val prediction = if (valido == "Si") "PREDICCIÓN: VÁLIDO" else "PREDICCIÓN: NO VÁLIDO"
-                    document.add(Paragraph(prediction).setBold().setFontSize(12f))
-
-                    document.close()
-                    Toast.makeText(this, "PDF guardado en Descargas", Toast.LENGTH_SHORT).show()
-                    abrirPDF(it)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error al generar el PDF", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun abrirPDF(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        startActivity(Intent.createChooser(intent, "Abrir PDF con"))
-    }
-
-    private fun getFormattedDate(timestamp: Timestamp): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-        return sdf.format(timestamp.toDate())
-    }
-
     private fun eliminarPrediccion(pred: Prediccion) {
+        // Quitamos filtro por "nombre_medico" para evitar mismatches entre nombre vs nombre+apellidos
         db.collection("predicciones")
             .whereEqualTo("edad", pred.edad)
             .whereEqualTo("capnometria", pred.capnometria)
@@ -351,7 +273,6 @@ class HistorialActivity : AppCompatActivity() {
             .whereEqualTo("causa_cardiaca", pred.causa_cardiaca)
             .whereEqualTo("cardio_manual", pred.cardio_manual)
             .whereEqualTo("rec_pulso", pred.rec_pulso)
-            .whereEqualTo("nombre_medico", name)
             .whereEqualTo("valido", pred.valido)
             .whereEqualTo("uid_medico", userUid)
             .whereEqualTo("fecha", pred.fecha)
@@ -403,7 +324,6 @@ class HistorialActivity : AppCompatActivity() {
                 val lista = snap.map { it.toObject(Prediccion::class.java) }
 
                 try {
-                    // Nombre del archivo con nombre y apellidos si están disponibles
                     val displayName = (fullName ?: name ?: "medico")
                         .replace('/', '-')
                         .replace('\\', '-')
@@ -439,7 +359,7 @@ class HistorialActivity : AppCompatActivity() {
                                     canonicalMoment,
                                     pred.valido,
                                     pred.uid_medico,
-                                    getFormattedDate(pred.fecha)
+                                    formatDisplayDate(pred.fecha)
                                 ).joinToString(",")
                                 writer.write("$row\n")
                             }

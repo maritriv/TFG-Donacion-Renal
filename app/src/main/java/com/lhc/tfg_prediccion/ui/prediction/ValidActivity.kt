@@ -1,102 +1,103 @@
 package com.lhc.tfg_prediccion.ui.prediction
 
-import android.content.ContentValues
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.itextpdf.kernel.geom.PageSize
-import com.itextpdf.kernel.pdf.PdfDocument
-import com.itextpdf.kernel.pdf.PdfWriter
-import com.itextpdf.layout.Document
-import com.itextpdf.layout.element.Paragraph
-import com.itextpdf.layout.properties.TextAlignment
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityValidBinding
 import com.lhc.tfg_prediccion.ui.main.MainActivity
-import java.text.SimpleDateFormat
-import java.util.Locale
 
-class ValidActivity: AppCompatActivity() {
+// Utilidades comunes
+import com.lhc.tfg_prediccion.util.PdfPrediction
+import com.lhc.tfg_prediccion.util.generatePredictionPdf
+import com.lhc.tfg_prediccion.util.UserUtils
+
+// Frases canónicas para el “Momento”
+import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
+
+class ValidActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityValidBinding
-    private var fecha = Timestamp.now() // cojo fecha para incluirla en la base de datos y en el PDF
+
+    // 💡 Necesaria para guardar/mostrar nombre + apellidos
+    private var fullName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityValidBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // cargo texto dinamico usando binding
+        // Animación
         val scaleAnimation: Animation = AnimationUtils.loadAnimation(this, R.anim.donantevalido)
         binding.textoDonantValido.startAnimation(scaleAnimation)
 
+        // Valores del intent
+        val edad              = intent.getStringExtra("edad") ?: ""
+        val auxFem            = intent.getStringExtra("fem") ?: ""
+        val capnometria       = intent.getStringExtra("capnometria") ?: ""
+        val causa_cardiaca    = intent.getStringExtra("causa_cardiaca") ?: ""
+        val cardio_manual     = intent.getStringExtra("cardio_manual") ?: ""
+        val recuperacionPulso = intent.getStringExtra("rec_pulso") ?: ""
+        val userUid           = intent.getStringExtra("userUid") ?: ""
+        val name              = intent.getStringExtra("username") ?: "Desconocido"
 
-        // cojo valores del intent
-        val edad = intent.getStringExtra("edad")
-        val auxFem = intent.getStringExtra("fem")
-        val capnometria = intent.getStringExtra("capnometria")
-        val causa_cardiaca = intent.getStringExtra("causa_cardiaca")
-        val cardio_manual = intent.getStringExtra("cardio_manual")
-        val recuperacionPulso = intent.getStringExtra("rec_pulso")
-        val userUid = intent.getStringExtra("userUid")
-        val name = intent.getStringExtra("username")
-        val modeCode = intent.getStringExtra("prediction_mode") ?: "AFTER_RCP"
-        val indice = intent.getDoubleExtra("indice", Double.NaN)
+        // Cargar nombre completo de Firestore (asíncrono, con fallback al name del intent)
+        UserUtils.cargarNombreCompleto(
+            FirebaseFirestore.getInstance(),
+            userUid,
+            name
+        ) { full -> fullName = full }
 
-        // Lo convertimos a un texto legible para el PDF
-        val momentoPrediccion = when (modeCode) {
-            "BEFORE_RCP" -> "Antes del procedimiento de RCP"
-            "MID_RCP"    -> "A los 20 minutos de iniciada la RCP"
-            "AFTER_RCP"  -> "Después del procedimiento de RCP"
-            else         -> "No especificado"
-        }
+        val modeCode    = intent.getStringExtra("prediction_mode") ?: "AFTER_RCP"
+        val indiceExtra = intent.getDoubleExtra("indice", Double.NaN)
+        val indice: Double? = if (indiceExtra.isNaN()) null else indiceExtra
 
-        // cambio a si o no el valor femenino
-        val femenino: String
-        if(auxFem == "Mujer"){
-            femenino = "Sí"
-        }
-        else{
-            femenino = "No"
-        }
+        // Momento canónico y femenino normalizado
+        val momentoCanonico = modeToLabel(modeCode)
+        val femenino = if (auxFem == "Mujer") "Si" else "No"
 
+        // Guardar predicción en Firestore
+        guardarPrediccion(
+            edad, femenino, capnometria, causa_cardiaca,
+            cardio_manual, recuperacionPulso, userUid, (fullName ?: name),
+            modeCode, indice
+        )
 
-        // guardo la prediccion en la base de datos
-        guardarPrediccion(edad!!, femenino!!, capnometria!!, causa_cardiaca!!,
-            cardio_manual!!, recuperacionPulso!!, userUid!!, name!!,
-            modeCode, if (indice.isNaN()) null else indice )
-
-        // boton volver al menu principal
+        // Volver a menú
         binding.buttonBackToMenu.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("edad", edad)
-            intent.putExtra("fem", femenino)
-            intent.putExtra("capnometria", capnometria)
-            intent.putExtra("causa_cardiaca", causa_cardiaca)
-            intent.putExtra("cardio_manual", cardio_manual)
-            intent.putExtra("rec_pulso", recuperacionPulso)
-            intent.putExtra("userUid", userUid)
-            intent.putExtra("userName", name)
-            startActivity(intent)
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                putExtra("edad", edad)
+                putExtra("fem", femenino)
+                putExtra("capnometria", capnometria)
+                putExtra("causa_cardiaca", causa_cardiaca)
+                putExtra("cardio_manual", cardio_manual)
+                putExtra("rec_pulso", recuperacionPulso)
+                putExtra("userUid", userUid)
+                putExtra("userName", fullName ?: name) // ← pasa nombre completo si lo tenemos
+            })
         }
 
-        // boton descargar PDF con datos de la prediccion
+        // Descargar PDF (usa nombre completo si ya está cargado; si no, usa 'name')
         binding.downloadPDF.setOnClickListener {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
-                Toast.makeText(this, "Necesita una versión Android igual o superior a 10", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                generarPDF(edad, femenino, capnometria, causa_cardiaca, cardio_manual, recuperacionPulso, name, momentoPrediccion, if (indice.isNaN()) null else indice)
-            }
+            val pdfData = PdfPrediction(
+                doctorName = (fullName ?: name),
+                fecha = Timestamp.now(),
+                momentoCanonico = momentoCanonico,
+                edad = edad,
+                femenino = femenino,
+                capnometria = capnometria,
+                causaCardiaca = causa_cardiaca,
+                cardioManual = cardio_manual,
+                recPulso = recuperacionPulso,
+                valido = true,
+                indice = indice
+            )
+            generatePredictionPdf(this, pdfData)
         }
     }
 
@@ -108,14 +109,14 @@ class ValidActivity: AppCompatActivity() {
         cardio_manual: String,
         recuperacionPulso: String,
         userUid: String,
-        name: String,
+        nameOrFullName: String,  // ← ahora aceptamos nombre completo si está
         predictionMode: String,
         indice: Double?
-    ){
-        val fecha = Timestamp.now() // cojo fecha para incluirla en la base de datos
+    ) {
+        val fecha = Timestamp.now()
         val db = FirebaseFirestore.getInstance()
         val prediccion = hashMapOf(
-            "nombre_medico" to name,
+            "nombre_medico" to nameOrFullName, // ← guardamos nombre completo
             "uid_medico" to userUid,
             "edad" to edad,
             "femenino" to femenino,
@@ -126,14 +127,9 @@ class ValidActivity: AppCompatActivity() {
             "fecha" to fecha,
             "valido" to "Si",
             "prediction_mode" to predictionMode,
-            "momento_prediccion_legible" to when (predictionMode) { // 👈 aquí lo añadimos
-                "BEFORE_RCP" -> "Antes del procedimiento de RCP"
-                "MID_RCP"    -> "A los 20 minutos de iniciada la RCP"
-                "AFTER_RCP"  -> "Después del procedimiento de RCP"
-                else         -> "No especificado"
-            },
-            "modelos" to mutableListOf<String>(), // lista vacia para añadir los modelos de IA
-            "no_modelos" to mutableListOf("Modelo1", "Modelo2", "Modelo3", "Modelo4") // lista de los modelos en los que NO esta la prediccion
+            "momento_prediccion_legible" to modeToLabel(predictionMode),
+            "modelos" to mutableListOf<String>(),
+            "no_modelos" to mutableListOf("Modelo1", "Modelo2", "Modelo3", "Modelo4")
         )
 
         indice?.let { prediccion["indice"] = it }
@@ -147,96 +143,4 @@ class ValidActivity: AppCompatActivity() {
                 Toast.makeText(this, "Error al guardar en Firestore", Toast.LENGTH_SHORT).show()
             }
     }
-
-    private fun generarPDF(
-        edad: String, femenino: String, capnometria: String, causa_cardiaca: String,
-        cardio_manual: String, recuperacionPulso: String, name: String, momentoPrediccion: String, indice: Double?
-    ) {
-        try {
-            // Crear el archivo PDF en el almacenamiento privado
-            val fileName = "Reporte_${fecha}.pdf" // nombre único del archivo
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS) // Siempre en "Descargas"
-            }
-
-            val resolver = contentResolver
-            val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-
-            uri?.let {
-                resolver.openOutputStream(it)?.use { outputStream ->
-                    val pdfDocument = PdfDocument(PdfWriter(outputStream))
-                    val document = Document(pdfDocument, PageSize.A4)
-
-                    // titulo
-                    val title = Paragraph("RESULTADOS PREDICCIÓN DONANTE DE RIÑÓN")
-                        .setBold()
-                        .setTextAlignment(TextAlignment.CENTER)
-                        .setFontSize(16f)
-                    document.add(title)
-
-                    // información del médico y fecha
-                    val fechaLegible = getFormattedDate(fecha)
-                    val doctorInfo = Paragraph("Nombre médico: $name\nFecha: $fechaLegible")
-                        .setTextAlignment(TextAlignment.LEFT)
-                        .setFontSize(12f)
-                    document.add(doctorInfo)
-                    document.add(Paragraph("\n"))
-
-                    // Datos del posible donante
-                    val donorInfo = Paragraph("DATOS POSIBLE DONANTE:")
-                        .setBold()
-                        .setTextAlignment(TextAlignment.LEFT)
-                        .setFontSize(14f)
-                    document.add(donorInfo)
-
-                    document.add(Paragraph("Momento de la predicción: $momentoPrediccion").setTextAlignment(TextAlignment.LEFT))
-                    document.add(Paragraph("Edad: $edad").setTextAlignment(TextAlignment.LEFT))
-                    document.add(Paragraph("Sexo femenino: $femenino").setTextAlignment(TextAlignment.LEFT))
-                    document.add(Paragraph("Capnometría: $capnometria").setTextAlignment(TextAlignment.LEFT))
-                    document.add(Paragraph("Causa cardiaca: $causa_cardiaca").setTextAlignment(TextAlignment.LEFT))
-                    document.add(Paragraph("Cardiocompresión extrahospitalaria manual: $cardio_manual").setTextAlignment(TextAlignment.LEFT))
-                    document.add(Paragraph("Recuperación circulación: $recuperacionPulso").setTextAlignment(TextAlignment.LEFT))
-                    indice?.let {
-                        document.add(
-                            Paragraph("Índice calculado: " + String.format(Locale.getDefault(), "%.3f", it))
-                                .setTextAlignment(TextAlignment.LEFT)
-                        )
-                    }
-
-                    // Resultado predicción
-                    val prediction = Paragraph("PREDICCIÓN: VÁLIDO")
-                        .setBold()
-                        .setTextAlignment(TextAlignment.LEFT)
-                        .setFontSize(12f)
-                    document.add(prediction)
-
-                    // Cerrar el documento
-                    document.close()
-
-                    Toast.makeText(this, "PDF guardado en Descargas", Toast.LENGTH_SHORT).show()
-                    abrirPDF(it) // abre automáticamente el PDF después de guardarlo
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error al generar el PDF", Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
-    private fun abrirPDF(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        startActivity(Intent.createChooser(intent, "Abrir PDF con"))
-    }
-
-    private fun getFormattedDate(timestamp: Timestamp): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-        return sdf.format(timestamp.toDate()) // dar formato legible
-    }
-
 }
