@@ -276,7 +276,11 @@ class HistorialActivity : AppCompatActivity() {
         fecha: Timestamp, valido: String, momentoCanonico: String
     ) {
         try {
-            val fileName = "Reporte_${fecha}_médico_${nombre}.pdf"
+            val sdf = SimpleDateFormat("dd-MM-yyyy_HH-mm", Locale.getDefault())
+            val fechaLegible = sdf.format(fecha.toDate())
+            val nombreLimpio = nombre.replace(" ", "_")  // quita espacios para que no dé problemas
+            val fileName = "Reporte_${fechaLegible}_$nombreLimpio.pdf"
+
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
