@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="1080dp"
+    android:height="340dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="340">
+
+    <!-- MISMA CURVA para las 3, con distintos grosores y colores -->
+
+    <!-- Franja ANCHA #5c7f8e -->
+    <path
+        android:strokeColor="#5c7f8e"
+        android:strokeWidth="72"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M1048,0
+                          C 980,40 920,110 900,190
+                          S 850,330 780,360" />
+
+    <!-- Franja MEDIA #d8ebf0 -->
+    <path
+        android:strokeColor="#d8ebf0"
+        android:strokeWidth="18"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M1032,-4
+                          C 964,36 904,106 884,186
+                          S 834,326 764,356" />
+
+    <!-- Línea MUY FINA blanca -->
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M1018,-6
+                          C 950,34 890,104 870,184
+                          S 820,324 750,354" />
+</vector>

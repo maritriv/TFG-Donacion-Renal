@@ -1,175 +1,299 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ABD0E0"
-    android:padding="16dp">
+    android:background="@color/c_primary_bg">
 
+    <!-- Panel blanco que baja hasta el fondo -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/register_blue"
+        android:id="@+id/panel_register"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp"
+        android:background="@drawable/bg_panel_full"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- titulo -->
-        <TextView
-            android:layout_width="match_parent"
+        <!-- Fila “Volver” (icono + texto) -->
+        <LinearLayout
+            android:id="@+id/backRow"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:gravity="center"
-            android:text="- REGISTRO -"
-            android:textColor="#042939"
-            android:textSize="38sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_back_24"
+                android:contentDescription="@string/navigation_drawer_close"
+                app:tint="@color/c_primary_text" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  Volver"
+                android:textColor="@color/c_primary_text"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTitleRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registro"
+            android:textColor="@color/c_primary_text"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
         <!-- Nombre -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_person_24"
+                app:tint="@color/c_primary_text" />
+
+            <EditText
                 android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Nombre"
+                android:textColor="@color/c_primary_text"
+                android:textColorHint="@color/c_primary_text"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
         <!-- Apellidos -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Apellidos">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_person_24"
+                app:tint="@color/c_primary_text" />
+
+            <EditText
                 android:id="@+id/lastname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/camposform" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Apellidos"
+                android:textColor="@color/c_primary_text"
+                android:textColorHint="@color/c_primary_text"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Fecha de Nacimiento -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Fecha de nacimiento -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Fecha de Nacimiento">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_calendar_24"
+                app:tint="@color/c_primary_text" />
+
+            <EditText
                 android:id="@+id/birthdate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/camposform"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Fecha de Nacimiento"
                 android:clickable="true"
-                android:focusable="false" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:focusable="false"
+                android:textColor="@color/c_primary_text"
+                android:textColorHint="@color/c_primary_text"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Correo Electrónico -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Email -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Correo Electrónico">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_email_24"
+                 app:tint="@color/c_primary_text" />
+
+            <EditText
                 android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/camposform"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Correo Electrónico"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/c_primary_text"
+                android:textColorHint="@color/c_primary_text"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
         <!-- Contraseña -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contraseña">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock_24"
+                app:tint="@color/c_primary_text" />
+
+            <EditText
                 android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/camposform"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:textColor="@color/c_primary_text"
+                android:textColorHint="@color/c_primary_text"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Confirmar Contraseña -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Confirmar contraseña -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Confirmar Contraseña">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock_24"
+                app:tint="@color/c_primary_text" />
+
+            <EditText
                 android:id="@+id/confirm_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/camposform"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Confirmar Contraseña"
+                android:inputType="textPassword"
+                android:textColor="@color/c_primary_text"
+                android:textColorHint="@color/c_primary_text"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Selección de Rol -->
+        <!-- Selector de rol -->
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingTop="8dp"
-            android:text="Selecciona tu Rol"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="14dp"
+            android:text="Selecciona tu rol"
+            android:textStyle="bold"
+            android:textColor="@color/c_primary_text"
+            android:textSize="16sp"/>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginTop="8dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_drop_down_24"
+                android:rotation="180"
+                app:tint="@color/c_primary_text" />
 
             <Spinner
                 android:id="@+id/role_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/camposform"
-                android:popupBackground="@color/white" />
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:spinnerMode="dropdown"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="40dp"
-                android:src="@drawable/arrow_down_ic" />
-        </RelativeLayout>
-
-
-        <!-- Boton de Registro -->
-        <com.google.android.material.button.MaterialButton
+        <!-- Botón Registrarse -->
+        <Button
             android:id="@+id/register_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="18dp"
             android:text="Registrarse"
-            android:textColor="#042939"
-            android:textSize="18sp"
-            app:backgroundTint="#fcfe82" />
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/c_panel"
+            android:background="@drawable/bg_button_primary"/>
 
-        <!-- Boton para volver al Inicio de sesión -->
-        <com.google.android.material.button.MaterialButton
+        <!-- “Volver al inicio de sesión” (se mantiene para tu lógica) -->
+        <TextView
             android:id="@+id/login_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Volver al Inicio de sesión"
-            android:textColor="#042939"
-            android:textSize="18sp"
-            app:backgroundTint="#fcfe82" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="14dp"
+            android:text="Volver al inicio de sesión"
+            android:textColor="@color/c_primary_text"
+            android:textStyle="bold"/>
     </LinearLayout>
-</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

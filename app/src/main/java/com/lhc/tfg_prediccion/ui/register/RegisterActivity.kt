@@ -11,15 +11,26 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.databinding.ActivityRegisterBinding
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.lhc.tfg_prediccion.ui.login.LoginActivity
-import com.lhc.tfg_prediccion.ui.main.MainActivity
+import com.lhc.tfg_prediccion.R
 import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+
+    private val datePicker by lazy {
+        MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Selecciona una fecha")
+            .setTheme(R.style.ThemeOverlay_CustomDatePicker)
+            .build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +48,15 @@ class RegisterActivity : AppCompatActivity() {
 
         // Fecha de nacimiento
         binding.birthdate.setOnClickListener {
-            showDatePickerDialog()
+            datePicker.show(supportFragmentManager, "DATE_PICKER")
+        }
+
+        datePicker.addOnPositiveButtonClickListener { selection: Long? ->
+            selection?.let {
+                val date = Date(it) // it es Long (millis)
+                val fmt = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                binding.birthdate.setText(fmt.format(date))
+            }
         }
 
         // Boton de registro

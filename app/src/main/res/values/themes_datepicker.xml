@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Tema personalizado para el encabezado del DatePicker -->
+    <style name="ThemeOverlay.CustomDatePicker" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!-- Color del top (header) -->
+        <item name="colorPrimary">#417f9a</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- Color de los botones Cancel y OK -->
+        <item name="colorPrimaryVariant">#417f9a</item>
+
+        <!-- Color del día seleccionado -->
+        <item name="materialCalendarTheme">@style/CustomCalendarTheme</item>
+    </style>
+
+    <!-- Círculo del día seleccionado -->
+    <style name="CustomCalendarTheme" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">#417f9a</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+
+</resources>
