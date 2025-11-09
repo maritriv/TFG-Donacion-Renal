@@ -6,20 +6,24 @@ import com.lhc.tfg_prediccion.data.LoginDataSource
 import com.lhc.tfg_prediccion.data.LoginRepository
 
 /**
- * ViewModel provider factory to instantiate LoginViewModel.
- * Required given LoginViewModel has a non-empty constructor
+ * Factory para instanciar LoginViewModel.
+ * Necesaria porque LoginViewModel tiene un constructor con parámetros.
  */
 class LoginViewModelFactory : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            return LoginViewModel(
-                loginRepository = LoginRepository(
-                    dataSource = LoginDataSource()
-                )
-            ) as T
+        return when {
+            modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
+                LoginViewModel(
+                    loginRepository = LoginRepository(
+                        dataSource = LoginDataSource()
+                    )
+                ) as T
+            }
+            else -> {
+                throw IllegalArgumentException("Clase ViewModel desconocida: ${modelClass.name}")
+            }
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

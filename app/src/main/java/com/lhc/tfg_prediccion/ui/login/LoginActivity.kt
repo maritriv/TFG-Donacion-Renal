@@ -14,7 +14,7 @@ import android.widget.Toast
 import com.lhc.tfg_prediccion.databinding.ActivityLoginBinding
 import android.content.Intent
 import com.google.firebase.FirebaseApp
-
+import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.ui.main.MainActivity
 import com.lhc.tfg_prediccion.ui.main.MainAdmin
 import com.lhc.tfg_prediccion.ui.register.RegisterActivity
@@ -100,7 +100,7 @@ class LoginActivity : AppCompatActivity() {
                 val userText = username.text.toString().trim()
                 val passwText = password.text.toString().trim()
                 if (userText.isEmpty() || passwText.isEmpty()){
-                    Toast.makeText(applicationContext, "Introduzca usuario y contraseña", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, getString(R.string.toast_enter_credentials), Toast.LENGTH_SHORT).show()
                 }
                 else{
                     loading.visibility = View.VISIBLE
@@ -120,7 +120,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         // mensaje de bienvenida
-        val welcome = "Bienvenid@"
+        val welcome = getString(R.string.welcome_generic)
         val displayName = model.displayName
         val userUid = model.userUid
         Toast.makeText(
@@ -148,7 +148,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoginFailed() {
-        Toast.makeText(applicationContext, "Usuario y/o contraseña incorrecto", Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, getString(R.string.login_incorrect), Toast.LENGTH_SHORT).show()
     }
 
 }

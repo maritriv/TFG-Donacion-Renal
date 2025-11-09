@@ -1,4 +1,5 @@
 <resources>
+    <!-- Login -->
     <string name="app_name">tfg_prediccion</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
@@ -6,12 +7,36 @@
     <string name="action_sign_in">No tengo cuenta</string>
     <string name="login">Entrar</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Bienvenido !"</string>
+    <string name="welcome">Bienvenido!</string>
     <string name="invalid_username">Usuario no válido</string>
     <string name="invalid_password">Contraseña debe tener más de 5 caracteres</string>
-    <string name="login_failed">"Fallo de login"</string>
+    <string name="login_failed">Fallo de login</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Cerrar</string>
     <string name="inicio_de_sesi_n">INICIO DE SESIÓN</string>
+    <string name="welcome_generic">Bienvenid@</string>
 
-</resources>
+    <!-- PDF -->
+    <string name="pdf_title">RESULTADOS PREDICCIÓN DONANTE DE RIÑÓN</string>
+    <string name="pdf_doctor_line">Nombre médico: %1$s\nFecha: %2$s</string>
+    <string name="pdf_section_donor">DATOS POSIBLE DONANTE:</string>
+    <string name="pdf_field_momento">Momento de la predicción: %1$s</string>
+    <string name="pdf_field_edad">Edad: %1$s</string>
+    <string name="pdf_field_fem">Sexo femenino: %1$s</string>
+    <string name="pdf_field_capno">Capnometría: %1$s</string>
+    <string name="pdf_field_causa">Causa cardiaca: %1$s</string>
+    <string name="pdf_field_cardio">Cardiocompresión extrahospitalaria manual: %1$s</string>
+    <string name="pdf_field_rec">Recuperación circulación: %1$s</string>
+    <string name="pdf_field_indice">Índice calculado: %1$s</string>
+    <string name="pdf_result_valido">PREDICCIÓN: VÁLIDO</string>
+    <string name="pdf_result_no_valido">PREDICCIÓN: NO VÁLIDO</string>
+
+    <!-- Toasters -->
+    <string name="toast_pdf_saved">PDF guardado en Descargas</string>
+    <string name="err_android10">Necesita Android 10 o superior</string>
+    <string name="toast_enter_credentials">Introduzca usuario y contraseña</string>
+
+    <!-- Errores -->
+    <string name="toast_pdf_error">Error al generar el PDF</string>
+    <string name="login_incorrect">Usuario y/o contraseña incorrecto</string>
+    </resources>
