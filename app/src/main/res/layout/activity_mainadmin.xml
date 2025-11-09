@@ -53,7 +53,24 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- contenedor titulo tabla -->
+                <!-- Buscador -->
+                <EditText
+                    android:id="@+id/search_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_searchbox"
+                    android:hint="Buscar médico (nombre, apellidos o email)"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textSize="16sp"
+                    android:singleLine="true"/>
+
+
+                <!-- Título médicos -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

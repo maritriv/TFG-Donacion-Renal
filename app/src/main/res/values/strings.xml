@@ -16,6 +16,14 @@
     <string name="inicio_de_sesi_n">INICIO DE SESIÓN</string>
     <string name="welcome_generic">Bienvenid@</string>
 
+    <!-- MainAdmin -->
+    <string name="welcome_prefix">Bienvenid@ %1$s</string>
+    <string name="toast_edit_profile">Editar perfil</string>
+    <string name="toast_logging_out">Cerrando sesión</string>
+    <string name="toast_table_error">Error al cargar la tabla</string>
+    <string name="toast_doctor_deleted">Médico eliminado correctamente</string>
+    <string name="toast_doctor_delete_error">Error al eliminar médico: %1$s</string>
+
     <!-- PDF -->
     <string name="pdf_title">RESULTADOS PREDICCIÓN DONANTE DE RIÑÓN</string>
     <string name="pdf_doctor_line">Nombre médico: %1$s\nFecha: %2$s</string>
