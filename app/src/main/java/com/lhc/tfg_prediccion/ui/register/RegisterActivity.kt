@@ -7,17 +7,18 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.lhc.tfg_prediccion.databinding.ActivityRegisterBinding
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.lhc.tfg_prediccion.ui.login.LoginActivity
 import com.lhc.tfg_prediccion.R
-import java.util.Calendar
+import com.lhc.tfg_prediccion.databinding.ActivityRegisterBinding
+import com.lhc.tfg_prediccion.ui.login.LoginActivity
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.activity.addCallback
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -37,11 +38,16 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar base de datos y autenticacion
+        // Botón volver + flecha
+        onBackPressedDispatcher.addCallback(this) {
+            goToLogin()
+        }
+
+        // Init Firebase
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Configurar el Spinner de roles
+        // Spinner de roles
         val roles = arrayOf("Médico", "Administrador")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, roles)
         binding.roleSpinner.adapter = adapter
@@ -50,16 +56,19 @@ class RegisterActivity : AppCompatActivity() {
         binding.birthdate.setOnClickListener {
             datePicker.show(supportFragmentManager, "DATE_PICKER")
         }
-
         datePicker.addOnPositiveButtonClickListener { selection: Long? ->
             selection?.let {
-                val date = Date(it) // it es Long (millis)
+                val date = Date(it)
                 val fmt = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 binding.birthdate.setText(fmt.format(date))
             }
         }
 
-        // Boton de registro
+        // Navegación: Volver (icono + texto)
+        binding.backRow.setOnClickListener { goToLogin() }
+        binding.btnBack.setOnClickListener { goToLogin() }
+
+        // Registro
         binding.registerButton.setOnClickListener {
             val name = binding.name.text.toString()
             val lastname = binding.lastname.text.toString()
@@ -69,38 +78,39 @@ class RegisterActivity : AppCompatActivity() {
             val confirmPassword = binding.confirmPassword.text.toString()
             val role = binding.roleSpinner.selectedItem.toString()
 
-            // todos los campos deben estar llenos
-            if (name.isEmpty() || lastname.isEmpty() || birthdate.isEmpty() || email.isEmpty() || password.isEmpty()
-                || confirmPassword.isEmpty()) {
+            if (name.isEmpty() || lastname.isEmpty() || birthdate.isEmpty() ||
+                email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()
+            ) {
                 Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // contraseña igual a confirmacion
             if (password != confirmPassword) {
                 Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // funcion para añadir usuario a la base de datos
             registerUser(name, lastname, birthdate, email, password, role)
-        }
-
-        // Botón de Volver al Inicio de sesión
-        binding.loginButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
         }
     }
 
-    private fun registerUser(name: String, lastname: String, birthdate:String, email:String, password:String, role:String){
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this){ task ->
-            if(task.isSuccessful){
-                // guardar en la base de datos
+    private fun goToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
+
+    private fun registerUser(
+        name: String,
+        lastname: String,
+        birthdate: String,
+        email: String,
+        password: String,
+        role: String
+    ) {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
                 val user = auth.currentUser
-                if(user != null){
-                    saveUserToFirestore(user, name, lastname, birthdate, email, password, role)
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
-                } else{ // mensaje de error
+                if (user != null) {
+                    saveUserToFirestore(user, name, lastname, birthdate, email, role)
+                } else {
                     Toast.makeText(this, "Error de registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -110,44 +120,47 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUserToFirestore(user: FirebaseUser, name: String, lastname: String, birthdate:String, email:String,
-                                    password:String, role:String){
+    private fun saveUserToFirestore(
+        user: FirebaseUser,
+        name: String,
+        lastname: String,
+        birthdate: String,
+        email: String,
+        role: String
+    ) {
         val userMap = hashMapOf(
             "uid" to user.uid,
             "name" to name,
             "lastname" to lastname,
             "birthdate" to birthdate,
-            "email" to user.email,
+            "email" to email, // usa el email que se introdujo
             "role" to role,
             "numeroPredicciones" to 0,
             "predicciones_validas" to 0,
             "predicciones_no_validas" to 0
         )
 
-        // Guardar la información del usuario en la colección "users" de Firestore
         db.collection("users")
             .document(user.uid)
             .set(userMap)
             .addOnSuccessListener {
-                Toast.makeText(this, "Registro exitoso y datos guardados en la base de datos", Toast.LENGTH_SHORT).show()
-                // Redirigir al login después del registro exitoso
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish() // Finalizar la actividad de registro
+                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                goToLogin()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error al guardar los datos: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
+    // (Opcional) DatePicker nativo por si lo necesitas en otro momento
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePicker = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            val formattedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear)
+        val datePicker = DatePickerDialog(this, { _, y, m, d ->
+            val formattedDate = String.format("%02d/%02d/%04d", d, m + 1, y)
             binding.birthdate.setText(formattedDate)
         }, year, month, day)
 

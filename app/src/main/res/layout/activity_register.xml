@@ -160,7 +160,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_email_24"
-                 app:tint="@color/c_primary_text" />
+                app:tint="@color/c_primary_text" />
 
             <EditText
                 android:id="@+id/email"
@@ -284,16 +284,7 @@
             android:textColor="@color/c_panel"
             android:background="@drawable/bg_button_primary"/>
 
-        <!-- “Volver al inicio de sesión” (se mantiene para tu lógica) -->
-        <TextView
-            android:id="@+id/login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="14dp"
-            android:text="Volver al inicio de sesión"
-            android:textColor="@color/c_primary_text"
-            android:textStyle="bold"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
