@@ -52,6 +52,7 @@ androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecy
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+androidx-core-splashscreen = "androidx.core:core-splashscreen:1.2.0"
 
 mpandroidchart = "com.github.PhilJay:MPAndroidChart:v3.1.0"
 

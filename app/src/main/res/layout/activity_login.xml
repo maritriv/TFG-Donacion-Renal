@@ -6,7 +6,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/c_primary_bg"
+    android:background="@color/mid_blue"
     tools:context=".ui.login.LoginActivity">
 
 
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¡BIENVENIDO/A!"
-                android:textColor="@color/c_white"
+                android:textColor="@color/white"
                 android:textSize="48sp"
                 android:fontFamily="@font/amaticsc_bold"/>
 
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ya puedes realizar tus predicciones"
-                android:textColor="@color/c_white"
+                android:textColor="@color/white"
                 android:textSize="14sp"/>
         </LinearLayout>
     </FrameLayout>
@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Inicio de Sesión"
-            android:textColor="@color/c_primary_text"
+            android:textColor="@color/dark_blue"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginBottom="12dp"/>
@@ -94,7 +94,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_email_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/username"
@@ -104,8 +104,8 @@
                 android:layout_weight="1"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -124,7 +124,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_lock_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/password"
@@ -134,8 +134,8 @@
                 android:layout_weight="1"
                 android:hint="Contraseña"
                 android:inputType="textPassword"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -149,7 +149,7 @@
             android:text="Entrar"
             android:textAllCaps="false"
             android:textStyle="bold"
-            android:textColor="@color/c_white"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:background="@drawable/bg_button_primary"
             android:backgroundTint="@null"
@@ -169,7 +169,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¿No tienes una cuenta?"
-                android:textColor="@color/c_grey_text"/>
+                android:textColor="@color/grey"/>
 
             <TextView
                 android:id="@+id/registerButton"
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:text="  Regístrate"
                 android:textStyle="bold"
-                android:textColor="@color/c_primary_text"/>
+                android:textColor="@color/dark_blue"/>
         </LinearLayout>
     </LinearLayout>
 

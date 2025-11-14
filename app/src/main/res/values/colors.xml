@@ -5,21 +5,22 @@
     <color name="purple_700">#FFBB86FC</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
     <color name="colorAccent">#FFBB86FC</color>
     <color name="blue1celdas">#add9dc</color>
     <color name="blue2celdas">#eaf8f9</color>
 
+    <color name="black">#FF000000</color>
 
-    <color name="c_primary_text">#042939</color>  <!-- Azul oscuro -->
-    <color name="c_primary_bg">#417f9a</color>    <!-- Azul medio -->
-    <color name="c_deco_mid">#5c7f8e</color>      <!-- Azul medio-claro -->
-    <color name="c_deco_light">#d8ebf0</color>    <!-- Azul claro -->
-    <color name="c_panel">#f6f7f4</color>         <!-- Beige -->
-    <color name="c_white">#FFFFFF</color>
-    <color name="c_grey_text">#9CA3AF</color>
-    <color name="c_yellow">#fcfe82</color>
+    <color name="dark_blue">#042939</color>  <!-- Azul oscuro -->
+    <color name="mid_blue">#417f9a</color>    <!-- Azul medio  -->
+    <color name="mid_light_blue">#5c7f8e</color>      <!-- Azul medio-claro -->
+    <color name="mlight_blue">#8cc6df</color>
+    <color name="light_blue">#d8ebf0</color>    <!-- Azul claro -->
+    <color name="beige">#f6f7f4</color>         <!-- Beige (panel) -->
+    <color name="white">#FFFFFF</color>
+    <color name="grey">#9CA3AF</color>
+    <color name="yellow">#fcfe82</color>
 
 
 </resources>

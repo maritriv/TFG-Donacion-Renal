@@ -1,25 +1,51 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Tfg_prediccion" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <!-- Primary brand color.-->
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+    <style name="Theme.Tfg_prediccion" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+        <!-- COLOR PRIMARIO: barras, botones principales -->
+        <item name="colorPrimary">@color/mid_blue</item>
+
+        <!-- Variante del primario: un tono más oscuro/claro -->
+        <item name="colorPrimaryVariant">@color/dark_blue</item>
+
+        <!-- Texto/iconos encima de colorPrimary -->
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Para el menu desplegable -->
+
+
+        <!-- COLOR SECUNDARIO: chips, detalles, sliders -->
+        <item name="colorSecondary">@color/dark_blue</item>
+
+        <!-- Variante del secundario -->
+        <item name="colorSecondaryVariant">@color/light_blue</item>
+
+        <!-- Texto/iconos sobre el secundario -->
+        <item name="colorOnSecondary">@color/beige</item>
+
+
+        <!-- Fondo por defecto de las pantallas -->
+        <item name="android:windowBackground">@color/beige</item>
+
+        <!-- Barra de estado (hora/batería arriba del todo) -->
+        <item name="android:statusBarColor">@color/mid_blue</item>
+
+        <!-- Ocultar ActionBar vieja (ya usas layouts bonitos y toolbar propia) -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="actionBarStyle">@drawable/action_bar</item>
-
     </style>
+
+
     <!-- Estilo personalizado para los botones -->
     <style name="CustomButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="android:background">@drawable/buttonblue</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="Theme.RenalDCD" parent="Theme.Material3.Light.NoActionBar"/>
+
+    <style name="Theme.RenalDCD.Splash" parent="@style/Theme.Tfg_prediccion">
+        <!-- Solo ponemos el fondo oscuro para la SplashActivity -->
+        <item name="android:windowBackground">@color/dark_blue</item>
+    </style>
+
 </resources>

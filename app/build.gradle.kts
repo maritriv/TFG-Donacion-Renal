@@ -68,4 +68,5 @@ dependencies {
     implementation(libs.itext7.core)
     // grafica pie
     implementation(libs.mpandroidchart)
+    implementation(libs.androidx.core.splashscreen)
 }

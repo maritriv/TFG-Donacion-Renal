@@ -1,30 +1,51 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
-                android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+  <group android:scaleX="0.69"
+      android:scaleY="0.69"
+      android:translateX="16.74"
+      android:translateY="16.74">
+      <!-- Sombra -->
+      <path
+          android:fillColor="#20000000"
+          android:pathData="M62,20
+                            C48,20 36,35 36,56
+                            C36,77 49,90 63,90
+                            C71,90 77,84 77,76
+                            C77,69 73,61 67,55
+                            L72,55
+                            C81,55 88,63 88,74
+                            L88,82
+                            C88,84 87,86 85,86
+                            C83,86 82,84 82,82
+                            L82,74
+                            C82,65 77,60 72,60
+                            L63,60
+                            C61,60 60,59 60,57
+                            C60,55 61,54 63,52
+                            C70,45 74,38 74,30
+                            C74,23 69,20 62,20 z" />
+      <!-- Riñón -->
+      <path
+          android:fillColor="@color/mlight_blue"
+          android:pathData="M60,18
+                            C46,18 34,33 34,54
+                            C34,75 47,88 61,88
+                            C69,88 75,82 75,74
+                            C75,67 71,59 65,53
+                            L70,53
+                            C79,53 86,61 86,72
+                            L86,80
+                            C86,82 85,84 83,84
+                            C81,84 80,82 80,80
+                            L80,72
+                            C80,63 75,58 70,58
+                            L61,58
+                            C59,58 58,57 58,55
+                            C58,53 59,52 61,50
+                            C68,43 72,36 72,28
+                            C72,21 67,18 60,18 z" />
+  </group>
 </vector>

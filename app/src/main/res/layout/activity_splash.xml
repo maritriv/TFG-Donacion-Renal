@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#042939"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <!-- "@font/montserrat_extrabold"/>-->
+
+    <ImageView
+        android:layout_width="199dp"
+        android:layout_height="222dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_kidney_foreground" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
+        android:text="RENAL-DCD"
+        android:textColor="#f6f7f4"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+</LinearLayout>

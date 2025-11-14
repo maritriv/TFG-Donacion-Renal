@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/c_primary_bg">
+    android:background="@color/mid_blue">
 
     <!-- Panel blanco que baja hasta el fondo -->
     <LinearLayout
@@ -36,13 +36,13 @@
                 android:layout_height="24dp"
                 android:src="@drawable/ic_arrow_back_24"
                 android:contentDescription="@string/navigation_drawer_close"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="  Volver"
-                android:textColor="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
                 android:textSize="16sp"/>
         </LinearLayout>
 
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Registro"
-            android:textColor="@color/c_primary_text"
+            android:textColor="@color/dark_blue"
             android:textSize="40sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -71,7 +71,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_person_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/name"
@@ -80,8 +80,8 @@
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
                 android:hint="Nombre"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -100,7 +100,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_person_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/lastname"
@@ -109,8 +109,8 @@
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
                 android:hint="Apellidos"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -129,7 +129,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_calendar_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/birthdate"
@@ -140,8 +140,8 @@
                 android:hint="Fecha de Nacimiento"
                 android:clickable="true"
                 android:focusable="false"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -160,7 +160,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_email_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/email"
@@ -170,8 +170,8 @@
                 android:layout_marginStart="10dp"
                 android:hint="Correo Electrónico"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -190,7 +190,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_lock_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/password"
@@ -200,8 +200,8 @@
                 android:layout_marginStart="10dp"
                 android:hint="Contraseña"
                 android:inputType="textPassword"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -220,7 +220,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_lock_24"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <EditText
                 android:id="@+id/confirm_password"
@@ -230,8 +230,8 @@
                 android:layout_marginStart="10dp"
                 android:hint="Confirmar Contraseña"
                 android:inputType="textPassword"
-                android:textColor="@color/c_primary_text"
-                android:textColorHint="@color/c_primary_text"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
@@ -243,7 +243,7 @@
             android:layout_marginTop="14dp"
             android:text="Selecciona tu rol"
             android:textStyle="bold"
-            android:textColor="@color/c_primary_text"
+            android:textColor="@color/dark_blue"
             android:textSize="16sp"/>
 
         <LinearLayout
@@ -260,7 +260,7 @@
                 android:layout_height="20dp"
                 android:src="@drawable/ic_arrow_drop_down_24"
                 android:rotation="180"
-                app:tint="@color/c_primary_text" />
+                app:tint="@color/dark_blue" />
 
             <Spinner
                 android:id="@+id/role_spinner"
@@ -281,7 +281,7 @@
             android:text="Registrarse"
             android:textAllCaps="false"
             android:textStyle="bold"
-            android:textColor="@color/c_panel"
+            android:textColor="@color/beige"
             android:background="@drawable/bg_button_primary"/>
 
 
