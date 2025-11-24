@@ -23,6 +23,7 @@ activity = "1.8.0"
 materialVersion = "1.9.0"
 runtime = "1.7.8"
 ui = "1.7.8"
+cardview = "1.0.0"
 
 mpandroidchart = "v3.1.0"
 
@@ -53,9 +54,8 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 androidx-core-splashscreen = "androidx.core:core-splashscreen:1.2.0"
-
+androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 mpandroidchart = "com.github.PhilJay:MPAndroidChart:v3.1.0"
-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

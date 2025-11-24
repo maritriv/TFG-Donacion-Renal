@@ -66,7 +66,9 @@ dependencies {
     implementation(libs.androidx.drawerlayout)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.itext7.core)
+    implementation(libs.androidx.cardview)
     // grafica pie
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.core.splashscreen)
+
 }

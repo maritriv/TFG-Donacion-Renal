@@ -27,9 +27,9 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.FirebaseAuth
 import com.lhc.tfg_prediccion.ui.prediction.ImportActivity
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -69,15 +69,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val headerView = navigationView.getHeaderView(0)
         val aux = headerView.findViewById<TextView>(R.id.nav_header_textView)
         aux.text = "$name"
-        val nombreBienvenida = findViewById<TextView>(R.id.title_main)
-        nombreBienvenida.text = "Bienvenid@ $name"
         navigationView.setNavigationItemSelectedListener(this)
 
         // numero predicciones
-        val num_pred = findViewById<TextView>(R.id.prediction_count)
+        val centerValue = findViewById<TextView>(R.id.center_value)
+        val centerLabel = findViewById<TextView>(R.id.center_label)
+
         getNumeroPredicciones { n ->
-            num_pred.text = "NÚMERO DE PREDICCIONES: $n"
+            centerValue.text = n.toString()
+            centerLabel.text = "PREDICCIONES"
         }
+
 
         // -----------   pie chart   --------------------------------------------------
         val pieChart = findViewById<PieChart>(R.id.pie_chart)
@@ -200,9 +202,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun configurarPieChart(pieChart: PieChart, validas: Float, noValidas: Float) {
         val entries = mutableListOf<PieEntry>()
 
-        // si todavia no hay predicciones se muestra un grafico vacio
+        // Calcular porcentajes para la leyenda
+        val total = validas + noValidas
+        val txtValid = findViewById<TextView>(R.id.txt_valid_percent)
+        val txtInvalid = findViewById<TextView>(R.id.txt_invalid_percent)
+
+        if (total == 0f) {
+            // Caso sin datos: todo 0%
+            txtValid.text = "0% Válidas"
+            txtInvalid.text = "0% No válidas"
+        } else {
+            val validPercent = (validas / total * 100).roundToInt()
+            val invalidPercent = (noValidas / total * 100).roundToInt()
+
+            txtValid.text = "$validPercent% Válidas"
+            txtInvalid.text = "$invalidPercent% No válidas"
+        }
+
+        // Configuración del gráfico
         if (validas == 0f && noValidas == 0f) {
-            entries.add(PieEntry(1f, "")) // se añade asi porque si no no se mostraria nada y habria un vacio
+            entries.add(PieEntry(1f, ""))
         } else {
             entries.add(PieEntry(validas, "Válidas"))
             entries.add(PieEntry(noValidas, "No Válidas"))
@@ -213,40 +232,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             listOf(android.graphics.Color.LTGRAY) // grafico vacio en gris claro
         } else {
             listOf(
-                android.graphics.Color.parseColor("#7cc873"), // verde para "Válidas"
-                android.graphics.Color.parseColor("#e56f66")  // rojo para "No Válidas"
+                android.graphics.Color.parseColor("#7cc873"),
+                android.graphics.Color.parseColor("#e56f66")
             )
         }
         dataSet.sliceSpace = 2f // Espacio entre segmentos del gráfico
 
         val data = PieData(dataSet)
-        data.setValueTextSize(14f) // Tamaño de los valores
-        data.setValueTextColor(android.graphics.Color.BLACK) // Color del texto
+        data.setDrawValues(false)
 
-        if (validas == 0f && noValidas == 0f) {
-            data.setDrawValues(false) // Ocultar valores si no hay datos reales
-        }
+        pieChart.legend.isEnabled = false
+        pieChart.setDrawEntryLabels(false)
 
         pieChart.data = data
-
-        // Personalización del gráfico
-        pieChart.description.isEnabled = false // Ocultar descripción
-        pieChart.isDrawHoleEnabled = true // Habilitar agujero central
-        pieChart.holeRadius = 40f // Ajustar tamaño del agujero
-        pieChart.setEntryLabelTextSize(12f) // Tamaño del texto de etiquetas
-        pieChart.setEntryLabelColor(android.graphics.Color.DKGRAY) // Color del texto de etiquetas
+        pieChart.description.isEnabled = false
+        pieChart.isDrawHoleEnabled = true
+        pieChart.holeRadius = 70f
+        pieChart.transparentCircleRadius = 75f
         pieChart.animateY(1000) // Animación al renderizar
-
-        // Configuración de la leyenda
-        val legend = pieChart.legend
-        legend.isEnabled = false // Habilitar la leyenda
-        legend.textSize = 18f // Tamaño del texto
-        legend.textColor = android.graphics.Color.BLACK // Color del texto
-        legend.verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM // Posición en la parte inferior
-        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER // Centrado horizontalmente
-        legend.formSize = 14f // Tamaño de los íconos
-        legend.formToTextSpace = 6f // Espacio entre iconos y texto
-        legend.orientation = Legend.LegendOrientation.HORIZONTAL // Leyenda horizontal
     }
 
 }
