@@ -220,7 +220,7 @@ class ImportActivity : AppCompatActivity() {
                     binding.btnAddPredictions.apply {
                         visibility = View.VISIBLE
                         isEnabled = true
-                        text = "AÑADIR ${rowsReady.size} FILAS A LAS PREDICCIONES ACTUALES"
+                        text = "AÑADIR ${rowsReady.size} FILAS"
                     }
                     // La X sigue visible por si quiere deseleccionar
                     binding.btnClearFile.visibility = View.VISIBLE
