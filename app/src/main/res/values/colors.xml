@@ -13,10 +13,9 @@
     <color name="black">#FF000000</color>
 
     <color name="dark_blue">#042939</color>  <!-- Azul oscuro -->
-    <color name="mid_blue">#417f9a</color>    <!-- Azul medio  -->
+    <color name="mid_blue">#417f9a</color>    <!-- Azul medio  #417f9a -->
     <color name="mid_light_blue">#5c7f8e</color>      <!-- Azul medio-claro -->
-    <color name="mlight_blue">#8cc6df</color>
-    <color name="light_blue">#d8ebf0</color>    <!-- Azul claro -->
+    <color name="light_blue">#8cc6df</color>
     <color name="beige">#f6f7f4</color>         <!-- Beige (panel) -->
     <color name="white">#FFFFFF</color>
     <color name="grey">#9CA3AF</color>

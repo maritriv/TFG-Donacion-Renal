@@ -29,7 +29,7 @@
                             C74,23 69,20 62,20 z" />
       <!-- Riñón -->
       <path
-          android:fillColor="@color/mlight_blue"
+          android:fillColor="@color/light_blue"
           android:pathData="M60,18
                             C46,18 34,33 34,54
                             C34,75 47,88 61,88

@@ -16,7 +16,21 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/mid_blue"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- CONTENIDO PRINCIPAL -->
@@ -33,20 +47,21 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/card_chart"
             android:layout_width="0dp"
-            android:layout_height="410dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="116dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="24dp"
             app:cardElevation="4dp"
             app:cardUseCompatPadding="true"
+            android:paddingBottom="32dp"
+            android:paddingTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="448dp"
                 android:padding="16dp">
 
                 <!-- filtro por momento de la predicción -->
@@ -55,12 +70,12 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="24dp"
-                    android:layout_marginEnd="28dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="28dp"
                     android:background="@drawable/spinner_bg"
                     android:popupBackground="@drawable/spinner_dropdown_bg"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -69,38 +84,42 @@
                     android:id="@+id/pie_chart"
                     android:layout_width="0dp"
                     android:layout_height="260dp"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="32dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/spinner_mode" />
 
                 <!-- Texto CENTRO: Número -->
                 <TextView
                     android:id="@+id/center_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
                     android:text="0"
+                    android:textColor="@color/dark_blue"
                     android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="@color/dark_blue"
-                    android:fontFamily="sans-serif-medium"
-                    app:layout_constraintBottom_toBottomOf="@+id/pie_chart"
-                    app:layout_constraintTop_toTopOf="@+id/pie_chart"
-                    app:layout_constraintStart_toStartOf="@+id/pie_chart"
-                    app:layout_constraintEnd_toEndOf="@+id/pie_chart" />
+                    app:layout_constraintBottom_toTopOf="@id/center_label"
+                    app:layout_constraintEnd_toEndOf="@id/pie_chart"
+                    app:layout_constraintStart_toStartOf="@id/pie_chart"
+                    app:layout_constraintTop_toTopOf="@id/pie_chart"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
 
                 <!-- Texto CENTRO: "PREDICCIONES" -->
                 <TextView
                     android:id="@+id/center_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PREDICCIONES"
-                    android:textSize="14sp"
-                    android:textColor="@color/grey"
                     android:fontFamily="sans-serif"
-                    app:layout_constraintTop_toBottomOf="@+id/center_value"
-                    app:layout_constraintStart_toStartOf="@+id/pie_chart"
-                    app:layout_constraintEnd_toEndOf="@+id/pie_chart" />
+                    android:text="PREDICCIONES"
+                    android:textColor="@color/grey"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@id/pie_chart"
+                    app:layout_constraintEnd_toEndOf="@id/pie_chart"
+                    app:layout_constraintStart_toStartOf="@id/pie_chart"
+                    app:layout_constraintTop_toBottomOf="@id/center_value" />
+
 
                 <!-- Leyenda simple: Válidas / No Válidas -->
                 <LinearLayout
@@ -197,39 +216,48 @@
                     android:id="@+id/btn_prediction"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
                     android:text="REALIZAR PREDICCIÓN"
                     android:textAllCaps="false"
                     android:textColor="@color/dark_blue"
                     android:textSize="16sp"
                     app:backgroundTint="@color/white"
-                    app:strokeColor="@color/dark_blue" />
+                    app:strokeColor="@color/dark_blue"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="50dp" />
+
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_historial"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
                     android:text="HISTORIAL PREDICCIONES"
                     android:textAllCaps="false"
                     android:textColor="@color/dark_blue"
                     android:textSize="16sp"
                     app:backgroundTint="@color/white"
-                    app:strokeColor="@color/dark_blue" />
+                    app:strokeColor="@color/dark_blue"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="50dp" />
+
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_import"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:text="IMPORTAR PREDICCIONES"
                     android:textAllCaps="false"
                     android:textColor="@color/dark_blue"
                     android:textSize="16sp"
                     app:backgroundTint="@color/white"
-                    app:strokeColor="@color/dark_blue" />
+                    app:strokeColor="@color/dark_blue"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="50dp" />
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

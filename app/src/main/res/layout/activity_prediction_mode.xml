@@ -4,71 +4,108 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#417f9a"
+    android:background="@color/beige"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- Título al estilo de "FORMULARIO" -->
-    <TextView
-        android:id="@+id/tvTitle"
+    <!-- TARJETA BLANCA CENTRAL -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
-        android:fontFamily="sans-serif-condensed-medium"
-        android:gravity="center"
-        android:text="¿EN QUÉ PUNTO QUIERES REALIZAR LA PREDICCIÓN?"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        android:textSize="26sp"
-        android:textStyle="bold" />
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="24dp"
+        app:cardCornerRadius="26dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@color/white">
 
-    <!-- Botones de opción -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBefore"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="8dp"
-        android:text="ANTES DE LA RCP"
-        android:textColor="#042939"
-        android:textSize="16sp"
-        app:backgroundTint="#fcfe82" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnMid"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:text="A LOS 20 MINUTOS DE INICIADA LA RCP"
-        android:textColor="#042939"
-        android:textSize="15sp"
-        android:lines="2"
-        app:backgroundTint="#fcfe82" />
+            <!-- TÍTULO -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿EN QUÉ PUNTO QUIERES REALIZAR LA PREDICCIÓN?"
+                android:textAlignment="center"
+                android:textColor="@color/dark_blue"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:layout_marginBottom="24dp"
+                android:textStyle="bold"
+                android:lineSpacingExtra="3dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAfter"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:text="DESPUÉS DE LA RCP"
-        android:textColor="#042939"
-        android:textSize="16sp"
-        app:backgroundTint="#fcfe82" />
+            <!-- BOTÓN: ANTES -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBefore"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:text="ANTES DE LA RCP"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:backgroundTint="@color/dark_blue"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp"
+                app:cornerRadius="50dp" />
 
-    <!-- Separación -->
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="32dp" />
+            <!-- BOTÓN: A LOS 20 MINUTOS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:layout_marginBottom="16dp"
+                android:text="A LOS 20 MINUTOS DE INICIADA LA RCP"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:gravity="center"
+                android:padding="8dp"
+                android:lines="2"
+                app:backgroundTint="@color/dark_blue"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp"
+                app:cornerRadius="50dp" />
 
-    <!-- Botón volver -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBackToMain"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_gravity="center_horizontal"
-        android:text="VOLVER AL MENÚ"
-        android:textColor="#042939"
-        android:textSize="18sp"
-        app:backgroundTint="#fcfe82" />
+            <!-- BOTÓN: DESPUÉS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAfter"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="26dp"
+                android:text="DESPUÉS DE LA RCP"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:backgroundTint="@color/dark_blue"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp"
+                app:cornerRadius="50dp" />
+
+            <!-- BOTÓN VOLVER -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBackToMain"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:text="VOLVER AL MENÚ"
+                android:textColor="@color/dark_blue"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                app:backgroundTint="@color/white"
+                app:strokeColor="@color/dark_blue"
+                app:strokeWidth="1dp"
+                app:cornerRadius="50dp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>
