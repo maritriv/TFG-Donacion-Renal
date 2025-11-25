@@ -21,15 +21,28 @@ import com.lhc.tfg_prediccion.ui.login.LoginActivity
 import com.lhc.tfg_prediccion.ui.prediction.PredictionModeActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.ui.historial.HistorialActivity
+import com.google.firebase.firestore.Query
+import android.view.View
+import android.text.TextUtils
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.AdapterView
 // grafica pie chart
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.google.firebase.auth.FirebaseAuth
 import com.lhc.tfg_prediccion.ui.prediction.ImportActivity
 import kotlin.math.roundToInt
+// Modos y etiquetas canónicas
+import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
+import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
+import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
+import com.lhc.tfg_prediccion.ui.prediction.LBL_BEFORE
+import com.lhc.tfg_prediccion.ui.prediction.LBL_MID
+import com.lhc.tfg_prediccion.ui.prediction.LBL_AFTER
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -72,33 +85,73 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
 
         // numero predicciones
+        // numero predicciones (centro del donut)
         val centerValue = findViewById<TextView>(R.id.center_value)
         val centerLabel = findViewById<TextView>(R.id.center_label)
 
-        getNumeroPredicciones { n ->
-            centerValue.text = n.toString()
-            centerLabel.text = "PREDICCIONES"
+        // Pie chart
+        val pieChart = findViewById<PieChart>(R.id.pie_chart)
+
+        // Spinner para filtrar por momento
+        val spinnerMode = findViewById<Spinner>(R.id.spinner_mode)
+
+        val opciones = arrayOf(
+            "Todos los momentos",
+            LBL_BEFORE,
+            LBL_MID,
+            LBL_AFTER
+        )
+
+    // Adapter personalizado
+        val adapter = object : ArrayAdapter<String>(
+            this,
+            R.layout.spinner_mode_item,
+            opciones
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.isSingleLine = true
+                view.ellipsize = TextUtils.TruncateAt.END
+                return view
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getDropDownView(position, convertView, parent) as TextView
+                view.setBackgroundResource(android.R.color.transparent)
+                return view
+            }
         }
 
+        adapter.setDropDownViewResource(R.layout.spinner_mode_dropdown_item)
+        spinnerMode.adapter = adapter
 
-        // -----------   pie chart   --------------------------------------------------
-        val pieChart = findViewById<PieChart>(R.id.pie_chart)
-        // obtengo datos de la base de datos Firestore
-        val userUidNotNull = userUid ?: "defaultUserId"
-        db.collection("users").document(userUidNotNull).get()
-            .addOnSuccessListener { result ->
-                if (result.exists()) {
-                    val prediccionesValidas = result.getLong("predicciones_validas")?.toFloat() ?: 0f
-                    val prediccionesNoValidas =
-                        result.getLong("predicciones_no_validas")?.toFloat() ?: 0f
 
-                    // configurar el grafico con estos valores
-                    configurarPieChart(pieChart, prediccionesValidas, prediccionesNoValidas)
+
+
+        spinnerMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val seleccion = opciones[position]
+                val mode: String? = when (seleccion) {
+                    LBL_BEFORE -> MODE_BEFORE
+                    LBL_MID    -> MODE_MID
+                    LBL_AFTER  -> MODE_AFTER
+                    else       -> null          // "Todos los momentos"
                 }
-                else{
-                    Toast.makeText(this, "Error al crear el gráfico", Toast.LENGTH_SHORT).show()
-                }
+
+                // Cargar estadísticas filtradas por ese modo
+                cargarEstadisticasPorModo(mode, pieChart, centerValue, centerLabel)
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) { /* nada */ }
+        }
+
+        // Al arrancar la actividad, onItemSelected se dispara solo con la opción 0
+
 
         // -------------------------------------------------------------------------------
         // boton prediccion
@@ -178,25 +231,59 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getNumeroPredicciones(callback: (Int) -> Unit) {
-        val db = FirebaseFirestore.getInstance()
-        val userDocRef = db.collection("users").document(userUid ?: "")
+    private fun cargarEstadisticasPorModo(
+        mode: String?,                     // null = todos los momentos
+        pieChart: PieChart,
+        centerValue: TextView,
+        centerLabel: TextView
+    ) {
+        val uid = userUid ?: return
 
-        userDocRef.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                // cojo el valor del campo "numeroPredicciones"
-                val numeroPredicciones = document.getLong("numeroPredicciones")
-                val n = numeroPredicciones?.toInt() ?: 0 // Usamos 0 si no se encuentra el valor
-                callback(n)
-            } else {
-                // Si el documento no existe, devuelve 0
-                callback(0)
-            }
-        }.addOnFailureListener { exception ->
-            // En caso de error, devuelve 0
-            callback(0)
-            println("Error al obtener el documento: $exception")
+        var query: Query = db.collection("predicciones")
+            .whereEqualTo("uid_medico", uid)
+
+        // Si hay modo seleccionado, filtramos por el campo prediction_mode
+        if (mode != null) {
+            query = query.whereEqualTo("prediction_mode", mode)
         }
+
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                var validas = 0f
+                var noValidas = 0f
+
+                for (doc in snapshot) {
+                    val rawVal = doc.get("valido")
+
+                    val esValida = when (rawVal) {
+                        is Boolean -> rawVal
+                        is String -> rawVal.equals("si", true) ||
+                                rawVal.equals("sí", true) ||
+                                rawVal.equals("true", true) ||
+                                rawVal == "1"
+                        is Number -> rawVal.toInt() != 0
+                        else -> false
+                    }
+
+                    if (esValida) validas++ else noValidas++
+                }
+
+
+                val total = (validas + noValidas).toInt()
+                centerValue.text = total.toString()
+
+                centerLabel.text = "PREDICCIONES"
+
+                // Actualizar la circunferencia con los nuevos datos
+                configurarPieChart(pieChart, validas, noValidas)
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    this,
+                    "Error al cargar estadísticas",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
     private fun configurarPieChart(pieChart: PieChart, validas: Float, noValidas: Float) {

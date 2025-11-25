@@ -26,14 +26,14 @@
         android:padding="16dp"
         android:paddingTop="88dp">
 
-    <!-- TARJETA 1: Gráfico + resumen -->
+        <!-- TARJETA 1: Gráfico + resumen -->
 
         <!-- TARJETA 2: Botones -->
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_chart"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="410dp"
             android:layout_marginTop="116dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="24dp"
@@ -49,12 +49,27 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp">
 
+                <!-- filtro por momento de la predicción -->
+                <Spinner
+                    android:id="@+id/spinner_mode"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="28dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/spinner_bg"
+                    android:popupBackground="@drawable/spinner_dropdown_bg"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
                 <!-- PieChart al centro de la tarjeta -->
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/pie_chart"
                     android:layout_width="0dp"
                     android:layout_height="260dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="50dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -92,7 +107,7 @@
                     android:id="@+id/legend_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="24dp"
                     android:gravity="center"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -159,7 +174,7 @@
             android:id="@+id/card_actions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="24dp"
             app:cardElevation="4dp"
