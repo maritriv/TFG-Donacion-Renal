@@ -1,0 +1,16 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Tamaño aproximado, se adapta al view padre -->
+    <size
+        android:width="200dp"
+        android:height="200dp" />
+
+    <!-- Solo borde, sin relleno -->
+    <solid android:color="@android:color/transparent"/>
+
+    <stroke
+        android:width="3dp"
+        android:color="@color/dark_blue" />
+
+</shape>

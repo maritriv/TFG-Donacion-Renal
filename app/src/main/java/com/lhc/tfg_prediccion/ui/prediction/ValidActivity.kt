@@ -30,8 +30,8 @@ class ValidActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Animación
-        val scaleAnimation: Animation = AnimationUtils.loadAnimation(this, R.anim.donantevalido)
-        binding.textoDonantValido.startAnimation(scaleAnimation)
+        val appear = AnimationUtils.loadAnimation(this, R.anim.result_appear)
+        binding.rootResult.startAnimation(appear)
 
         // Valores del intent
         val edad              = intent.getStringExtra("edad") ?: ""

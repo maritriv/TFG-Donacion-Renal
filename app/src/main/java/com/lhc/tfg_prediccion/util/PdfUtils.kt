@@ -115,7 +115,7 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
 
         val itemUri = resolver.insert(collection, values)
         if (itemUri == null) {
-            Toast.makeText(context, "No se pudo crear el archivo en Descargas", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Error al crear archivo", Toast.LENGTH_SHORT).show()
             return null
         }
 
@@ -123,43 +123,78 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             val pdf = PdfDocument(PdfWriter(os))
             val doc = Document(pdf, PageSize.A4)
 
-            // Encabezado
+            // =============================================================
+            // TÍTULO PRINCIPAL
+            // =============================================================
             doc.add(
-                Paragraph("RESULTADOS PREDICCIÓN DONANTE DE RIÑÓN")
+                Paragraph("RESULTADOS DE LA PREDICCIÓN DE DONANTE DE RIÑÓN")
                     .setBold()
                     .setTextAlignment(TextAlignment.CENTER)
-                    .setFontSize(16f)
-            )
-
-            val displayDate = formatDisplayDate(data.fecha)
-            doc.add(
-                Paragraph("Nombre médico: ${data.doctorName}\nFecha: $displayDate")
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setFontSize(12f)
+                    .setFontSize(18f)
             )
             doc.add(Paragraph("\n"))
 
-            // Cuerpo
+            // =============================================================
+            // DATOS DEL PROFESIONAL
+            // =============================================================
+            val displayDate = formatDisplayDate(data.fecha)
             doc.add(
-                Paragraph("DATOS POSIBLE DONANTE:")
+                Paragraph("DATOS DEL PROFESIONAL SANITARIO RESPONSABLE:")
                     .setBold()
-                    .setTextAlignment(TextAlignment.LEFT)
                     .setFontSize(14f)
             )
+            doc.add(
+                Paragraph(
+                    "Nombre del profesional sanitario responsable: ${data.doctorName}\n" +
+                            "Fecha y hora de la predicción: $displayDate"
+                ).setFontSize(12f)
+            )
+            doc.add(Paragraph("\n"))
+
+            // =============================================================
+            // DATOS DEL POSIBLE DONANTE
+            // =============================================================
+            doc.add(
+                Paragraph("DATOS DEL POSIBLE DONANTE:")
+                    .setBold()
+                    .setFontSize(14f)
+            )
+
+            val sexo = if (data.femenino == "Si") "Femenino" else "Masculino"
+
             doc.add(Paragraph("Momento de la predicción: ${data.momentoCanonico}"))
-            doc.add(Paragraph("Edad: ${data.edad}"))
-            doc.add(Paragraph("Sexo femenino: ${data.femenino}"))
-            doc.add(Paragraph("Capnometría: ${data.capnometria}"))
-            doc.add(Paragraph("Causa cardiaca: ${data.causaCardiaca}"))
-            doc.add(Paragraph("Cardiocompresión extrahospitalaria manual: ${data.cardioManual}"))
-            doc.add(Paragraph("Recuperación circulación: ${data.recPulso}"))
+            doc.add(Paragraph("Edad: ${data.edad} años"))
+            doc.add(Paragraph("Sexo: $sexo"))
+            doc.add(Paragraph("Capnometría (inicio): ${data.capnometria}"))
+
+            val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
+            doc.add(Paragraph("Causa principal del evento: $causa"))
+
+            val cardio = if (data.cardioManual == "Si") "Sí" else "No"
+            doc.add(Paragraph("RCP extrahospitalaria manual: $cardio"))
+
+            val rec = if (data.recPulso == "Si") "Sí" else "No"
+            doc.add(Paragraph("Recuperación de la circulación espontánea (ROSC): $rec"))
 
             data.indice?.let {
-                doc.add(Paragraph("Índice calculado: " + String.format(Locale.getDefault(), "%.3f", it)))
+                doc.add(Paragraph("Índice calculado: ${String.format("%.3f", it)}"))
             }
 
-            val resultado = if (data.valido) "PREDICCIÓN: VÁLIDO" else "PREDICCIÓN: NO VÁLIDO"
-            doc.add(Paragraph(resultado).setBold().setFontSize(12f))
+            doc.add(Paragraph("\n"))
+
+            // =============================================================
+            // RESULTADO FINAL
+            // =============================================================
+            val resultado = if (data.valido)
+                "RESULTADO DE LA PREDICCIÓN: DONANTE VÁLIDO"
+            else
+                "RESULTADO DE LA PREDICCIÓN: DONANTE NO VÁLIDO"
+
+            doc.add(
+                Paragraph(resultado)
+                    .setBold()
+                    .setFontSize(14f)
+            )
 
             doc.close()
         }
@@ -180,9 +215,7 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
                 setDataAndType(itemUri, "application/pdf")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             })
-        } catch (_: Exception) {
-            // Sin visor: al menos ya está guardado
-        }
+        } catch (_: Exception) {}
 
         itemUri
     } catch (e: Exception) {
