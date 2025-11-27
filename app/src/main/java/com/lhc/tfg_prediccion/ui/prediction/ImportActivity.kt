@@ -15,6 +15,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.databinding.ActivityImportBinding
 import com.lhc.tfg_prediccion.ui.main.MainActivity
 import androidx.documentfile.provider.DocumentFile
+import android.graphics.drawable.ColorDrawable
+import com.google.android.material.button.MaterialButton
+import com.lhc.tfg_prediccion.R
 
 class ImportActivity : AppCompatActivity() {
 
@@ -357,19 +360,19 @@ class ImportActivity : AppCompatActivity() {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
     private fun mostrarAyudaCsv() {
-        AlertDialog.Builder(this)
-            .setTitle("Formato del CSV")
-            .setMessage(
-                "Se aceptan:\n\n" +
-                        "• CSV exportado por la app (10 columnas, separadas por comas):\n" +
-                        "Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual,Recuperacion_pulso,Momento,Valido,UID_medico,Fecha\n\n" +
-                        "• CSV clásico (punto y coma):\n" +
-                        "Edad;Capn;Femenino;Cardiocomp;RecPulso;CausaCardiaca;[Momento]\n\n" +
-                        "Notas:\n" +
-                        "• Con 6 columnas (sin “Momento”) se asume “Después del procedimiento de RCP”.\n" +
-                        "• Valores 0/1: 1=Sí, 0=No."
-            )
-            .setPositiveButton("Entendido", null)
-            .show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_csv_help, null)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Fondo transparente para que solo se vea la CardView redondeada
+        dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        // Botón ENTENDIDO cierra el diálogo
+        val btnOk = dialogView.findViewById<MaterialButton>(R.id.btnEntendido)
+        btnOk.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
     }
 }

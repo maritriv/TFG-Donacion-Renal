@@ -47,4 +47,23 @@
     <!-- Errores -->
     <string name="toast_pdf_error">Error al generar el PDF</string>
     <string name="login_incorrect">Usuario y/o contraseña incorrecto</string>
-    </resources>
+
+    <!-- Texto de ayuda -->
+    <string name="csv_help_body">
+        Se aceptan estos formatos de archivo:\n\n
+        1. CSV exportado desde la app (10 columnas, separadas por comas):\n
+        Edad, Femenino, Capnometria, Causa_cardiaca,\n
+        Cardio_manual, Recuperacion_pulso, Momento,\n
+        Valido, UID_medico, Fecha.\n\n
+        2. CSV clásico (punto y coma ";"):\n
+        Edad; Capn; Femenino; Cardiocomp;\n
+        RecPulso; CausaCardiaca; [Momento].\n\n
+        Notas:\n
+        • La columna "Momento" es opcional. Si no está, se asume\n
+        "Después del procedimiento de RCP".\n
+        • Para los campos Sí/No utiliza: 1 = Sí, 0 = No.
+    </string>
+
+
+
+</resources>
