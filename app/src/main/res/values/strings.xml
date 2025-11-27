@@ -38,12 +38,12 @@
 
 
     <!-- MainAdmin -->
-    <string name="welcome_prefix">Bienvenid@ %1$s</string>
-    <string name="toast_edit_profile">Editar perfil</string>
-    <string name="toast_logging_out">Cerrando sesión</string>
-    <string name="toast_table_error">Error al cargar la tabla</string>
-    <string name="toast_doctor_deleted">Médico eliminado correctamente</string>
-    <string name="toast_doctor_delete_error">Error al eliminar médico: %1$s</string>
+    <string name="cero">0</string>
+    <string name="predicciones">PREDICCIONES</string>
+    <string name="validas">Válidas</string>
+    <string name="no_validas">No válidas</string>
+
+
 
     <!-- PDF -->
     <string name="pdf_title">RESULTADOS PREDICCIÓN DONANTE DE RIÑÓN</string>
@@ -68,15 +68,23 @@
     <!-- Botones -->
     <string name="registrarse">Registrarse</string>
     <string name="realizar_cambios">Realizar cambios</string>
+    <string name="realizar_prediccion">REALIZAR PREDICCIÓN</string>
+    <string name="historial_predicciones">HISTORIAL PREDICCIONES</string>
+    <string name="importar_predicciones">IMPORTAR PREDICCIONES</string>
     <string name="volver">  Volver</string>
 
     <!-- Toasters -->
     <string name="toast_pdf_saved">PDF guardado en Descargas</string>
-    <string name="err_android10">Necesita Android 10 o superior</string>
     <string name="toast_enter_credentials">Introduzca usuario y contraseña</string>
+    <string name="toast_edit_profile">Editar perfil</string>
+    <string name="toast_logging_out">Cerrando sesión</string>
+    <string name="toast_table_error">Error al cargar la tabla</string>
+    <string name="toast_doctor_deleted">Médico eliminado correctamente</string>
+    <string name="toast_doctor_delete_error">Error al eliminar médico: %1$s</string>
+    <string name="toast_pdf_error">Error al generar el PDF</string>
 
     <!-- Errores -->
-    <string name="toast_pdf_error">Error al generar el PDF</string>
+    <string name="err_android10">Necesita Android 10 o superior</string>
     <string name="login_incorrect">Usuario y/o contraseña incorrecto</string>
 
     <!-- Texto de ayuda -->

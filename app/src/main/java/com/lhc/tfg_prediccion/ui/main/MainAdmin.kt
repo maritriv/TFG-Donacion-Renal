@@ -61,9 +61,6 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         userUid = intent.getStringExtra("userUid")
         name = intent.getStringExtra("userName")
 
-        findViewById<TextView>(R.id.title_main).text =
-            getString(R.string.welcome_prefix, name ?: "")
-
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
         val headerView = navigationView.getHeaderView(0)
