@@ -16,6 +16,27 @@
     <string name="inicio_de_sesi_n">INICIO DE SESIÓN</string>
     <string name="welcome_generic">Bienvenid@</string>
 
+    <!-- Datos del usuario -->
+    <string name="nombre">Nombre</string>
+    <string name="apellidos">Apellidos</string>
+    <string name="fecha_nacimiento">Fecha de Nacimiento</string>
+    <string name="correo_electronico">Correo Electrónico</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="contrasena_actual">Contraseña actual</string>
+    <string name="nueva_contrasena">Nueva contraseña</string>
+    <string name="confirmar_contrasena">Confirmar Contraseña</string>
+    <string name="selecciona_tu_rol">Selecciona tu rol</string>
+
+    <!-- Descripciones -->
+    <string name="desc_back">Volver atrás</string>
+    <string name="desc_icon_person">Icono persona</string>
+    <string name="desc_icon_calendar">Icono calendario</string>
+    <string name="desc_icon_email">Icono correo</string>
+    <string name="desc_icon_lock">Icono candado</string>
+    <string name="desc_icon_dropdown">Desplegar lista</string>
+    <string name="desc_icon_cross">Cerrar menú</string>
+
+
     <!-- MainAdmin -->
     <string name="welcome_prefix">Bienvenid@ %1$s</string>
     <string name="toast_edit_profile">Editar perfil</string>
@@ -38,6 +59,16 @@
     <string name="pdf_field_indice">Índice calculado: %1$s</string>
     <string name="pdf_result_valido">PREDICCIÓN: VÁLIDO</string>
     <string name="pdf_result_no_valido">PREDICCIÓN: NO VÁLIDO</string>
+
+    <!-- Títulos -->
+    <string name="registro">Registro</string>
+    <string name="editar_perfil">Editar perfil</string>
+    <string name="mi_perfil">Mi perfil</string>
+
+    <!-- Botones -->
+    <string name="registrarse">Registrarse</string>
+    <string name="realizar_cambios">Realizar cambios</string>
+    <string name="volver">  Volver</string>
 
     <!-- Toasters -->
     <string name="toast_pdf_saved">PDF guardado en Descargas</string>

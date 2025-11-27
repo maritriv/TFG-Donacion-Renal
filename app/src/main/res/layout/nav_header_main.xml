@@ -14,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:src="@drawable/ic_cross"
-        android:contentDescription="Cerrar menú"
+        android:contentDescription="@string/desc_icon_cross"
         app:tint="@color/white" />
 
     <!-- Foto usuario -->
@@ -37,7 +37,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/nav_header_imageView"
         android:layout_marginTop="12dp"
-        android:text="Mi perfil"
+        android:text="@string/mi_perfil"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:fontFamily="sans-serif-medium"/>

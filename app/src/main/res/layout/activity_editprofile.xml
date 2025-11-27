@@ -1,174 +1,337 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#417f9a"
-    android:padding="16dp">
+    android:background="@color/mid_blue">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/panel_register"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp"
+        android:background="@drawable/bg_panel_full_rounded"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- titulo "EDITAR PERFIL" -->
-        <TextView
-            android:layout_width="match_parent"
+        <!-- Volver -->
+        <LinearLayout
+            android:id="@+id/backRow"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:gravity="center"
-            android:text="- EDITAR PERFIL -"
-            android:textColor="#042939"
-            android:textSize="38sp"
-            android:textStyle="bold" />
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_back_24"
+                android:contentDescription="@string/desc_back"
+                app:tint="@color/dark_blue" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/volver"
+                android:textColor="@color/dark_blue"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTitleEditProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/editar_perfil"
+            android:textColor="@color/dark_blue"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
         <!-- Nombre -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_person_24"
+                android:contentDescription="@string/desc_icon_person"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/nombre"
+                android:inputType="textPersonName"
+                android:autofillHints="name"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- apellidos -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Apellidos -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Apellidos">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_person_24"
+                android:contentDescription="@string/desc_icon_person"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/lastname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/apellidos"
+                android:inputType="textPersonName"
+                android:autofillHints="familyName"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- fecha de nacimiento -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Fecha de nacimiento -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Fecha de Nacimiento">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_calendar_24"
+                android:contentDescription="@string/desc_icon_calendar"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/birthdate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/fecha_nacimiento"
                 android:clickable="true"
-                android:focusable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:focusable="false"
+                android:inputType="text"
+                android:autofillHints="birthday"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- mail -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Email -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:clickable="false"
-            android:focusable="false"
-            android:hint="Correo Electrónico"
-            android:longClickable="false">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_email_24"
+                android:contentDescription="@string/desc_icon_email"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/material_dynamic_neutral80"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/correo_electronico"
+                android:inputType="textEmailAddress"
+                android:autofillHints="emailAddress"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Contraseña -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Contraseña actual -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Contraseña actual">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock_24"
+                android:contentDescription="@string/desc_icon_lock"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/contrasena_actual"
+                android:inputType="textPassword"
+                android:autofillHints="password"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Nueva Contraseña -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Nueva contraseña -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Nueva contraseña">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock_24"
+                android:contentDescription="@string/desc_icon_lock"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/new_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/nueva_contrasena"
+                android:inputType="textPassword"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Confirmar Contraseña -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Confirmar contraseña -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Confirmar Contraseña">
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock_24"
+                android:contentDescription="@string/desc_icon_lock"
+                app:tint="@color/dark_blue" />
+
+            <EditText
                 android:id="@+id/confirm_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/camposform"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="@string/confirmar_contrasena"
+                android:inputType="textPassword"
+                android:textColor="@color/dark_blue"
+                android:textColorHint="@color/dark_blue"
+                android:background="@android:color/transparent"
+                android:textCursorDrawable="@drawable/custom_cursor"/>
+        </LinearLayout>
 
-        <!-- Seleccion de Rol -->
+        <!-- Selector de rol -->
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Tu Rol"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="14dp"
+            android:text="@string/selecciona_tu_rol"
+            android:textStyle="bold"
+            android:textColor="@color/dark_blue"
+            android:textSize="16sp"/>
 
-        <Spinner
-            android:id="@+id/role_spinner"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
-            android:background="@color/material_dynamic_neutral80" />
+            android:layout_height="52dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginTop="8dp">
 
-        <!-- botones cambios y volver -->
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_drop_down_24"
+                android:rotation="180"
+                android:contentDescription="@string/desc_icon_dropdown"
+                app:tint="@color/dark_blue" />
+
+            <Spinner
+                android:id="@+id/role_spinner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:spinnerMode="dropdown"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+
+        <!-- Botón Realizar cambios -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/change"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Realizar cambios"
-            android:textColor="@color/material_dynamic_primary10"
-            android:textSize="18sp"
-            app:backgroundTint="#fcfe82" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/back_main"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
-            android:text="Volver"
-            android:textColor="@color/material_dynamic_primary10"
-            android:textSize="18sp"
-            app:backgroundTint="#fcfe82" />
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/realizar_cambios"
+            android:textColor="@color/beige"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/dark_blue"
+            app:cornerRadius="50dp" />
 
     </LinearLayout>
-</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

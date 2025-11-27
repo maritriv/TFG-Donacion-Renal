@@ -1,6 +1,5 @@
 package com.lhc.tfg_prediccion.ui.register
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +14,6 @@ import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityRegisterBinding
 import com.lhc.tfg_prediccion.ui.login.LoginActivity
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.activity.addCallback
@@ -150,20 +148,5 @@ class RegisterActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error al guardar los datos: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-    }
-
-    // (Opcional) DatePicker nativo por si lo necesitas en otro momento
-    private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePicker = DatePickerDialog(this, { _, y, m, d ->
-            val formattedDate = String.format("%02d/%02d/%04d", d, m + 1, y)
-            binding.birthdate.setText(formattedDate)
-        }, year, month, day)
-
-        datePicker.show()
     }
 }

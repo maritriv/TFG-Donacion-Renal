@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/mid_blue">
 
-    <!-- Panel blanco que baja hasta el fondo -->
+    <!-- Panel blanco principal -->
     <LinearLayout
         android:id="@+id/panel_register"
         android:layout_width="0dp"
@@ -20,11 +20,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Fila “Volver” (icono + texto) -->
+        <!-- Volver -->
         <LinearLayout
             android:id="@+id/backRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:gravity="center_vertical"
             android:paddingBottom="8dp"
             android:clickable="true"
@@ -35,13 +36,13 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_arrow_back_24"
-                android:contentDescription="@string/navigation_drawer_close"
+                android:contentDescription="@string/desc_back"
                 app:tint="@color/dark_blue" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="  Volver"
+                android:text="@string/volver"
                 android:textColor="@color/dark_blue"
                 android:textSize="16sp"/>
         </LinearLayout>
@@ -51,7 +52,7 @@
             android:id="@+id/tvTitleRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Registro"
+            android:text="@string/registro"
             android:textColor="@color/dark_blue"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -71,6 +72,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_person_24"
+                android:contentDescription="@string/desc_icon_person"
                 app:tint="@color/dark_blue" />
 
             <EditText
@@ -79,7 +81,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:hint="Nombre"
+                android:hint="@string/nombre"
+                android:autofillHints="name"
+                android:inputType="textPersonName"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
@@ -100,6 +104,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_person_24"
+                android:contentDescription="@string/desc_icon_person"
                 app:tint="@color/dark_blue" />
 
             <EditText
@@ -108,14 +113,16 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:hint="Apellidos"
+                android:hint="@string/apellidos"
+                android:autofillHints="name"
+                android:inputType="textPersonName"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
 
-        <!-- Fecha de nacimiento -->
+        <!-- Fecha nacimiento -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="52dp"
@@ -129,6 +136,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_calendar_24"
+                android:contentDescription="@string/desc_icon_calendar"
                 app:tint="@color/dark_blue" />
 
             <EditText
@@ -137,9 +145,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:hint="Fecha de Nacimiento"
+                android:hint="@string/fecha_nacimiento"
                 android:clickable="true"
                 android:focusable="false"
+                android:autofillHints="birthday"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
@@ -160,6 +169,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_email_24"
+                android:contentDescription="@string/desc_icon_email"
                 app:tint="@color/dark_blue" />
 
             <EditText
@@ -168,8 +178,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:hint="Correo Electrónico"
+                android:hint="@string/correo_electronico"
                 android:inputType="textEmailAddress"
+                android:autofillHints="emailAddress"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
@@ -190,6 +201,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_lock_24"
+                android:contentDescription="@string/desc_icon_lock"
                 app:tint="@color/dark_blue" />
 
             <EditText
@@ -198,15 +210,16 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:hint="Contraseña"
+                android:hint="@string/contrasena"
                 android:inputType="textPassword"
+                android:autofillHints="password"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
                 android:textCursorDrawable="@drawable/custom_cursor"/>
         </LinearLayout>
 
-        <!-- Confirmar contraseña -->
+        <!-- Confirmar Contraseña -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="52dp"
@@ -220,6 +233,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_lock_24"
+                android:contentDescription="@string/desc_icon_lock"
                 app:tint="@color/dark_blue" />
 
             <EditText
@@ -228,8 +242,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:hint="Confirmar Contraseña"
+                android:hint="@string/confirmar_contrasena"
                 android:inputType="textPassword"
+                android:autofillHints="password"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
                 android:background="@android:color/transparent"
@@ -241,7 +256,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:text="Selecciona tu rol"
+            android:text="@string/selecciona_tu_rol"
             android:textStyle="bold"
             android:textColor="@color/dark_blue"
             android:textSize="16sp"/>
@@ -260,6 +275,7 @@
                 android:layout_height="20dp"
                 android:src="@drawable/ic_arrow_drop_down_24"
                 android:rotation="180"
+                android:contentDescription="@string/desc_icon_dropdown"
                 app:tint="@color/dark_blue" />
 
             <Spinner
@@ -268,6 +284,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:spinnerMode="dropdown"
                 android:background="@android:color/transparent"/>
         </LinearLayout>
@@ -278,13 +295,11 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="18dp"
-            android:text="Registrarse"
+            android:text="@string/registrarse"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textColor="@color/beige"
             android:background="@drawable/bg_button_primary"/>
-
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
