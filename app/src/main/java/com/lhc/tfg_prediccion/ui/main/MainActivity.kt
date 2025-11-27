@@ -15,7 +15,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.lhc.tfg_prediccion.R
-import com.lhc.tfg_prediccion.databinding.ActivityMainBinding
 import com.lhc.tfg_prediccion.ui.edit.EditProfileActivity
 import com.lhc.tfg_prediccion.ui.login.LoginActivity
 import com.lhc.tfg_prediccion.ui.prediction.PredictionModeActivity
@@ -28,6 +27,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.AdapterView
+import androidx.core.content.ContextCompat
+
 // grafica pie chart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
@@ -50,7 +51,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var toggle: ActionBarDrawerToggle
     private var userUid: String? = null
     private var name: String? = null
-    private lateinit var binding: ActivityMainBinding
     private val db = FirebaseFirestore.getInstance()
 
 
@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar: Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         drawer = findViewById(R.id.drawer_layout)
         toggle = ActionBarDrawerToggle(
             this,
@@ -72,8 +71,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.string.navigation_drawer_close
         )
         drawer.addDrawerListener(toggle)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
+        toggle.syncState()
+        toggle.drawerArrowDrawable.color =
+            ContextCompat.getColor(this, R.color.white)
 
         // nombre que se pasa con el intent
         name = intent.getStringExtra("userName")

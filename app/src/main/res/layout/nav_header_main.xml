@@ -1,51 +1,45 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/nav_header"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:background="#fcfe82"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackgroundBorderless"
-    android:gravity="bottom"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    android:layout_height="180dp"
+    android:background="@color/dark_blue"
+    android:padding="16dp">
 
+    <!-- Botón cerrar -->
+    <ImageView
+        android:id="@+id/btn_close_nav"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_cross"
+        android:contentDescription="Cerrar menú"
+        app:tint="@color/white" />
+
+    <!-- Foto usuario -->
     <ImageView
         android:id="@+id/nav_header_imageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginLeft="5dp"
-        android:src="@drawable/usuario" />
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_person_24"
+        android:scaleType="centerCrop"
+        android:background="@drawable/circle_white"
+        android:padding="6dp"/>
 
-    <!-- Contenedor para el título y el botón de cerrar -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Nombre -->
+    <TextView
+        android:id="@+id/nav_header_textView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/nav_header_imageView"
+        android:layout_marginTop="12dp"
+        android:text="Mi perfil"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-medium"/>
 
-        <TextView
-            android:id="@+id/nav_header_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="tu perfil"
-            android:textSize="17sp"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_marginLeft="10dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/black" />
-
-        <ImageView
-            android:id="@+id/btn_close_nav"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="150dp"
-            android:layout_marginEnd="8dp"
-            android:clickable="true"
-            android:contentDescription="Cerrar menú"
-            android:focusable="true"
-            android:src="@drawable/cerraric" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
