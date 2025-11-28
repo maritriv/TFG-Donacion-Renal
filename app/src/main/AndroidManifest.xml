@@ -42,6 +42,8 @@
         <activity android:name=".ui.prediction.ShowpredActivity" android:exported="false" />
         <activity android:name=".ui.prediction.ImportActivity" android:exported="false" />
         <activity android:name=".ui.prediction.PredictionModeActivity" android:exported="false" />
+        <activity android:name=".ui.control.ViewUsersActivity" android:exported="false" />
+
 
     </application>
 </manifest>

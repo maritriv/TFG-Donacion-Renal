@@ -69,6 +69,8 @@
     <string name="registro">Registro</string>
     <string name="editar_perfil">Editar perfil</string>
     <string name="mi_perfil">Mi perfil</string>
+    <string name="medicos_mayus">MÉDICOS</string>
+    <string name="administradores_mayus">ADMINISTRADORES</string>
 
     <!-- Botones -->
     <string name="entrar">Entrar</string>
@@ -80,9 +82,20 @@
     <string name="importar_predicciones">IMPORTAR PREDICCIONES</string>
     <string name="añadir_filas">AÑADIR FILAS</string>
     <string name="ayuda_formato_csv">AYUDA FORMATO CSV</string>
+    <string name="ver_usuarios">VER USUARIOS</string>
+    <string name="ver_predicciones">VER PREDICCIONES</string>
     <string name="volver">  Volver</string>
     <string name="volver_mayus">VOLVER</string>
     <string name="selecciona_csv">Selecciona un archivo CSV...</string>
+    <string name="filtro_tipo_usuario">Tipo de usuario</string>
+    <string name="medicos">Médicos</string>
+    <string name="administradores">Administradores</string>
+    <string name="estado_activo">Activo</string>
+    <string name="estado_inactivo">Inactivo</string>
+    <string name="nombre_appellidos">Nombre Apellidos</string>
+    <string name="correo_ejemplo">correo@ejemplo.com</string>
+    <string name="buscar_usuario_hint">Buscar usuario (nombre, apellidos o email)</string>
+
 
 
     <!-- Toasters -->

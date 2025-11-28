@@ -101,7 +101,7 @@ class RegisterActivity : AppCompatActivity() {
         birthdate: String,
         email: String,
         password: String,
-        role: String
+        role: String,
     ) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
@@ -135,7 +135,8 @@ class RegisterActivity : AppCompatActivity() {
             "role" to role,
             "numeroPredicciones" to 0,
             "predicciones_validas" to 0,
-            "predicciones_no_validas" to 0
+            "predicciones_no_validas" to 0,
+            "active" to true
         )
 
         db.collection("users")

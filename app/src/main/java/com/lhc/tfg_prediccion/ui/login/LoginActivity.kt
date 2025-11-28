@@ -11,9 +11,11 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
-import com.lhc.tfg_prediccion.databinding.ActivityLoginBinding
 import android.content.Intent
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.lhc.tfg_prediccion.databinding.ActivityLoginBinding
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.ui.main.MainActivity
 import com.lhc.tfg_prediccion.ui.main.MainAdmin
@@ -26,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this) // inicializacion de la base de datos Firebase
+        FirebaseApp.initializeApp(this) // inicialización Firebase
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -42,7 +44,6 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
-            // disable login button unless both username / password is valid
             login.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
@@ -64,16 +65,12 @@ class LoginActivity : AppCompatActivity() {
                 updateUiWithUser(loginResult.success)
             }
             setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            // finish()
         })
 
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
                 username.text.toString(),
                 password.text.toString(),
-
             )
         }
 
@@ -99,58 +96,108 @@ class LoginActivity : AppCompatActivity() {
             login.setOnClickListener {
                 val userText = username.text.toString().trim()
                 val passwText = password.text.toString().trim()
-                if (userText.isEmpty() || passwText.isEmpty()){
-                    Toast.makeText(applicationContext, getString(R.string.toast_enter_credentials), Toast.LENGTH_SHORT).show()
-                }
-                else{
+                if (userText.isEmpty() || passwText.isEmpty()) {
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.toast_enter_credentials),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
                     loading.visibility = View.VISIBLE
-                    loginViewModel.login(username.text.toString(), password.text.toString(), ) // check con la base de datos y va al observer
+                    loginViewModel.login(
+                        username.text.toString(),
+                        password.text.toString()
+                    )
                 }
-
             }
-
         }
-        val registerButton = binding.registerButton
+
         binding.registerButton?.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent) // Iniciamos RegisterActivity
+            startActivity(intent)
         }
-
     }
 
+    /**
+     * Comprobamos el campo "active" en Firestore
+     * antes de dejar entrar al usuario.
+     */
     private fun updateUiWithUser(model: LoggedInUserView) {
-        // mensaje de bienvenida
-        val welcome = getString(R.string.welcome_generic)
         val displayName = model.displayName
         val userUid = model.userUid
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
-        // nueva ventana segun el tipo de usuario
-        val rol = model.role
-        if(rol == "Médico"){
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("userName", displayName)
-            intent.putExtra("userUid", userUid)
-            startActivity(intent)
-            finish()
-        }
-        else{
-            val intentAdmin = Intent(this, MainAdmin::class.java)
-            intentAdmin.putExtra("userName", displayName)
-            intentAdmin.putExtra("userUid", userUid)
-            startActivity(intentAdmin)
-            finish()
-        }
+        val role = model.role
 
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("users")
+            .document(userUid)
+            .get()
+            .addOnSuccessListener { doc ->
+
+                // Leemos el campo "active"
+                val rawActive = doc.get("active")
+
+                val isActive = when (rawActive) {
+                    is Boolean -> rawActive
+                    is Number -> rawActive.toInt() != 0
+                    is String -> rawActive.equals("true", true) ||
+                            rawActive.equals("yes", true) ||
+                            rawActive == "1"
+                    null -> true   // si no existe, por compatibilidad dejamos entrar
+                    else -> true
+                }
+
+                if (!isActive) {
+                    // Cuenta desactivada -> no dejamos entrar
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Your account is deactivated. Please contact the administrator.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    FirebaseAuth.getInstance().signOut()
+                    return@addOnSuccessListener
+                }
+
+                // ---- Usuario ACTIVO: flujo normal ----
+                val welcome = getString(R.string.welcome_generic)
+                Toast.makeText(
+                    applicationContext,
+                    "$welcome $displayName",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                // Navegación según el rol
+                if (role == "Médico") {
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("userName", displayName)
+                    intent.putExtra("userUid", userUid)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    val intentAdmin = Intent(this, MainAdmin::class.java)
+                    intentAdmin.putExtra("userName", displayName)
+                    intentAdmin.putExtra("userUid", userUid)
+                    startActivity(intentAdmin)
+                    finish()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    this@LoginActivity,
+                    "Error checking account status.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
     private fun showLoginFailed() {
-        Toast.makeText(applicationContext, getString(R.string.login_incorrect), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            applicationContext,
+            getString(R.string.login_incorrect),
+            Toast.LENGTH_SHORT
+        ).show()
     }
-
 }
 
 /**
@@ -163,7 +210,6 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
 }
