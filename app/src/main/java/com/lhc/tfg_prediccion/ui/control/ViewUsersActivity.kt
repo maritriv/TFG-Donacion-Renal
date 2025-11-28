@@ -1,5 +1,6 @@
 package com.lhc.tfg_prediccion.ui.control
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityAdminUsersBinding
+import com.lhc.tfg_prediccion.ui.profile.AdminProfileActivity
+import com.lhc.tfg_prediccion.ui.profile.MedicalProfileActivity
 import java.text.Normalizer
 
 class ViewUsersActivity : AppCompatActivity() {
@@ -35,7 +38,11 @@ class ViewUsersActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener { finish() }
 
         // ---------- RecyclerView ----------
-        usersAdapter = UserListAdapter { user -> onStatusToggle(user) }
+        usersAdapter = UserListAdapter(
+            onStatusClick = { user -> onStatusToggle(user) },
+            onItemClick = { user -> openUserProfile(user) }
+        )
+
         binding.rvUsers.apply {
             layoutManager = LinearLayoutManager(this@ViewUsersActivity)
             adapter = usersAdapter
@@ -100,7 +107,8 @@ class ViewUsersActivity : AppCompatActivity() {
                         .filter { it.isNotBlank() }
                         .joinToString(" ")
 
-                    val email = doc.getString("email").orEmpty()
+                    val email = doc.getString("email").orEmpty().trim()
+                    val role = doc.getString("role").orEmpty().trim()
 
                     // Campo "active" en inglés (con compatibilidad con "activo")
                     val rawActive = doc.get("active") ?: doc.get("activo")
@@ -108,9 +116,9 @@ class ViewUsersActivity : AppCompatActivity() {
                         is Boolean -> rawActive
                         is Number  -> rawActive.toInt() != 0
                         is String  -> rawActive.equals("true", true) ||
-                                rawActive.equals("yes", true) ||
-                                rawActive.equals("si", true) ||
-                                rawActive.equals("sí", true) ||
+                                rawActive.equals("yes", true)  ||
+                                rawActive.equals("si", true)   ||
+                                rawActive.equals("sí", true)   ||
                                 rawActive == "1"
                         else       -> true   // si no existe, lo consideramos activo
                     }
@@ -119,6 +127,7 @@ class ViewUsersActivity : AppCompatActivity() {
                         id = id,
                         fullName = fullName.ifBlank { email },
                         email = email,
+                        role = role,
                         isActive = isActive
                     )
                 }
@@ -186,5 +195,20 @@ class ViewUsersActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Error al cambiar estado", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // ---------------------------------------------------------
+    // Abrir perfil según rol
+    // ---------------------------------------------------------
+    private fun openUserProfile(user: UserItem) {
+        if (user.role == "Médico") {
+            val intent = Intent(this, MedicalProfileActivity::class.java)
+            intent.putExtra("userId", user.id)
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, AdminProfileActivity::class.java)
+            intent.putExtra("userId", user.id)
+            startActivity(intent)
+        }
     }
 }

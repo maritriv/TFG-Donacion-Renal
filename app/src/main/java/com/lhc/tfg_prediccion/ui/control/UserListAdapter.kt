@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lhc.tfg_prediccion.R
 
 class UserListAdapter(
-    private val onStatusClick: (UserItem) -> Unit
-) : ListAdapter<UserItem, UserListAdapter.UserViewHolder>(DiffCallback()) {
+    private val onStatusClick: (UserItem) -> Unit,
+    private val onItemClick: (UserItem) -> Unit
+): ListAdapter<UserItem, UserListAdapter.UserViewHolder>(DiffCallback()) {
 
     inner class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val name = itemView.findViewById<TextView>(R.id.tvUserName)
@@ -35,6 +36,10 @@ class UserListAdapter(
 
             // AL PULSAR -> llamar al callback
             badge.setOnClickListener { onStatusClick(item) }
+
+            // Pulsar el item -> ver perfil
+            itemView.setOnClickListener { onItemClick(item) }
+
         }
     }
 

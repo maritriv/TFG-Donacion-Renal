@@ -36,6 +36,9 @@
     <string name="desc_icon_dropdown">Desplegar lista</string>
     <string name="desc_icon_cross">Cerrar menú</string>
     <string name="quitar_archivo">Quitar archivo</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+
 
 
 
@@ -69,6 +72,7 @@
     <string name="registro">Registro</string>
     <string name="editar_perfil">Editar perfil</string>
     <string name="mi_perfil">Mi perfil</string>
+    <string name="perfil_del_usuario">Perfil del Usuario</string>
     <string name="medicos_mayus">MÉDICOS</string>
     <string name="administradores_mayus">ADMINISTRADORES</string>
 
@@ -95,6 +99,8 @@
     <string name="nombre_appellidos">Nombre Apellidos</string>
     <string name="correo_ejemplo">correo@ejemplo.com</string>
     <string name="buscar_usuario_hint">Buscar usuario (nombre, apellidos o email)</string>
+    <string name="sin_fecha">Sin fecha</string>
+    <string name="cancelar">Cancelar</string>
 
 
 
