@@ -39,7 +39,7 @@
                 android:id="@+id/tvWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¡BIENVENIDO/A!"
+                android:text="@string/bienbenido_a"
                 android:textColor="@color/white"
                 android:textSize="48sp"
                 android:fontFamily="@font/amaticsc_bold"/>
@@ -48,7 +48,7 @@
                 android:id="@+id/tvSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ya puedes realizar tus predicciones"
+                android:text="@string/frase_inicio"
                 android:textColor="@color/white"
                 android:textSize="14sp"/>
         </LinearLayout>
@@ -74,7 +74,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Inicio de Sesión"
+            android:text="@string/inicio_de_sesion"
             android:textColor="@color/dark_blue"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -102,7 +102,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:hint="Email"
+                android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
@@ -132,7 +132,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:hint="Contraseña"
+                android:hint="@string/contrasena"
                 android:inputType="textPassword"
                 android:textColor="@color/dark_blue"
                 android:textColorHint="@color/dark_blue"
@@ -146,7 +146,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
-            android:text="Entrar"
+            android:text="@string/entrar"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textColor="@color/white"
@@ -168,7 +168,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¿No tienes una cuenta?"
+                android:text="@string/no_cuenta"
                 android:textColor="@color/grey"/>
 
             <TextView

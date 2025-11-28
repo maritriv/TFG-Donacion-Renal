@@ -35,6 +35,8 @@
     <string name="desc_icon_lock">Icono candado</string>
     <string name="desc_icon_dropdown">Desplegar lista</string>
     <string name="desc_icon_cross">Cerrar menú</string>
+    <string name="quitar_archivo">Quitar archivo</string>
+
 
 
     <!-- MainAdmin -->
@@ -61,17 +63,27 @@
     <string name="pdf_result_no_valido">PREDICCIÓN: NO VÁLIDO</string>
 
     <!-- Títulos -->
+    <string name="bienbenido_a">¡BIENVENIDO/A!</string>
+    <string name="inicio_de_sesion">Inicio de Sesión</string>
+    <string name="frase_inicio">Ya puedes realizar tus predicciones</string>
     <string name="registro">Registro</string>
     <string name="editar_perfil">Editar perfil</string>
     <string name="mi_perfil">Mi perfil</string>
 
     <!-- Botones -->
+    <string name="entrar">Entrar</string>
+    <string name="no_cuenta">¿No tienes una cuenta? </string>
     <string name="registrarse">Registrarse</string>
     <string name="realizar_cambios">Realizar cambios</string>
     <string name="realizar_prediccion">REALIZAR PREDICCIÓN</string>
     <string name="historial_predicciones">HISTORIAL PREDICCIONES</string>
     <string name="importar_predicciones">IMPORTAR PREDICCIONES</string>
+    <string name="añadir_filas">AÑADIR FILAS</string>
+    <string name="ayuda_formato_csv">AYUDA FORMATO CSV</string>
     <string name="volver">  Volver</string>
+    <string name="volver_mayus">VOLVER</string>
+    <string name="selecciona_csv">Selecciona un archivo CSV...</string>
+
 
     <!-- Toasters -->
     <string name="toast_pdf_saved">PDF guardado en Descargas</string>
