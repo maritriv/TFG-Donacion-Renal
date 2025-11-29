@@ -1,24 +1,32 @@
 package com.lhc.tfg_prediccion.ui.profile
 
 import android.os.Bundle
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.data.model.Prediccion
 import com.lhc.tfg_prediccion.databinding.ActivityMedicalProfileBinding
+import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
+import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
+import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
+import com.lhc.tfg_prediccion.ui.prediction.modeFromLabelLoose
+import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
+import com.lhc.tfg_prediccion.util.PredictionCsvExporter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.view.ViewGroup
 import kotlin.math.min
-
 
 class MedicalProfileActivity : AppCompatActivity() {
 
@@ -43,6 +51,9 @@ class MedicalProfileActivity : AppCompatActivity() {
             .setTitleText("Selecciona una fecha")
             .build()
     }
+
+    // Lista completa en memoria para poder ordenar sin volver a Firestore
+    private val predictions = mutableListOf<Prediccion>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,9 +94,7 @@ class MedicalProfileActivity : AppCompatActivity() {
             toggleEditMode(!isEditMode)
         }
 
-        // X arriba a la derecha:
-        //   - Si hay cambios → preguntar si quiere descartarlos
-        //   - Si no hay cambios → salir directamente del modo edición
+        // X arriba a la derecha
         binding.btnDeleteUser.setOnClickListener {
             if (hasChanges()) {
                 confirmDiscardChanges()
@@ -100,9 +109,25 @@ class MedicalProfileActivity : AppCompatActivity() {
             saveChanges()
         }
 
-        // Botón inferior: eliminar usuario
+        // Eliminar usuario
         binding.btnCancelChanges.setOnClickListener {
             confirmDeleteUser()
+        }
+
+        // Botón "Filtrar"
+        binding.btnFilter.setOnClickListener {
+            showFilterDialog()
+        }
+
+        // Botón "Exportar"
+        binding.btnExport.setOnClickListener {
+            val doctorName = binding.etFullName.text.toString()
+            PredictionCsvExporter.exportCsv(
+                activity = this,
+                predictions = predictions,
+                doctorName = doctorName,
+                userUid = userId
+            )
         }
     }
 
@@ -162,101 +187,22 @@ class MedicalProfileActivity : AppCompatActivity() {
     }
 
     // -------------------------------------------------------------
-    // Cargar predicciones del médico y rellenar tabla
+    // Cargar predicciones del médico → llenar lista + pintar
     // -------------------------------------------------------------
     private fun loadPredictions() {
         val id = userId ?: return
-
-        val table = binding.tablePredictions
-
-        // Eliminar filas de datos, mantener la cabecera (fila 0)
-        if (table.childCount > 1) {
-            table.removeViews(1, table.childCount - 1)
-        }
 
         db.collection("predicciones")
             .whereEqualTo("uid_medico", id)
             .get()
             .addOnSuccessListener { snapshot ->
                 val docs = snapshot.documents
-                binding.tvShowingRows.text = "Mostrando ${docs.size} filas"
 
-                var contador = 1
-                val params = TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(8, 16, 8, 16)
-                }
+                predictions.clear()
+                predictions.addAll(docs.mapNotNull { it.toObject(Prediccion::class.java) })
 
-                fun TableRow.addCell(text: String, bold: Boolean = false) {
-                    TextView(this@MedicalProfileActivity).apply {
-                        this.text = text
-                        textSize = 12f
-                        setPadding(16, 24, 16, 24)
-                        typeface = android.graphics.Typeface.create(
-                            "sans-serif-condensed",
-                            if (bold) android.graphics.Typeface.BOLD
-                            else android.graphics.Typeface.NORMAL
-                        )
-                        layoutParams = params
-                        this@addCell.addView(this)
-                    }
-                }
-
-                docs.forEach { doc ->
-                    val pred = doc.toObject(Prediccion::class.java) ?: return@forEach
-
-                    val fila = TableRow(this)
-
-                    // #
-                    fila.addCell(contador.toString())
-
-                    // Edad
-                    fila.addCell(pred.edad)
-
-                    // Sexo: mapeamos femenino ("Si"/"No") a M / H
-                    fila.addCell(mapSexo(pred.femenino))
-
-                    // Capnografía
-                    fila.addCell(pred.capnometria)
-
-                    // Causa cardiaca
-                    fila.addCell(pred.causa_cardiaca)
-
-                    // Cardiocompresión
-                    fila.addCell(pred.cardio_manual)
-
-                    // Rec. del pulso
-                    fila.addCell(pred.rec_pulso)
-
-                    // Momento
-                    val momento = pred.momento_prediccion_legible ?: ""
-                    fila.addCell(momento)
-
-                    // Resultado: "Si"/"No" -> "Válido"/"No válido"
-                    fila.addCell(mapResultado(pred.valido))
-
-                    // Informe (PDF) – de momento solo texto “PDF”
-                    TextView(this).apply {
-                        text = "PDF"
-                        textSize = 12f
-                        setPadding(16, 24, 16, 24)
-                        layoutParams = params
-                        setTextColor(
-                            ContextCompat.getColor(
-                                this@MedicalProfileActivity,
-                                R.color.dark_blue
-                            )
-                        )
-                        // TODO: aquí podrías poner un setOnClickListener para generar/abrir el PDF
-                        fila.addView(this)
-                    }
-
-                    table.addView(fila)
-                    contador++
-                }
-                adjustPredictionsHeight(docs.size)
+                // Pintamos inicial sin filtro
+                renderPredictions(predictions)
             }
             .addOnFailureListener { e ->
                 e.printStackTrace()
@@ -264,7 +210,181 @@ class MedicalProfileActivity : AppCompatActivity() {
             }
     }
 
-    // Mapea el campo "femenino" almacenado ("Si"/"No", 1/0, true/false, etc.) a "M" / "H"
+    // -------------------------------------------------------------
+    // Pintar tabla (manteniendo cabecera XML)
+    // -------------------------------------------------------------
+    private fun renderPredictions(list: List<Prediccion>) {
+        val table = binding.tablePredictions
+
+        // Eliminar filas de datos, mantener cabecera (fila 0)
+        if (table.childCount > 1) {
+            table.removeViews(1, table.childCount - 1)
+        }
+
+        binding.tvShowingRows.text = "Mostrando ${list.size} filas"
+
+        var contador = 1
+        val params = TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT
+        ).apply {
+            setMargins(8, 16, 8, 16)
+        }
+
+        fun TableRow.addCell(text: String, bold: Boolean = false) {
+            TextView(this@MedicalProfileActivity).apply {
+                this.text = text
+                textSize = 12f
+                setPadding(16, 24, 16, 24)
+                typeface = android.graphics.Typeface.create(
+                    "sans-serif-condensed",
+                    if (bold) android.graphics.Typeface.BOLD
+                    else android.graphics.Typeface.NORMAL
+                )
+                layoutParams = params
+                this@addCell.addView(this)
+            }
+        }
+
+        list.forEach { pred ->
+            val fila = TableRow(this)
+
+            // #
+            fila.addCell(contador.toString())
+
+            // Edad
+            fila.addCell(pred.edad)
+
+            // Sexo
+            fila.addCell(mapSexo(pred.femenino))
+
+            // Capnometría
+            fila.addCell(pred.capnometria)
+
+            // Causa cardiaca
+            fila.addCell(pred.causa_cardiaca)
+
+            // Cardiocompresión
+            fila.addCell(pred.cardio_manual)
+
+            // Rec. del pulso
+            fila.addCell(pred.rec_pulso)
+
+            // Momento — SIEMPRE frase canónica, por defecto "Después del procedimiento de RCP"
+            val mode = pred.prediction_mode
+                ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
+            val canonicalMoment = modeToLabel(mode)
+            fila.addCell(canonicalMoment)
+
+            // Resultado
+            fila.addCell(mapResultado(pred.valido))
+
+            // Informe (PDF) – por ahora solo texto
+            TextView(this).apply {
+                text = "PDF"
+                textSize = 12f
+                setPadding(16, 24, 16, 24)
+                layoutParams = params
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@MedicalProfileActivity,
+                        R.color.dark_blue
+                    )
+                )
+                fila.addView(this)
+            }
+
+            table.addView(fila)
+            contador++
+        }
+
+        adjustPredictionsHeight(list.size)
+    }
+
+    // -------------------------------------------------------------
+    // Filtro / Ordenar
+    // -------------------------------------------------------------
+    private fun showFilterDialog() {
+        val opciones = arrayOf("Edad", "Capnometría", "Momento")
+
+        val spinner = AppCompatSpinner(this).apply {
+            val adapter = ArrayAdapter(
+                this@MedicalProfileActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                opciones
+            )
+            this.adapter = adapter
+
+            // Fondo redondeado y gris suave
+            background = ContextCompat.getDrawable(
+                this@MedicalProfileActivity,
+                R.drawable.bg_input   // o el drawable gris que estés usando
+            )
+
+            setPopupBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    this@MedicalProfileActivity,
+                    R.drawable.bg_panel_full_rounded
+                )
+            )
+
+            setPadding(32, 16, 32, 16)
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(48, 32, 48, 16)
+            gravity = Gravity.CENTER_HORIZONTAL
+            addView(spinner)
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Ordenar predicciones por")
+            .setView(container)
+            .setPositiveButton("Aplicar") { _, _ ->
+                val seleccion = spinner.selectedItem.toString()
+                applySort(seleccion)
+            }
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    this,
+                    R.drawable.bg_panel_full_rounded
+                )
+            )
+        }
+
+        dialog.show()
+    }
+
+    private fun applySort(orden: String) {
+        if (predictions.isEmpty()) return
+
+        val listaOrdenada = when (orden) {
+            "Edad" -> predictions.sortedBy { it.edad.toIntOrNull() ?: 0 }
+            "Capnometría" -> predictions.sortedBy { it.capnometria.toIntOrNull() ?: 0 }
+            "Momento" -> predictions.sortedBy {
+                val mode = it.prediction_mode
+                    ?: modeFromLabelLoose(it.momento_prediccion_legible ?: "")
+                when (mode) {
+                    MODE_BEFORE -> 0   // Antes de la RCP
+                    MODE_MID    -> 1   // A los 20 minutos
+                    MODE_AFTER  -> 2   // Después
+                    else        -> 3
+                }
+            }
+            else -> predictions
+        }
+
+        renderPredictions(listaOrdenada)
+    }
+
+    // -------------------------------------------------------------
+    // Utilidades de mapeo
+    // -------------------------------------------------------------
     private fun mapSexo(femenino: String?): String {
         val value = femenino?.trim()?.lowercase(Locale.getDefault()) ?: return ""
         return when (value) {
@@ -274,7 +394,6 @@ class MedicalProfileActivity : AppCompatActivity() {
         }
     }
 
-    // Mapea "Si"/"No", 1/0... a "Válido" / "No válido"
     private fun mapResultado(valido: String?): String {
         val value = valido?.trim()?.lowercase(Locale.getDefault()) ?: return ""
         return when (value) {
@@ -290,30 +409,25 @@ class MedicalProfileActivity : AppCompatActivity() {
     private fun toggleEditMode(enable: Boolean) {
         isEditMode = enable
 
-        // Iconos
         binding.btnEditUser.visibility =
             if (enable) android.view.View.GONE else android.view.View.VISIBLE
         binding.btnDeleteUser.visibility =
             if (enable) android.view.View.VISIBLE else android.view.View.GONE
 
-        // Botones inferior
         binding.btnSaveChanges.visibility =
             if (enable) android.view.View.VISIBLE else android.view.View.GONE
         binding.btnCancelChanges.visibility =
             if (enable) android.view.View.VISIBLE else android.view.View.GONE
 
-        // Rol: TextView vs Spinner
         binding.tvUserRole.visibility =
             if (enable) android.view.View.GONE else android.view.View.VISIBLE
         binding.spinnerRole.visibility =
             if (enable) android.view.View.VISIBLE else android.view.View.GONE
 
-        // Campos editables
         setEditable(binding.etFullName, enable)
         setEditable(binding.etEmail, enable)
         setEditable(binding.etBirthdate, enable, isDateField = true)
 
-        // El badge de estado solo se puede tocar en modo edición
         binding.tvUserStatus.isClickable = enable
     }
 
@@ -362,7 +476,7 @@ class MedicalProfileActivity : AppCompatActivity() {
     }
 
     // -------------------------------------------------------------
-    // Detectar si hay cambios sin guardar
+    // Detectar cambios
     // -------------------------------------------------------------
     private fun hasChanges(): Boolean {
         val fullName = binding.etFullName.text.toString().trim()
@@ -378,7 +492,7 @@ class MedicalProfileActivity : AppCompatActivity() {
     }
 
     // -------------------------------------------------------------
-    // Guardar cambios en Firestore
+    // Guardar cambios usuario
     // -------------------------------------------------------------
     private fun saveChanges() {
         val id = userId ?: return
@@ -407,7 +521,6 @@ class MedicalProfileActivity : AppCompatActivity() {
                 Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show()
                 binding.tvUserRole.text = roleSelected
 
-                // Actualizamos originales
                 originalRole = roleSelected
                 originalActive = currentActive
                 originalFullName = fullName
@@ -422,7 +535,7 @@ class MedicalProfileActivity : AppCompatActivity() {
     }
 
     // -------------------------------------------------------------
-    // Borrar usuario con confirmación
+    // Borrar usuario
     // -------------------------------------------------------------
     private fun confirmDeleteUser() {
         val id = userId ?: return
@@ -435,7 +548,7 @@ class MedicalProfileActivity : AppCompatActivity() {
                     .delete()
                     .addOnSuccessListener {
                         Toast.makeText(this, "Usuario eliminado", Toast.LENGTH_SHORT).show()
-                        finish()  // Volver a la lista
+                        finish()
                     }
                     .addOnFailureListener {
                         Toast.makeText(this, "Error al eliminar usuario", Toast.LENGTH_SHORT).show()
@@ -454,7 +567,7 @@ class MedicalProfileActivity : AppCompatActivity() {
     }
 
     // -------------------------------------------------------------
-    // Confirmar descarte de cambios
+    // Descartar cambios
     // -------------------------------------------------------------
     private fun confirmDiscardChanges() {
         val dialog = AlertDialog.Builder(this)
@@ -491,25 +604,19 @@ class MedicalProfileActivity : AppCompatActivity() {
 
     private fun adjustPredictionsHeight(rowCount: Int) {
         val scroll = binding.scrollPredictions
-
         val metrics = resources.displayMetrics
 
-        // Altura aproximada de cada fila en dp (ajústalo si hace falta)
         val rowHeightDp = 48f
         val rowHeightPx = (rowHeightDp * metrics.density).toInt()
 
-        // Alto deseado en función del nº de filas
         val desiredHeightPx = rowCount * rowHeightPx
-
-        // Alto máximo: por ejemplo el 40% de la pantalla
         val maxHeightPx = (metrics.heightPixels * 0.4f).toInt()
 
         val lp = scroll.layoutParams
-
-        if (rowCount == 0) {
-            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        lp.height = if (rowCount == 0) {
+            ViewGroup.LayoutParams.WRAP_CONTENT
         } else {
-            lp.height = min(desiredHeightPx, maxHeightPx)
+            min(desiredHeightPx, maxHeightPx)
         }
 
         scroll.layoutParams = lp

@@ -380,7 +380,7 @@
                                     <TextView android:text="#" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="Edad" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="Sexo" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Capnografía" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Capnometría" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="Causa cardiaca" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="Cardiocompresión" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="Rec. del pulso" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
