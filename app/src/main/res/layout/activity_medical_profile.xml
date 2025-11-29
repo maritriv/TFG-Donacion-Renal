@@ -295,7 +295,7 @@
                 app:cardUseCompatPadding="true"
                 app:cardBackgroundColor="@color/white">
 
-            <LinearLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -354,24 +354,25 @@
                             android:textColor="@color/dark_blue"/>
                     </LinearLayout>
 
-                    <!-- Tabla de predicciones con cabecera fija y filas con scroll -->
+                    <!-- Tabla de predicciones con scroll horizontal + vertical -->
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:scrollbars="horizontal">
 
-                        <LinearLayout
+                        <ScrollView
+                            android:id="@+id/scrollPredictions"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:fillViewport="true">
 
-                            <!-- CABECERA -->
                             <TableLayout
-                                android:id="@+id/tableHeader"
+                                android:id="@+id/tablePredictions"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:stretchColumns="*">
 
+                                <!-- Cabecera -->
                                 <TableRow
                                     android:background="#F0F0F0"
                                     android:padding="6dp">
@@ -387,24 +388,11 @@
                                     <TextView android:text="Resultado" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="Informe" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                 </TableRow>
+
+                                <!-- Las filas reales se añaden desde código -->
+
                             </TableLayout>
-
-                            <!-- CUERPO (FILAS) CON SCROLL VERTICAL -->
-                            <ScrollView
-                                android:id="@+id/scrollPredictions"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fillViewport="true">
-
-                                <TableLayout
-                                    android:id="@+id/tablePredictions"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:stretchColumns="*"/>
-
-                            </ScrollView>
-
-                        </LinearLayout>
+                        </ScrollView>
                     </HorizontalScrollView>
 
                 </LinearLayout>

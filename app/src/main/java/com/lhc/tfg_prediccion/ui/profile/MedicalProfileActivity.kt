@@ -176,7 +176,6 @@ class MedicalProfileActivity : AppCompatActivity() {
 
         db.collection("predicciones")
             .whereEqualTo("uid_medico", id)
-            // sin orderBy para evitar necesidad de índice compuesto
             .get()
             .addOnSuccessListener { snapshot ->
                 val docs = snapshot.documents
