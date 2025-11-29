@@ -37,7 +37,7 @@
     <string name="desc_icon_cross">Cerrar menú</string>
     <string name="quitar_archivo">Quitar archivo</string>
     <string name="editar">Editar</string>
-    <string name="eliminar">Eliminar</string>
+    <string name="cancelar">Cancelar</string>
 
 
 
@@ -100,7 +100,7 @@
     <string name="correo_ejemplo">correo@ejemplo.com</string>
     <string name="buscar_usuario_hint">Buscar usuario (nombre, apellidos o email)</string>
     <string name="sin_fecha">Sin fecha</string>
-    <string name="cancelar">Cancelar</string>
+    <string name="eliminar_usuario">Eliminar usuario</string>
 
 
 

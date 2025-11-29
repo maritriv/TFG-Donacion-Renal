@@ -107,7 +107,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
-                    <!-- Contenedor acciones (papelera + lápiz) -->
+                    <!-- Contenedor acciones (X + lápiz) -->
                     <LinearLayout
                         android:id="@+id/actionsRow"
                         android:layout_width="wrap_content"
@@ -117,14 +117,14 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
-                        <!-- Papelera (solo edición) -->
+                        <!-- X (solo edición, para salir del modo edición) -->
                         <ImageView
                             android:id="@+id/btnDeleteUser"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="8dp"
-                            android:src="@drawable/basuraic"
-                            android:contentDescription="@string/eliminar"
+                            android:src="@drawable/ic_cross"
+                            android:contentDescription="@string/cancelar"
                             android:visibility="gone"
                             app:tint="@color/dark_blue" />
 
@@ -168,9 +168,11 @@
                             android:layout_height="40dp"
                             android:layout_marginStart="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_input"
+                            android:background="@drawable/spinner_bg"
+                            android:popupBackground="@drawable/spinner_bg"
                             android:paddingLeft="16dp"
                             android:paddingRight="16dp"
+                            android:paddingVertical="8dp"
                             android:visibility="gone"/>
 
                         <!-- Separador pequeño -->
@@ -266,14 +268,14 @@
                 app:strokeWidth="1dp"
                 app:cornerRadius="50dp" />
 
-            <!-- Botón CANCELAR -->
+            <!-- Botón ELIMINAR USUARIO -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelChanges"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/cancelar"
+                android:text="@string/eliminar_usuario"
                 android:textAllCaps="false"
                 android:textColor="@color/dark_blue"
                 android:visibility="gone"
@@ -293,7 +295,7 @@
                 app:cardUseCompatPadding="true"
                 app:cardBackgroundColor="@color/white">
 
-                <LinearLayout
+            <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -310,7 +312,7 @@
                         android:textStyle="bold"
                         android:paddingBottom="4dp" />
 
-                    <!-- Línea 2: "Mostrando 10 filas   Filtrar   Exportar" -->
+                    <!-- Línea 2: "Mostrando X filas   Filtrar   Exportar" -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -318,13 +320,13 @@
                         android:gravity="center_vertical"
                         android:paddingBottom="8dp">
 
-                        <!-- Mostrando 10 filas -->
+                        <!-- Mostrando X filas -->
                         <TextView
                             android:id="@+id/tvShowingRows"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Mostrando 10 filas"
+                            android:text="Mostrando 0 filas"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
 
@@ -352,50 +354,57 @@
                             android:textColor="@color/dark_blue"/>
                     </LinearLayout>
 
-                    <!-- Tabla de predicciones -->
+                    <!-- Tabla de predicciones con cabecera fija y filas con scroll -->
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:scrollbars="horizontal">
 
-                        <TableLayout
-                            android:id="@+id/tablePredictions"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:stretchColumns="*">
+                            android:orientation="vertical">
 
-                            <!-- Cabecera -->
-                            <TableRow
-                                android:background="#F0F0F0"
-                                android:padding="6dp">
+                            <!-- CABECERA -->
+                            <TableLayout
+                                android:id="@+id/tableHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:stretchColumns="*">
 
-                                <TextView android:text="#" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Edad" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Sexo" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Capnografía" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Causa cardiaca" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Cardiocompresión" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Rec. del pulso" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Momento" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Resultado" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                <TextView android:text="Informe" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                            </TableRow>
+                                <TableRow
+                                    android:background="#F0F0F0"
+                                    android:padding="6dp">
 
-                            <!-- Fila de ejemplo -->
-                            <TableRow android:padding="6dp">
-                                <TextView android:padding="8dp" android:text="1" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="45" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="M" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="14" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="Sí" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="Sí" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="Sí" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="Antes" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="Válido" android:textSize="12sp"/>
-                                <TextView android:padding="8dp" android:text="PDF" android:textColor="@color/dark_blue" android:textStyle="bold" android:textSize="12sp"/>
-                            </TableRow>
+                                    <TextView android:text="#" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Edad" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Sexo" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Capnografía" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Causa cardiaca" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Cardiocompresión" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Rec. del pulso" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Momento" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Resultado" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="Informe" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                </TableRow>
+                            </TableLayout>
 
-                        </TableLayout>
+                            <!-- CUERPO (FILAS) CON SCROLL VERTICAL -->
+                            <ScrollView
+                                android:id="@+id/scrollPredictions"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fillViewport="true">
+
+                                <TableLayout
+                                    android:id="@+id/tablePredictions"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*"/>
+
+                            </ScrollView>
+
+                        </LinearLayout>
                     </HorizontalScrollView>
 
                 </LinearLayout>
