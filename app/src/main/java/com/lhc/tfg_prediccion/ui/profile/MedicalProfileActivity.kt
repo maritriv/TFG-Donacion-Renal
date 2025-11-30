@@ -27,6 +27,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.min
+import com.lhc.tfg_prediccion.util.PdfPrediction
+import com.lhc.tfg_prediccion.util.generatePredictionPdf
+
 
 class MedicalProfileActivity : AppCompatActivity() {
 
@@ -279,7 +282,7 @@ class MedicalProfileActivity : AppCompatActivity() {
             // Resultado
             fila.addCell(mapResultado(pred.valido))
 
-            // Informe (PDF) – por ahora solo texto
+            // Informe (PDF)
             TextView(this).apply {
                 text = "PDF"
                 textSize = 12f
@@ -291,8 +294,34 @@ class MedicalProfileActivity : AppCompatActivity() {
                         R.color.dark_blue
                     )
                 )
+
+                // Al pulsar → generar y abrir PDF
+                setOnClickListener {
+                    val doctorName = binding.etFullName.text
+                        .toString()
+                        .ifBlank { "Desconocido" }
+
+                    generatePredictionPdf(
+                        this@MedicalProfileActivity,
+                        PdfPrediction(
+                            doctorName = doctorName,
+                            fecha = pred.fecha,
+                            momentoCanonico = canonicalMoment,
+                            edad = pred.edad ?: "",
+                            femenino = pred.femenino ?: "",
+                            capnometria = pred.capnometria ?: "",
+                            causaCardiaca = pred.causa_cardiaca ?: "",
+                            cardioManual = pred.cardio_manual ?: "",
+                            recPulso = pred.rec_pulso ?: "",
+                            valido = pred.valido.equals("Si", ignoreCase = true),
+                            indice = pred.indice
+                        )
+                    )
+                }
+
                 fila.addView(this)
             }
+
 
             table.addView(fila)
             contador++
