@@ -77,6 +77,8 @@
     <string name="administradores_mayus">ADMINISTRADORES</string>
     <string name="medico">Médico</string>
     <string name="hint_nombre_apellidos">Nombre y apellidos</string>
+    <string name="hint_nombre">Nombre</string>
+    <string name="hint_apellidos">Apellidos</string>
     <string name="hint_email">Correo electrónico</string>
     <string name="hint_fecha_nacimiento">Fecha de nacimiento</string>
     <string name="mostrando_0_filas">Mostrando 0 filas</string>
