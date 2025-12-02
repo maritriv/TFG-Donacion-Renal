@@ -194,7 +194,7 @@
 
                     <!-- Nombre -->
                     <EditText
-                        android:id="@+id/etFullName"
+                        android:id="@+id/etName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -202,13 +202,29 @@
                         android:background="@android:color/transparent"
                         android:singleLine="true"
                         android:enabled="false"
-                        android:hint="@string/hint_nombre_apellidos"
+                        android:hint="@string/hint_nombre"
                         android:inputType="textPersonName"
                         android:autofillHints="name"
                         app:layout_constraintTop_toBottomOf="@id/rowRoleStatus"
                         app:layout_constraintStart_toEndOf="@id/imgAvatar"
                         app:layout_constraintEnd_toStartOf="@id/actionsRow"
                         app:layout_constraintHorizontal_bias="0.0" />
+
+                    <!-- Apellidos -->
+                    <EditText
+                        android:id="@+id/etLastname"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginStart="12dp"
+                        android:background="@android:color/transparent"
+                        android:singleLine="true"
+                        android:enabled="false"
+                        android:hint="@string/hint_apellidos"
+                        android:inputType="textPersonName"
+                        app:layout_constraintTop_toBottomOf="@id/etName"
+                        app:layout_constraintStart_toEndOf="@id/imgAvatar"
+                        app:layout_constraintEnd_toStartOf="@id/actionsRow" />
 
                     <!-- Email -->
                     <EditText
@@ -223,7 +239,7 @@
                         android:hint="@string/hint_email"
                         android:inputType="textEmailAddress"
                         android:autofillHints="emailAddress"
-                        app:layout_constraintTop_toBottomOf="@id/etFullName"
+                        app:layout_constraintTop_toBottomOf="@id/etLastname"
                         app:layout_constraintStart_toEndOf="@id/imgAvatar"
                         app:layout_constraintEnd_toStartOf="@id/actionsRow" />
 

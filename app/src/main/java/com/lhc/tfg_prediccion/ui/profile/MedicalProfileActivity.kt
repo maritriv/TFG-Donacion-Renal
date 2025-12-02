@@ -2,7 +2,6 @@ package com.lhc.tfg_prediccion.ui.profile
 
 import android.os.Bundle
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TableRow
@@ -26,7 +25,6 @@ import com.lhc.tfg_prediccion.util.PredictionCsvExporter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.min
 import com.lhc.tfg_prediccion.util.PdfPrediction
 import com.lhc.tfg_prediccion.util.generatePredictionPdf
 import android.view.View
@@ -44,7 +42,8 @@ class MedicalProfileActivity : AppCompatActivity() {
     private var originalRole: String = "Médico"
 
     // Valores originales para detectar cambios
-    private var originalFullName: String = ""
+    private var originalName: String = ""
+    private var originalLastname: String = ""
     private var originalEmail: String = ""
     private var originalBirthdate: String = ""
 
@@ -125,7 +124,7 @@ class MedicalProfileActivity : AppCompatActivity() {
 
         // Botón "Exportar"
         binding.btnExport.setOnClickListener {
-            val doctorName = binding.etFullName.text.toString()
+            val doctorName = "${binding.etName.text} ${binding.etLastname.text}".trim()
             PredictionCsvExporter.exportCsv(
                 activity = this,
                 predictions = predictions,
@@ -151,10 +150,6 @@ class MedicalProfileActivity : AppCompatActivity() {
 
                 val name = doc.getString("name").orEmpty()
                 val lastname = doc.getString("lastname").orEmpty()
-                val fullName = listOf(name, lastname)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" ")
-
                 val email = doc.getString("email").orEmpty()
                 val birthdate = doc.getString("birthdate").orEmpty()
                 val role = doc.getString("role") ?: "Médico"
@@ -168,7 +163,8 @@ class MedicalProfileActivity : AppCompatActivity() {
                     if (birthdate.isBlank()) getString(R.string.sin_fecha) else birthdate
 
                 // Rellenamos vistas
-                binding.etFullName.setText(fullName)
+                binding.etName.setText(name)
+                binding.etLastname.setText(lastname)
                 binding.etEmail.setText(email)
                 binding.etBirthdate.setText(birthdateDisplay)
 
@@ -178,7 +174,8 @@ class MedicalProfileActivity : AppCompatActivity() {
                 )
 
                 // Guardamos originales para detectar cambios
-                originalFullName = fullName
+                originalName = name
+                originalLastname = lastname
                 originalEmail = email
                 originalBirthdate = birthdateDisplay
 
@@ -305,8 +302,8 @@ class MedicalProfileActivity : AppCompatActivity() {
                 )
 
                 setOnClickListener {
-                    val doctorName = binding.etFullName.text
-                        .toString()
+                    val doctorName = "${binding.etName.text} ${binding.etLastname.text}"
+                        .trim()
                         .ifBlank { "Desconocido" }
 
                     generatePredictionPdf(
@@ -460,7 +457,8 @@ class MedicalProfileActivity : AppCompatActivity() {
         binding.spinnerRole.visibility =
             if (enable) android.view.View.VISIBLE else android.view.View.GONE
 
-        setEditable(binding.etFullName, enable)
+        setEditable(binding.etName, enable)
+        setEditable(binding.etLastname, enable)
         setEditable(binding.etEmail, enable)
         setEditable(binding.etBirthdate, enable, isDateField = true)
 
@@ -515,12 +513,14 @@ class MedicalProfileActivity : AppCompatActivity() {
     // Detectar cambios
     // -------------------------------------------------------------
     private fun hasChanges(): Boolean {
-        val fullName = binding.etFullName.text.toString().trim()
+        val name = binding.etName.text.toString().trim()
+        val lastname = binding.etLastname.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val birthdateDisplay = binding.etBirthdate.text.toString().trim()
         val role = binding.spinnerRole.selectedItem.toString()
 
-        return fullName != originalFullName ||
+        return name != originalName ||
+                lastname != originalLastname ||
                 email != originalEmail ||
                 birthdateDisplay != originalBirthdate ||
                 role != originalRole ||
@@ -533,14 +533,11 @@ class MedicalProfileActivity : AppCompatActivity() {
     private fun saveChanges() {
         val id = userId ?: return
 
-        val fullName = binding.etFullName.text.toString().trim()
+        val name = binding.etName.text.toString().trim()
+        val lastname = binding.etLastname.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val birthdate = binding.etBirthdate.text.toString().trim()
         val roleSelected = binding.spinnerRole.selectedItem.toString()
-
-        val nameParts = fullName.split(" ")
-        val name = nameParts.firstOrNull().orEmpty()
-        val lastname = nameParts.drop(1).joinToString(" ")
 
         val updates = mapOf(
             "name" to name,
@@ -559,7 +556,8 @@ class MedicalProfileActivity : AppCompatActivity() {
 
                 originalRole = roleSelected
                 originalActive = currentActive
-                originalFullName = fullName
+                originalName = name
+                originalLastname = lastname
                 originalEmail = email
                 originalBirthdate = birthdate
 
@@ -651,9 +649,9 @@ class MedicalProfileActivity : AppCompatActivity() {
 
         val lp = scroll.layoutParams
         lp.height = if (rowCount == 0) {
-            minHeightPx   // ⬅️ Usa altura mínima si no hay filas
+            minHeightPx
         } else {
-            desiredHeightPx.coerceIn(minHeightPx, maxHeightPx) // ⬅️ Entre mínimo y máximo
+            desiredHeightPx.coerceIn(minHeightPx, maxHeightPx)
         }
 
         scroll.layoutParams = lp
