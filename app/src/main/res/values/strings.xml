@@ -75,6 +75,13 @@
     <string name="perfil_del_usuario">Perfil del Usuario</string>
     <string name="medicos_mayus">MÉDICOS</string>
     <string name="administradores_mayus">ADMINISTRADORES</string>
+    <string name="medico">Médico</string>
+    <string name="hint_nombre_apellidos">Nombre y apellidos</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="mostrando_0_filas">Mostrando 0 filas</string>
+    <string name="no_hay_predicciones">No hay predicciones aún</string>
+
 
     <!-- Botones -->
     <string name="entrar">Entrar</string>
@@ -101,6 +108,8 @@
     <string name="buscar_usuario_hint">Buscar usuario (nombre, apellidos o email)</string>
     <string name="sin_fecha">Sin fecha</string>
     <string name="eliminar_usuario">Eliminar usuario</string>
+    <string name="filtrar">Filtrar</string>
+    <string name="exportar">Exportar</string>
 
 
 
@@ -133,6 +142,18 @@
         "Después del procedimiento de RCP".\n
         • Para los campos Sí/No utiliza: 1 = Sí, 0 = No.
     </string>
+
+    <!-- Cabecera -->
+    <string name="header_numero">#</string>
+    <string name="header_edad">Edad</string>
+    <string name="header_sexo">Sexo</string>
+    <string name="header_capnometria">Capnometría</string>
+    <string name="header_causa_cardiaca">Causa cardiaca</string>
+    <string name="header_cardiocomp">Cardiocompresión</string>
+    <string name="header_rec_pulso">Rec. del pulso</string>
+    <string name="header_momento">Momento</string>
+    <string name="header_resultado">Resultado</string>
+    <string name="header_informe">Informe</string>
 
 
 

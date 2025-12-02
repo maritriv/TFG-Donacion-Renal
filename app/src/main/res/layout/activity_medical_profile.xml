@@ -2,10 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/beige"
-    android:padding="16dp">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    tools:ignore="TooDeepLayout">
 
     <!-- Fila VOLVER (flecha + texto) -->
     <LinearLayout
@@ -17,6 +20,7 @@
         android:paddingBottom="8dp"
         android:clickable="true"
         android:focusable="true"
+        android:layout_marginStart="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -39,11 +43,9 @@
     <!-- Barra azul tipo toolbar -->
     <LinearLayout
         android:id="@+id/profileToolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="-16dp"
-        android:layout_marginEnd="-16dp"
         android:background="@color/dark_blue"
         android:gravity="center"
         android:orientation="horizontal"
@@ -67,6 +69,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/profileToolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -156,10 +160,10 @@
                             android:id="@+id/tvUserRole"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Médico"
                             android:textColor="@color/dark_blue"
                             android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            tools:text="@string/medico" />
 
                         <!-- Spinner de rol (edición) -->
                         <Spinner
@@ -174,7 +178,6 @@
                             android:paddingRight="16dp"
                             android:paddingVertical="8dp"
                             android:visibility="gone"/>
-
                         <!-- Separador pequeño -->
                         <View
                             android:layout_width="8dp"
@@ -201,13 +204,12 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginStart="12dp"
-                        android:text="Nombre Apellidos"
-                        android:textColor="@color/dark_blue"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
                         android:background="@android:color/transparent"
                         android:singleLine="true"
                         android:enabled="false"
+                        android:hint="@string/hint_nombre_apellidos"
+                        android:inputType="textPersonName"
+                        android:autofillHints="name"
                         app:layout_constraintTop_toBottomOf="@id/rowRoleStatus"
                         app:layout_constraintStart_toEndOf="@id/imgAvatar"
                         app:layout_constraintEnd_toStartOf="@id/actionsRow"
@@ -220,12 +222,12 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:layout_marginStart="12dp"
-                        android:text="usuario@ejemplo.com"
-                        android:textColor="@color/grey"
-                        android:textSize="14sp"
                         android:background="@android:color/transparent"
                         android:singleLine="true"
                         android:enabled="false"
+                        android:hint="@string/hint_email"
+                        android:inputType="textEmailAddress"
+                        android:autofillHints="emailAddress"
                         app:layout_constraintTop_toBottomOf="@id/etFullName"
                         app:layout_constraintStart_toEndOf="@id/imgAvatar"
                         app:layout_constraintEnd_toStartOf="@id/actionsRow" />
@@ -238,14 +240,14 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:layout_marginStart="12dp"
-                        android:text="Fecha de nacimiento: 01/01/1980"
-                        android:textColor="@color/grey"
-                        android:textSize="14sp"
                         android:background="@android:color/transparent"
                         android:singleLine="true"
                         android:clickable="false"
                         android:focusable="false"
                         android:enabled="false"
+                        android:hint="@string/hint_fecha_nacimiento"
+                        android:inputType="date"
+                        android:autofillHints="birthday"
                         app:layout_constraintTop_toBottomOf="@id/etEmail"
                         app:layout_constraintStart_toEndOf="@id/imgAvatar"
                         app:layout_constraintEnd_toStartOf="@id/actionsRow"
@@ -326,9 +328,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Mostrando 0 filas"
                             android:textColor="@color/grey"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            tools:text="@string/mostrando_0_filas" />
 
                         <!-- Botón Filtrar -->
                         <TextView
@@ -338,7 +340,7 @@
                             android:layout_marginEnd="8dp"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="4dp"
-                            android:text="Filtrar"
+                            android:text="@string/filtrar"
                             android:textSize="12sp"
                             android:textColor="@color/dark_blue"/>
 
@@ -349,7 +351,7 @@
                             android:layout_height="wrap_content"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="4dp"
-                            android:text="Exportar"
+                            android:text="@string/exportar"
                             android:textSize="12sp"
                             android:textColor="@color/dark_blue"/>
                     </LinearLayout>
@@ -364,7 +366,8 @@
                             android:id="@+id/scrollPredictions"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fillViewport="true">
+                            android:fillViewport="true"
+                            tools:ignore="NestedScrolling">
 
                             <TableLayout
                                 android:id="@+id/tablePredictions"
@@ -372,28 +375,37 @@
                                 android:layout_height="wrap_content"
                                 android:stretchColumns="*">
 
-                                <!-- Cabecera -->
                                 <TableRow
                                     android:background="#F0F0F0"
                                     android:padding="6dp">
 
-                                    <TextView android:text="#" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Edad" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Sexo" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Capnometría" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Causa cardiaca" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Cardiocompresión" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Rec. del pulso" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Momento" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Resultado" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="Informe" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_numero"          android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_edad"            android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_sexo"            android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_capnometria"     android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_causa_cardiaca" android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_cardiocomp"     android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_rec_pulso"      android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_momento"        android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_resultado"      android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+                                    <TextView android:text="@string/header_informe"        android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                 </TableRow>
 
-                                <!-- Las filas reales se añaden desde código -->
-
+                                <!-- Filas desde código -->
                             </TableLayout>
                         </ScrollView>
                     </HorizontalScrollView>
+
+                    <TextView
+                        android:id="@+id/tvNoPredictions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/no_hay_predicciones"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        android:gravity="center"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

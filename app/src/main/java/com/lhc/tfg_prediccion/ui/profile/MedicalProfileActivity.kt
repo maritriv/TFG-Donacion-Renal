@@ -29,6 +29,7 @@ import java.util.Locale
 import kotlin.math.min
 import com.lhc.tfg_prediccion.util.PdfPrediction
 import com.lhc.tfg_prediccion.util.generatePredictionPdf
+import android.view.View
 
 
 class MedicalProfileActivity : AppCompatActivity() {
@@ -226,6 +227,14 @@ class MedicalProfileActivity : AppCompatActivity() {
 
         binding.tvShowingRows.text = "Mostrando ${list.size} filas"
 
+        // --- Mensaje "No hay predicciones aún" ---
+        if (list.isEmpty()) {
+            binding.tvNoPredictions.visibility = View.VISIBLE
+            return
+        } else {
+            binding.tvNoPredictions.visibility = View.GONE
+        }
+
         var contador = 1
         val params = TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
@@ -256,24 +265,24 @@ class MedicalProfileActivity : AppCompatActivity() {
             fila.addCell(contador.toString())
 
             // Edad
-            fila.addCell(pred.edad)
+            fila.addCell(pred.edad ?: "")
 
             // Sexo
             fila.addCell(mapSexo(pred.femenino))
 
             // Capnometría
-            fila.addCell(pred.capnometria)
+            fila.addCell(pred.capnometria ?: "")
 
             // Causa cardiaca
-            fila.addCell(pred.causa_cardiaca)
+            fila.addCell(pred.causa_cardiaca ?: "")
 
             // Cardiocompresión
-            fila.addCell(pred.cardio_manual)
+            fila.addCell(pred.cardio_manual ?: "")
 
             // Rec. del pulso
-            fila.addCell(pred.rec_pulso)
+            fila.addCell(pred.rec_pulso ?: "")
 
-            // Momento — SIEMPRE frase canónica, por defecto "Después del procedimiento de RCP"
+            // Momento — SIEMPRE frase canónica
             val mode = pred.prediction_mode
                 ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
             val canonicalMoment = modeToLabel(mode)
@@ -295,7 +304,6 @@ class MedicalProfileActivity : AppCompatActivity() {
                     )
                 )
 
-                // Al pulsar → generar y abrir PDF
                 setOnClickListener {
                     val doctorName = binding.etFullName.text
                         .toString()
@@ -322,13 +330,12 @@ class MedicalProfileActivity : AppCompatActivity() {
                 fila.addView(this)
             }
 
-
             table.addView(fila)
             contador++
         }
-
         adjustPredictionsHeight(list.size)
     }
+
 
     // -------------------------------------------------------------
     // Filtro / Ordenar
@@ -639,13 +646,14 @@ class MedicalProfileActivity : AppCompatActivity() {
         val rowHeightPx = (rowHeightDp * metrics.density).toInt()
 
         val desiredHeightPx = rowCount * rowHeightPx
-        val maxHeightPx = (metrics.heightPixels * 0.4f).toInt()
+        val maxHeightPx = (metrics.heightPixels * 0.5f).toInt()
+        val minHeightPx = (metrics.heightPixels * 0.25f).toInt()
 
         val lp = scroll.layoutParams
         lp.height = if (rowCount == 0) {
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            minHeightPx   // ⬅️ Usa altura mínima si no hay filas
         } else {
-            min(desiredHeightPx, maxHeightPx)
+            desiredHeightPx.coerceIn(minHeightPx, maxHeightPx) // ⬅️ Entre mínimo y máximo
         }
 
         scroll.layoutParams = lp
