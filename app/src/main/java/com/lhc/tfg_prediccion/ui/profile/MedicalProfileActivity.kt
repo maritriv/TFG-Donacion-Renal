@@ -459,8 +459,8 @@ class MedicalProfileActivity : AppCompatActivity() {
 
         setEditable(binding.etName, enable)
         setEditable(binding.etLastname, enable)
-        setEditable(binding.etEmail, enable)
-        setEditable(binding.etBirthdate, enable, isDateField = true)
+        setEditable(binding.etEmail, enable, isSecondary = true)
+        setEditable(binding.etBirthdate, enable, isDateField = true, isSecondary = true)
 
         binding.tvUserStatus.isClickable = enable
     }
@@ -468,19 +468,22 @@ class MedicalProfileActivity : AppCompatActivity() {
     private fun setEditable(
         editText: android.widget.EditText,
         editable: Boolean,
-        isDateField: Boolean = false
+        isDateField: Boolean = false,
+        isSecondary: Boolean = false
     ) {
         editText.isEnabled = editable
         editText.isFocusable = editable && !isDateField
         editText.isFocusableInTouchMode = editable && !isDateField
         editText.isClickable = editable && isDateField
 
+        val colorRes = if (isSecondary) R.color.grey else R.color.dark_blue
+
         if (editable) {
             editText.setBackgroundResource(R.drawable.bg_input)
-            editText.setTextColor(getColor(R.color.dark_blue))
+            editText.setTextColor(getColor(colorRes))
         } else {
             editText.setBackgroundResource(android.R.color.transparent)
-            editText.setTextColor(getColor(R.color.dark_blue))
+            editText.setTextColor(getColor(colorRes))
         }
     }
 
