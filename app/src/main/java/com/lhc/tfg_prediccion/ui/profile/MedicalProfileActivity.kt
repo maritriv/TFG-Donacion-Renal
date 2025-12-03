@@ -479,7 +479,7 @@ class MedicalProfileActivity : AppCompatActivity() {
         val colorRes = if (isSecondary) R.color.grey else R.color.dark_blue
 
         if (editable) {
-            editText.setBackgroundResource(R.drawable.bg_input)
+            editText.setBackgroundResource(R.drawable.bg_profile_input)
             editText.setTextColor(getColor(colorRes))
         } else {
             editText.setBackgroundResource(android.R.color.transparent)
