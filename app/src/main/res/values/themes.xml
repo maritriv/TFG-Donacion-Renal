@@ -4,7 +4,7 @@
     <style name="Theme.RenalDCD" parent="Theme.Material3.Light.NoActionBar">
 
         <!-- Colores principales de tu app -->
-        <item name="colorPrimary">@color/mid_blue</item>
+        <item name="colorPrimary">@color/dark_blue</item>
         <item name="colorPrimaryContainer">@color/dark_blue</item>
         <item name="colorOnPrimary">@color/white</item>
 

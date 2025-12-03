@@ -1,16 +1,40 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Tfg_prediccion" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+
+    <!-- TEMA PRINCIPAL NOCHE -->
+    <style name="Theme.RenalDCD" parent="Theme.Material3.Dark.NoActionBar">
+
+        <!-- Colores principales (barra superior, botones, acentos) -->
+        <item name="colorPrimary">@color/light_blue</item>
+        <item name="colorPrimaryContainer">@color/light_black</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Colores secundarios (chips, botones secundarios, etc.) -->
+        <item name="colorSecondary">@color/light_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Fondos generales -->
+        <item name="colorOnBackground">@color/white</item>
+
+        <!-- Tarjetas / paneles -->
+        <item name="colorSurface">@color/light_black</item>
+        <item name="colorOnSurface">@color/white</item>
+
+        <!-- Barra de estado y navegación -->
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+
+        <!-- Iconos claros en status bar -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Sin action bar antigua -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
     </style>
+
+    <!-- TEMA SOLO PARA SPLASH EN NOCHE (igual que antes) -->
+    <style name="Theme.RenalDCD.Splash" parent="Theme.RenalDCD">
+        <item name="android:windowBackground">@color/dark_blue</item>
+    </style>
+
 </resources>
