@@ -76,6 +76,7 @@
     <string name="medicos_mayus">MÉDICOS</string>
     <string name="administradores_mayus">ADMINISTRADORES</string>
     <string name="medico">Médico</string>
+    <string name="administrador">Administrador</string>
     <string name="hint_nombre_apellidos">Nombre y apellidos</string>
     <string name="hint_nombre">Nombre</string>
     <string name="hint_apellidos">Apellidos</string>
