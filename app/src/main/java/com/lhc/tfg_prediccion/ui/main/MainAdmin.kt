@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityMainadminBinding
+import com.lhc.tfg_prediccion.ui.profile.AdminPredictionsActivity
 import com.lhc.tfg_prediccion.ui.edit.EditProfileActivity
 import com.lhc.tfg_prediccion.ui.login.LoginActivity
 import com.lhc.tfg_prediccion.ui.control.ViewUsersActivity
@@ -150,8 +151,8 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         }
 
         binding.btnViewPredictions.setOnClickListener {
-            // Más adelante aquí abriremos el historial global de predicciones
-            Toast.makeText(this, "Ver predicciones (pendiente implementar)", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, AdminPredictionsActivity::class.java)
+            startActivity(intent)
         }
 
     }

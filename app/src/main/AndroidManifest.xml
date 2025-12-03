@@ -45,6 +45,8 @@
         <activity android:name=".ui.control.ViewUsersActivity" android:exported="false" />
         <activity android:name=".ui.profile.MedicalProfileActivity" android:exported="false" android:parentActivityName=".ui.control.ViewUsersActivity" />
         <activity android:name=".ui.profile.AdminProfileActivity" android:exported="false" android:parentActivityName=".ui.control.ViewUsersActivity" />
+        <activity android:name=".ui.profile.AdminPredictionsActivity" android:exported="false" />
+
 
     </application>
 </manifest>
