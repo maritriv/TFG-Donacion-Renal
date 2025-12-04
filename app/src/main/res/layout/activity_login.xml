@@ -139,12 +139,25 @@
                     android:textCursorDrawable="@drawable/custom_cursor"/>
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/has_olvidado_tu_contraseña"
+                android:textSize="13sp"
+                android:textColor="@color/dark_blue"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"/>
+
+
             <!-- Botón Entrar -->
             <Button
                 android:id="@+id/login"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/entrar"
                 android:textAllCaps="false"
                 android:textStyle="bold"

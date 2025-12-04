@@ -68,6 +68,7 @@
     <!-- Títulos -->
     <string name="bienbenido_a">¡BIENVENIDO/A!</string>
     <string name="inicio_de_sesion">Inicio de Sesión</string>
+    <string name="has_olvidado_tu_contraseña">¿Has olvidado tu contraseña?</string>
     <string name="frase_inicio">Ya puedes realizar tus predicciones</string>
     <string name="registro">Registro</string>
     <string name="editar_perfil">Editar perfil</string>
@@ -130,6 +131,13 @@
     <!-- Errores -->
     <string name="err_android10">Necesita Android 10 o superior</string>
     <string name="login_incorrect">Usuario y/o contraseña incorrecto</string>
+    <string name="error_email_required_reset">Introduce tu email para recuperar la contraseña</string>
+    <string name="reset_password_title">Restablecer contraseña</string>
+    <string name="reset_password_message">Te enviaremos un correo a %1$s con instrucciones para restablecer tu contraseña.</string>
+    <string name="reset_password_send">Enviar correo</string>
+    <string name="reset_password_email_sent">Hemos enviado un correo para restablecer tu contraseña.</string>
+    <string name="reset_password_error">No se ha podido enviar el correo. Inténtalo de nuevo.</string>
+
 
     <!-- Texto de ayuda -->
     <string name="csv_help_body">

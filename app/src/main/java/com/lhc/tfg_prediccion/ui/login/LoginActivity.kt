@@ -1,25 +1,27 @@
 package com.lhc.tfg_prediccion.ui.login
 
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
-import android.content.Intent
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.lhc.tfg_prediccion.databinding.ActivityLoginBinding
 import com.lhc.tfg_prediccion.R
+import com.lhc.tfg_prediccion.databinding.ActivityLoginBinding
 import com.lhc.tfg_prediccion.ui.main.MainActivity
 import com.lhc.tfg_prediccion.ui.main.MainAdmin
 import com.lhc.tfg_prediccion.ui.register.RegisterActivity
+import androidx.core.content.ContextCompat
 
 class LoginActivity : AppCompatActivity() {
 
@@ -41,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
 
+        // ---------- Validación de formulario ----------
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
@@ -54,6 +57,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
+        // ---------- Resultado del login ----------
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
@@ -67,6 +71,7 @@ class LoginActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK)
         })
 
+        // ---------- Listeners de texto ----------
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
                 username.text.toString(),
@@ -93,6 +98,7 @@ class LoginActivity : AppCompatActivity() {
                 false
             }
 
+            // Botón "Entrar"
             login.setOnClickListener {
                 val userText = username.text.toString().trim()
                 val passwText = password.text.toString().trim()
@@ -112,11 +118,63 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        // ---------- ¿Has olvidado tu contraseña? ----------
+        binding.tvForgotPassword?.setOnClickListener {
+            val email = binding.username.text.toString().trim()
+
+            if (email.isEmpty()) {
+                binding.username.error = getString(R.string.error_email_required_reset)
+                binding.username.requestFocus()
+            } else {
+                showForgotPasswordDialog(email)
+            }
+        }
+
+        // ---------- Ir a registro ----------
         binding.registerButton?.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
     }
+
+    // -------------------------------------------------------------
+    // Diálogo y lógica de recuperación de contraseña
+    // -------------------------------------------------------------
+    private fun showForgotPasswordDialog(email: String) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.reset_password_title))
+            .setMessage(getString(R.string.reset_password_message, email))
+            .setPositiveButton(getString(R.string.reset_password_send)) { _, _ ->
+                FirebaseAuth.getInstance()
+                    .sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(
+                                this,
+                                getString(R.string.reset_password_email_sent),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this,
+                                getString(R.string.reset_password_error),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(
+                ContextCompat.getDrawable(this, R.drawable.bg_panel_full_rounded)
+            )
+        }
+
+        dialog.show()
+    }
+
 
     /**
      * Comprobamos el campo "active" en Firestore
