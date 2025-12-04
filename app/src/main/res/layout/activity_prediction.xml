@@ -4,249 +4,253 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_blue">
+    android:background="@color/beige">
 
-    <!-- Scroll general para que el panel pueda desplazarse si hay muchos campos -->
-    <ScrollView
-        android:id="@+id/scroll_form"
+    <!-- CARD PRINCIPAL BLANCA, ESTILO REGISTRO -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_form"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_margin="14dp"
+        app:cardCornerRadius="26dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"
-        android:fillViewport="true">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- PANEL BLANCO REDONDO (como en REGISTRO) -->
-        <LinearLayout
-            android:id="@+id/panel_form"
+        <!-- Scroll general dentro de la card -->
+        <ScrollView
+            android:id="@+id/scroll_form"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp"
-            android:background="@drawable/bg_panel_full_rounded"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:fillViewport="true">
 
-            app:layout_constraintVertical_bias="0.5">
-
-            <!-- Fila “Volver” (icono + texto) -->
+            <!-- CONTENIDO DEL FORMULARIO (IGUAL QUE TU CÓDIGO) -->
             <LinearLayout
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
+                android:id="@+id/panel_form"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingBottom="8dp"
-                android:clickable="true"
-                android:focusable="true">
+                android:orientation="vertical"
+                android:padding="20dp">
 
-                <ImageView
-                    android:id="@+id/btnBackForm"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_arrow_back_24"
-                    android:contentDescription="@string/navigation_drawer_close"
-                    app:tint="@color/dark_blue" />
+                <!-- Fila “Volver” (icono + texto) -->
+                <LinearLayout
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="8dp"
+                    android:clickable="true"
+                    android:focusable="true">
 
+                    <ImageView
+                        android:id="@+id/btnBackForm"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_arrow_back_24"
+                        android:contentDescription="@string/navigation_drawer_close"
+                        app:tint="@color/dark_blue" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="  Volver"
+                        android:textColor="@color/dark_blue"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <!-- TÍTULO -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="  Volver"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="Formulario"
                     android:textColor="@color/dark_blue"
-                    android:textSize="16sp"/>
+                    android:textSize="34sp"
+                    android:textStyle="bold" />
+
+                <!-- EDAD -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="Edad"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundMode="filled">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_edad"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- SEXO -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Sexo"
+                    android:textColor="@color/dark_blue"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/sp_sexo_femenino"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/camposform"
+                        android:popupBackground="@drawable/camposform" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/arrow_down_ic"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </RelativeLayout>
+
+                <!-- CAPNOMETRÍA -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_capnometria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundMode="filled">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_capnometria"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- CAUSA CARDIACA -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="¿Causa Cardiaca?"
+                    android:textColor="@color/dark_blue"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/sp_causa_cardiaca"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:popupBackground="@drawable/camposform" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/arrow_down_ic"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </RelativeLayout>
+
+                <!-- CARDIOCOMPRESIÓN EXTRAHOSPITALARIA -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="¿Cardiocompresión extrahospitalaria?"
+                    android:textColor="@color/dark_blue"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/sp_cardio_manual"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:popupBackground="@drawable/camposform" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/arrow_down_ic"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </RelativeLayout>
+
+                <!-- RECUPERACIÓN CIRCULACIÓN -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="¿Recuperación de la circulación?"
+                    android:textColor="@color/dark_blue"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/sp_recuperacion"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:popupBackground="@drawable/camposform" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/arrow_down_ic"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </RelativeLayout>
+
+                <!-- BOTÓN REALIZAR PREDICCIÓN -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_predic"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="24dp"
+                    android:text="REALIZAR PREDICCIÓN"
+                    android:textColor="@color/beige"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    app:backgroundTint="@color/dark_blue"
+                    app:cornerRadius="50dp" />
+
+                <!-- Un poco de espacio al final -->
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp" />
+
             </LinearLayout>
 
-            <!-- TÍTULO -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="12dp"
-                android:text="Formulario"
-                android:textColor="@color/dark_blue"
-                android:textSize="34sp"
-                android:textStyle="bold" />
+        </ScrollView>
 
-            <!-- ====== CONTENIDO DEL FORMULARIO (tus campos originales) ====== -->
-
-            <!-- EDAD -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="8dp"
-                android:hint="Edad"
-                app:boxStrokeWidth="0dp"
-                app:boxBackgroundMode="filled">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_edad"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/camposform"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- SEXO -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="Sexo"
-                android:textColor="@color/dark_blue"
-                android:textSize="16sp" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Spinner
-                    android:id="@+id/sp_sexo_femenino"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/camposform"
-                    android:popupBackground="@drawable/camposform" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/arrow_down_ic"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
-
-            <!-- CAPNOMETRÍA -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_capnometria"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:boxStrokeWidth="0dp"
-                app:boxBackgroundMode="filled">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_capnometria"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/camposform"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- CAUSA CARDIACA -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="¿Causa Cardiaca?"
-                android:textColor="@color/dark_blue"
-                android:textSize="16sp" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Spinner
-                    android:id="@+id/sp_causa_cardiaca"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/camposform"
-                    android:popupBackground="@drawable/camposform" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/arrow_down_ic"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
-
-            <!-- CARDIOCOMPRESIÓN EXTRAHOSPITALARIA -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="¿Cardiocompresión extrahospitalaria?"
-                android:textColor="@color/dark_blue"
-                android:textSize="16sp" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Spinner
-                    android:id="@+id/sp_cardio_manual"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/camposform"
-                    android:popupBackground="@drawable/camposform" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/arrow_down_ic"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
-
-            <!-- RECUPERACIÓN CIRCULACIÓN -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="¿Recuperación de la circulación?"
-                android:textColor="@color/dark_blue"
-                android:textSize="16sp" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Spinner
-                    android:id="@+id/sp_recuperacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/camposform"
-                    android:popupBackground="@drawable/camposform" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/arrow_down_ic"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
-
-            <!-- BOTÓN REALIZAR PREDICCIÓN -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_predic"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="24dp"
-                android:text="REALIZAR PREDICCIÓN"
-                android:textColor="@color/beige"
-                android:textSize="16sp"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/dark_blue"
-                app:cornerRadius="50dp" />
-
-            <!-- Un poco de espacio al final -->
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="24dp" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
