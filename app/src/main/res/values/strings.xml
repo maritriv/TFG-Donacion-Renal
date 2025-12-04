@@ -111,6 +111,7 @@
     <string name="buscar_usuario_hint">Buscar usuario (nombre, apellidos o email)</string>
     <string name="sin_fecha">Sin fecha</string>
     <string name="eliminar_usuario">Eliminar usuario</string>
+    <string name="ordenar">Ordenar</string>
     <string name="filtrar">Filtrar</string>
     <string name="exportar">Exportar</string>
 

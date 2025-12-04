@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- EDAD -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edad"
+            android:textStyle="bold"
+            android:paddingBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etEdadMin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number"
+                android:hint="Mín." />
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/etEdadMax"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number"
+                android:hint="Máx." />
+        </LinearLayout>
+
+        <!-- SEXO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sexo"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spSexo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_dropdown_bg"
+            android:popupBackground="@drawable/spinner_dropdown_bg"/>
+
+        <!-- CAPNOMETRÍA -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capnometría"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etCapnoMin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number"
+                android:hint="Mín." />
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/etCapnoMax"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number"
+                android:hint="Máx." />
+        </LinearLayout>
+
+        <!-- CAUSA CARDIACA -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Causa cardiaca"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spCausaCardiaca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_dropdown_bg"
+            android:popupBackground="@drawable/spinner_dropdown_bg"/>
+
+        <!-- CARDIOCOMPRESIÓN MANUAL -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cardiocompresión manual"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spCardioManual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_dropdown_bg"
+            android:popupBackground="@drawable/spinner_dropdown_bg"/>
+
+        <!-- RECUPERACIÓN PULSO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recuperación pulso"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spRecPulso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_dropdown_bg"
+            android:popupBackground="@drawable/spinner_dropdown_bg"/>
+
+        <!-- RESULTADO VÁLIDO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resultado"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spValido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_dropdown_bg"
+            android:popupBackground="@drawable/spinner_dropdown_bg"/>
+
+    </LinearLayout>
+</ScrollView>
