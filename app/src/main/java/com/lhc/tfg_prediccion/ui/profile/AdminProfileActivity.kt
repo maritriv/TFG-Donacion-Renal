@@ -193,12 +193,25 @@ class AdminProfileActivity : AppCompatActivity() {
 
         val colorRes = if (isSecondary) R.color.grey else R.color.dark_blue
 
+        // padding en dp cuando está en modo edición
+        val horizontalPadding = (16 * resources.displayMetrics.density).toInt()
+        val verticalPadding = (8 * resources.displayMetrics.density).toInt()
+
         if (editable) {
             editText.setBackgroundResource(R.drawable.bg_profile_input)
             editText.setTextColor(getColor(colorRes))
+            // damos padding explícito en modo edición
+            editText.setPadding(
+                horizontalPadding,
+                verticalPadding,
+                horizontalPadding,
+                verticalPadding
+            )
         } else {
             editText.setBackgroundResource(android.R.color.transparent)
             editText.setTextColor(getColor(colorRes))
+            // quitamos padding para volver al estado inicial
+            editText.setPadding(0, 0, 0, 0)
         }
     }
 

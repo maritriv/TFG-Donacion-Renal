@@ -121,7 +121,7 @@
                         android:textSize="12sp"
                         tools:text="@string/mostrando_0_filas" />
 
-                    <!-- NUEVO BOTÓN ORDENAR -->
+                    <!-- Botón Ordenar -->
                     <TextView
                         android:id="@+id/btnSort"
                         android:layout_width="wrap_content"
@@ -133,6 +133,7 @@
                         android:textColor="@color/dark_blue"
                         android:textSize="12sp"/>
 
+                    <!-- Botón Filtrar -->
                     <TextView
                         android:id="@+id/btnFilter"
                         android:layout_width="wrap_content"
@@ -144,6 +145,7 @@
                         android:textColor="@color/dark_blue"
                         android:textSize="12sp"/>
 
+                    <!-- Botón Exportar -->
                     <TextView
                         android:id="@+id/btnExport"
                         android:layout_width="wrap_content"
