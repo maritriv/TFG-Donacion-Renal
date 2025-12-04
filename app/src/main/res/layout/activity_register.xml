@@ -4,302 +4,313 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_blue">
+    android:background="@color/beige">
 
-    <!-- Panel blanco principal -->
-    <LinearLayout
+    <!-- TARJETA BLANCA PRINCIPAL (CardView) -->
+    <androidx.cardview.widget.CardView
         android:id="@+id/panel_register"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="20dp"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:background="@drawable/bg_panel_full_rounded"
+        android:layout_margin="18dp"
+        app:cardCornerRadius="26dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Volver -->
+        <!-- CONTENIDO INTERNO -->
         <LinearLayout
-            android:id="@+id/backRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:gravity="center_vertical"
-            android:paddingBottom="8dp"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_back_24"
-                android:contentDescription="@string/desc_back"
-                app:tint="@color/dark_blue" />
+            <!-- Volver -->
+            <LinearLayout
+                android:id="@+id/backRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center_vertical"
+                android:paddingBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
 
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_back_24"
+                    android:contentDescription="@string/desc_back"
+                    app:tint="@color/dark_blue" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/volver"
+                    android:textColor="@color/dark_blue"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/tvTitleRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/registro"
+                android:textColor="@color/dark_blue"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Nombre -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_person_24"
+                    android:contentDescription="@string/desc_icon_person"
+                    app:tint="@color/dark_blue" />
+
+                <EditText
+                    android:id="@+id/name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:hint="@string/nombre"
+                    android:autofillHints="name"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/dark_blue"
+                    android:textColorHint="@color/dark_blue"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/custom_cursor"/>
+            </LinearLayout>
+
+            <!-- Apellidos -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_person_24"
+                    android:contentDescription="@string/desc_icon_person"
+                    app:tint="@color/dark_blue" />
+
+                <EditText
+                    android:id="@+id/lastname"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:hint="@string/apellidos"
+                    android:autofillHints="name"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/dark_blue"
+                    android:textColorHint="@color/dark_blue"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/custom_cursor"/>
+            </LinearLayout>
+
+            <!-- Fecha nacimiento -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_calendar_24"
+                    android:contentDescription="@string/desc_icon_calendar"
+                    app:tint="@color/dark_blue" />
+
+                <EditText
+                    android:id="@+id/birthdate"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:hint="@string/hint_fecha_nacimiento"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:autofillHints="birthday"
+                    android:textColor="@color/dark_blue"
+                    android:textColorHint="@color/dark_blue"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/custom_cursor"/>
+            </LinearLayout>
+
+            <!-- Email -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_email_24"
+                    android:contentDescription="@string/desc_icon_email"
+                    app:tint="@color/dark_blue" />
+
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:hint="@string/correo_electronico"
+                    android:inputType="textEmailAddress"
+                    android:autofillHints="emailAddress"
+                    android:textColor="@color/dark_blue"
+                    android:textColorHint="@color/dark_blue"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/custom_cursor"/>
+            </LinearLayout>
+
+            <!-- Contraseña -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_lock_24"
+                    android:contentDescription="@string/desc_icon_lock"
+                    app:tint="@color/dark_blue" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:hint="@string/contrasena"
+                    android:inputType="textPassword"
+                    android:autofillHints="password"
+                    android:textColor="@color/dark_blue"
+                    android:textColorHint="@color/dark_blue"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/custom_cursor"/>
+            </LinearLayout>
+
+            <!-- Confirmar Contraseña -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_lock_24"
+                    android:contentDescription="@string/desc_icon_lock"
+                    app:tint="@color/dark_blue" />
+
+                <EditText
+                    android:id="@+id/confirm_password"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:hint="@string/confirmar_contrasena"
+                    android:inputType="textPassword"
+                    android:autofillHints="password"
+                    android:textColor="@color/dark_blue"
+                    android:textColorHint="@color/dark_blue"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/custom_cursor"/>
+            </LinearLayout>
+
+            <!-- Selector de rol -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/volver"
+                android:layout_marginTop="14dp"
+                android:text="@string/selecciona_tu_rol"
+                android:textStyle="bold"
                 android:textColor="@color/dark_blue"
                 android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_arrow_drop_down_24"
+                    android:rotation="180"
+                    android:contentDescription="@string/desc_icon_dropdown"
+                    app:tint="@color/dark_blue" />
+
+                <Spinner
+                    android:id="@+id/role_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:spinnerMode="dropdown"
+                    android:background="@android:color/transparent"
+                    android:popupBackground="@drawable/spinner_dropdown_bg"/>
+            </LinearLayout>
+
+            <!-- Botón Registrarse -->
+            <Button
+                android:id="@+id/register_button"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:text="@string/registrarse"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_button_primary"/>
         </LinearLayout>
 
-        <!-- Título -->
-        <TextView
-            android:id="@+id/tvTitleRegister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/registro"
-            android:textColor="@color/dark_blue"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
-
-        <!-- Nombre -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="8dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_person_24"
-                android:contentDescription="@string/desc_icon_person"
-                app:tint="@color/dark_blue" />
-
-            <EditText
-                android:id="@+id/name"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:hint="@string/nombre"
-                android:autofillHints="name"
-                android:inputType="textPersonName"
-                android:textColor="@color/dark_blue"
-                android:textColorHint="@color/dark_blue"
-                android:background="@android:color/transparent"
-                android:textCursorDrawable="@drawable/custom_cursor"/>
-        </LinearLayout>
-
-        <!-- Apellidos -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_person_24"
-                android:contentDescription="@string/desc_icon_person"
-                app:tint="@color/dark_blue" />
-
-            <EditText
-                android:id="@+id/lastname"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:hint="@string/apellidos"
-                android:autofillHints="name"
-                android:inputType="textPersonName"
-                android:textColor="@color/dark_blue"
-                android:textColorHint="@color/dark_blue"
-                android:background="@android:color/transparent"
-                android:textCursorDrawable="@drawable/custom_cursor"/>
-        </LinearLayout>
-
-        <!-- Fecha nacimiento -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_calendar_24"
-                android:contentDescription="@string/desc_icon_calendar"
-                app:tint="@color/dark_blue" />
-
-            <EditText
-                android:id="@+id/birthdate"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:hint="@string/fecha_nacimiento"
-                android:clickable="true"
-                android:focusable="false"
-                android:autofillHints="birthday"
-                android:textColor="@color/dark_blue"
-                android:textColorHint="@color/dark_blue"
-                android:background="@android:color/transparent"
-                android:textCursorDrawable="@drawable/custom_cursor"/>
-        </LinearLayout>
-
-        <!-- Email -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_email_24"
-                android:contentDescription="@string/desc_icon_email"
-                app:tint="@color/dark_blue" />
-
-            <EditText
-                android:id="@+id/email"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:hint="@string/correo_electronico"
-                android:inputType="textEmailAddress"
-                android:autofillHints="emailAddress"
-                android:textColor="@color/dark_blue"
-                android:textColorHint="@color/dark_blue"
-                android:background="@android:color/transparent"
-                android:textCursorDrawable="@drawable/custom_cursor"/>
-        </LinearLayout>
-
-        <!-- Contraseña -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_lock_24"
-                android:contentDescription="@string/desc_icon_lock"
-                app:tint="@color/dark_blue" />
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:hint="@string/contrasena"
-                android:inputType="textPassword"
-                android:autofillHints="password"
-                android:textColor="@color/dark_blue"
-                android:textColorHint="@color/dark_blue"
-                android:background="@android:color/transparent"
-                android:textCursorDrawable="@drawable/custom_cursor"/>
-        </LinearLayout>
-
-        <!-- Confirmar Contraseña -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_lock_24"
-                android:contentDescription="@string/desc_icon_lock"
-                app:tint="@color/dark_blue" />
-
-            <EditText
-                android:id="@+id/confirm_password"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:hint="@string/confirmar_contrasena"
-                android:inputType="textPassword"
-                android:autofillHints="password"
-                android:textColor="@color/dark_blue"
-                android:textColorHint="@color/dark_blue"
-                android:background="@android:color/transparent"
-                android:textCursorDrawable="@drawable/custom_cursor"/>
-        </LinearLayout>
-
-        <!-- Selector de rol -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/selecciona_tu_rol"
-            android:textStyle="bold"
-            android:textColor="@color/dark_blue"
-            android:textSize="16sp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_input"
-            android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:layout_marginTop="8dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_arrow_drop_down_24"
-                android:rotation="180"
-                android:contentDescription="@string/desc_icon_dropdown"
-                app:tint="@color/dark_blue" />
-
-            <Spinner
-                android:id="@+id/role_spinner"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:spinnerMode="dropdown"
-                android:background="@android:color/transparent"/>
-        </LinearLayout>
-
-        <!-- Botón Registrarse -->
-        <Button
-            android:id="@+id/register_button"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="18dp"
-            android:text="@string/registrarse"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:background="@drawable/bg_button_primary"/>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,9 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/beige" />
-    <corners
-        android:topLeftRadius="28dp"
-        android:topRightRadius="28dp"
-        android:bottomLeftRadius="28dp"
-        android:bottomRightRadius="28dp" />
+
+    <!-- Fondo blanco de la pestaña -->
+    <solid android:color="@color/white" />
+
+    <!-- Bordes redondeados grandes (estilo iOS / tarjeta moderna) -->
+    <corners android:radius="28dp" />
+
+    <!-- Borde muy suave para separar la pestaña del fondo -->
+    <stroke
+        android:width="1dp"
+        android:color="#1A000000" /> <!-- negro 10% opacidad -->
 </shape>

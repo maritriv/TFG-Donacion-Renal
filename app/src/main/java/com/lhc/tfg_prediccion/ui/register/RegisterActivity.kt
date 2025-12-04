@@ -27,7 +27,6 @@ class RegisterActivity : AppCompatActivity() {
     private val datePicker by lazy {
         MaterialDatePicker.Builder.datePicker()
             .setTitleText("Selecciona una fecha")
-            .setTheme(R.style.ThemeOverlay_CustomDatePicker)
             .build()
     }
 
