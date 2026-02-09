@@ -46,8 +46,12 @@ class PredictionActivity : AppCompatActivity() {
         val opcionesSiNo = arrayOf("Si", "No")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, opcionesSiNo)
         binding.spCausaCardiaca.adapter = adapter
-        binding.spCardioManual.adapter = adapter
         binding.spRecuperacion.adapter = adapter
+
+        // Spinner de tipo de cardiocompresión: Mecánica / Manual
+        val opcionesCardio = arrayOf("Mecánica", "Manual")
+        val adapterCardio = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, opcionesCardio)
+        binding.spCardioManual.adapter = adapterCardio
 
         val opcionesSexo = arrayOf("Hombre", "Mujer")
         val adapterSexo = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, opcionesSexo)
@@ -108,7 +112,7 @@ class PredictionActivity : AppCompatActivity() {
         // 1) Pasamos los campos de la UI a binarios 0/1
         val femBin    = if (femenino == "Mujer") 1 else 0
         val causaBin  = if (causacardiaca == "Si") 1 else 0
-        val cardioBin = if (cardiomanual == "Si") 1 else 0
+        val cardioBin = if (cardiomanual == "Manual") 1 else 0
         val recBin    = if (recuperacionPulso == "Si") 1 else 0
 
         // 2) Llamamos al motor común (coefs + cálculo + corte)

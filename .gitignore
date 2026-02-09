@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+serviceAccountKey.json
+tools/dedupe/serviceAccountKey.json
+node_modules/
+tools/dedupe/node_modules/
+

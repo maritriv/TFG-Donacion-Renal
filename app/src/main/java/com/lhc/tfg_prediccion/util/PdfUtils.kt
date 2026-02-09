@@ -165,13 +165,13 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             doc.add(Paragraph("Momento de la predicción: ${data.momentoCanonico}"))
             doc.add(Paragraph("Edad: ${data.edad} años"))
             doc.add(Paragraph("Sexo: $sexo"))
-            doc.add(Paragraph("Capnometría (inicio): ${data.capnometria}"))
+            doc.add(Paragraph("Capnometría: ${data.capnometria}"))
 
             val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
             doc.add(Paragraph("Causa principal del evento: $causa"))
 
-            val cardio = if (data.cardioManual == "Si") "Sí" else "No"
-            doc.add(Paragraph("RCP extrahospitalaria manual: $cardio"))
+            val cardio = if (data.cardioManual == "Manual") "Manual" else "Mecánica"
+            doc.add(Paragraph("RCP extrahospitalaria: $cardio"))
 
             val rec = if (data.recPulso == "Si") "Sí" else "No"
             doc.add(Paragraph("Recuperación de la circulación espontánea (ROSC): $rec"))
