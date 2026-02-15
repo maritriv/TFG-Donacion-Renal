@@ -18,6 +18,8 @@ import androidx.documentfile.provider.DocumentFile
 import android.graphics.drawable.ColorDrawable
 import com.google.android.material.button.MaterialButton
 import com.lhc.tfg_prediccion.R
+import com.lhc.tfg_prediccion.util.PrediccionDedup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ImportActivity : AppCompatActivity() {
 
@@ -160,6 +162,18 @@ class ImportActivity : AppCompatActivity() {
                 }
             }
 
+            fun cardioTo01(text: String): Int? {
+                val t = text.trim().lowercase()
+                return when (t) {
+                    "manual" -> 1
+                    "mecánica", "mecanica" -> 0
+                    // por si te llega en formato antiguo
+                    "si", "sí", "true", "1" -> 1
+                    "no", "false", "0" -> 0
+                    else -> text.toIntOrNull()
+                }
+            }
+
             var pocasCols = false
             var demasiadasCols = false
             var valoresInvalidos = false
@@ -176,10 +190,10 @@ class ImportActivity : AppCompatActivity() {
                     val edad   = col(idxEdad).toIntOrNull()
                     val capno  = col(idxCap).toIntOrNull()
                     val fem    = to01(col(idxFem))
-                    val cardio = to01(col(idxCard))
+                    val cardio = cardioTo01(col(idxCard))
                     val rec    = to01(col(idxRec))
                     val causa  = to01(col(idxCausa))
-                    val mode   = modeFromLabelLoose(col(idxMom))   // <— CENTRALIZADO
+                    val mode   = modeFromLabelLoose(col(idxMom))
 
                     if (edad == null || capno == null || fem == null || cardio == null || rec == null || causa == null) {
                         valoresInvalidos = true
@@ -195,7 +209,7 @@ class ImportActivity : AppCompatActivity() {
                     val edad   = cols[0].toIntOrNull()
                     val capno  = cols[1].toIntOrNull()
                     val fem    = cols[2].toIntOrNull()
-                    val cardio = cols[3].toIntOrNull()
+                    val cardio = cardioTo01(cols[3])
                     val rec    = cols[4].toIntOrNull()
                     val causa  = cols[5].toIntOrNull()
                     val mode   = if (cols.size == 7) modeFromLabelLoose(cols[6]) else MODE_AFTER // <—
@@ -243,14 +257,27 @@ class ImportActivity : AppCompatActivity() {
     private fun importarFilasEnFirestore(rows: List<RowParsed>) {
         if (rows.isEmpty()) { toast("No hay filas para importar"); return }
 
-        startImportUI()
-
-        var total = 0
-        var validas = 0
-        var noValidas = 0
         val db = FirebaseFirestore.getInstance()
 
-        rows.forEach { r ->
+        // 1) Calcular docId para cada fila + detectar duplicados dentro del CSV
+        val rowsWithId = rows.map { r ->
+            val femTxt    = if (r.fem == 1) "Si" else "No"
+            val cardioTxt = if (r.cardio == 1) "Manual" else "Mecánica"
+            val recTxt    = if (r.rec == 1) "Si" else "No"
+            val causaTxt  = if (r.causa == 1) "Si" else "No"
+
+            // OJO: valido depende del modelo (lo calculamos después), así que de momento lo dejamos vacío
+            // y lo calculamos luego para construir el docId final.
+            r to listOf(femTxt, cardioTxt, recTxt, causaTxt)
+        }
+
+        // Generamos docId ya con valido (porque tu PrediccionDedup incluye "valido" en la clave)
+        val computed = rowsWithId.map { (r, texts) ->
+            val femTxt = texts[0]
+            val cardioTxt = texts[1]
+            val recTxt = texts[2]
+            val causaTxt = texts[3]
+
             val (valido, indice) = calcularIndiceYValidez(
                 mode = r.mode,
                 edad = r.edad,
@@ -262,13 +289,112 @@ class ImportActivity : AppCompatActivity() {
                 tiempoMin = 0
             )
 
+            val validoTxt = if (valido) "Si" else "No"
+
+            val docId = PrediccionDedup.docId(
+                predictionMode = r.mode,
+                edad = r.edad.toString(),
+                femenino = femTxt,
+                capnometria = r.capno.toString(),
+                causaCardiaca = causaTxt,
+                cardioManual = cardioTxt,
+                recPulso = recTxt,
+                valido = validoTxt
+            )
+
+            Triple(r, docId, Pair(valido, indice))
+        }
+
+        // Duplicados dentro del CSV (mismo docId)
+        val grouped = computed.groupBy { it.second }
+        val unique = mutableListOf<Triple<RowParsed, String, Pair<Boolean, Double>>>()
+        var duplicatesInCsv = 0
+        grouped.values.forEach { list ->
+            unique += list.first()
+            duplicatesInCsv += (list.size - 1)
+        }
+
+        // 2) Comprobar cuáles ya existen en Firestore
+        startImportUI()
+
+        val docRefs = unique.map { (_, docId, _) ->
+            db.collection("predicciones").document(docId)
+        }
+
+        // Leemos todos (si son muchos, se puede paginar, pero para TFG suele ir bien)
+        val tasks = docRefs.map { it.get() }
+
+        com.google.android.gms.tasks.Tasks.whenAllSuccess<com.google.firebase.firestore.DocumentSnapshot>(tasks)
+            .addOnSuccessListener { snaps ->
+                val existingIds = snaps.filter { it.exists() }.map { it.id }.toHashSet()
+
+                val toImport = mutableListOf<Triple<RowParsed, String, Pair<Boolean, Double>>>()
+                var duplicatesInFirestore = 0
+
+                unique.forEach { triple ->
+                    val docId = triple.second
+                    if (existingIds.contains(docId)) duplicatesInFirestore++ else toImport += triple
+                }
+
+                finImportUI()
+
+                val totalDuplicates = duplicatesInCsv + duplicatesInFirestore
+
+                if (toImport.isEmpty()) {
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Importación cancelada")
+                        .setMessage("No es posible importar estas filas porque son filas duplicadas.")
+                        .setPositiveButton("Entendido", null)
+                        .show()
+                    return@addOnSuccessListener
+                }
+
+
+                if (totalDuplicates > 0) {
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Filas duplicadas detectadas")
+                        .setMessage(
+                            "Hay $totalDuplicates filas duplicadas que no se van a poder importar.\n" +
+                                    "¿Deseas importar igualmente el resto (${toImport.size} filas)?"
+                        )
+                        .setNegativeButton("Cancelar", null)
+                        .setPositiveButton("Importar resto") { _, _ ->
+                            importarFilasNoDuplicadas(toImport)
+                        }
+                        .show()
+                } else {
+                    importarFilasNoDuplicadas(toImport)
+                }
+            }
+            .addOnFailureListener {
+                finImportUI()
+                toast("No se pudo comprobar duplicados. Inténtalo de nuevo.")
+            }
+    }
+
+    private fun importarFilasNoDuplicadas(rows: List<Triple<RowParsed, String, Pair<Boolean, Double>>>) {
+        if (rows.isEmpty()) { toast("No hay filas para importar"); return }
+
+        startImportUI()
+
+        val db = FirebaseFirestore.getInstance()
+
+        var processed = 0
+        var importadas = 0
+        var validas = 0
+        var noValidas = 0
+
+        rows.forEach { (r, docId, result) ->
+            val (valido, indice) = result
+
             val femTxt    = if (r.fem == 1) "Si" else "No"
-            val cardioTxt = if (r.cardio == 1) "Si" else "No"
+            val cardioTxt = if (r.cardio == 1) "Manual" else "Mecánica"
             val recTxt    = if (r.rec == 1) "Si" else "No"
             val causaTxt  = if (r.causa == 1) "Si" else "No"
             val validoTxt = if (valido) "Si" else "No"
 
             val pred = hashMapOf(
+                "doc_id" to docId,
                 "nombre_medico" to name,
                 "uid_medico" to userUid,
                 "edad" to r.edad.toString(),
@@ -281,28 +407,36 @@ class ImportActivity : AppCompatActivity() {
                 "valido" to validoTxt,
                 "indice" to indice,
                 "prediction_mode" to r.mode,
-                "momento_prediccion_legible" to modeToLabel(r.mode), // <— CANÓNICO
+                "momento_prediccion_legible" to modeToLabel(r.mode),
                 "modelos" to mutableListOf<String>(),
                 "no_modelos" to mutableListOf("Modelo1","Modelo2","Modelo3","Modelo4")
             )
 
-            db.collection("predicciones").add(pred)
-                .addOnSuccessListener {
-                    total++
-                    if (valido) validas++ else noValidas++
-                    binding.barraProgreso.progress = ((total.toFloat() / rows.size) * 100).toInt()
+            val docRef = db.collection("predicciones").document(docId)
 
-                    if (total == rows.size) {
+            // Transacción: si existe -> no guarda
+            db.runTransaction { tx ->
+                val snap = tx.get(docRef)
+                if (snap.exists()) false else { tx.set(docRef, pred); true }
+            }.addOnSuccessListener { created ->
+                if (created) {
+                    importadas++
+                    if (valido) validas++ else noValidas++
+                }
+            }.addOnCompleteListener {
+                processed++
+                binding.barraProgreso.progress = ((processed.toFloat() / rows.size) * 100).toInt()
+
+                if (processed == rows.size) {
+                    if (importadas > 0) {
                         actualizarContadores(validas, noValidas)
+                    } else {
+                        toast("No se importó ninguna fila (todas duplicadas).")
+                        resetUI()
+                        finImportUI()
                     }
                 }
-                .addOnFailureListener {
-                    total++
-                    binding.barraProgreso.progress = ((total.toFloat() / rows.size) * 100).toInt()
-                    if (total == rows.size) {
-                        actualizarContadores(validas, noValidas)
-                    }
-                }
+            }
         }
     }
 

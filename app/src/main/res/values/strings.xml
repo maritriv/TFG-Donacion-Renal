@@ -142,18 +142,30 @@
     <!-- Texto de ayuda -->
     <string name="csv_help_body">
         Se aceptan estos formatos de archivo:\n\n
+
         1. CSV exportado desde la app (10 columnas, separadas por comas):\n
         Edad, Femenino, Capnometria, Causa_cardiaca,\n
         Cardio_manual, Recuperacion_pulso, Momento,\n
         Valido, UID_medico, Fecha.\n\n
-        2. CSV clásico (punto y coma ";"):\n
-        Edad; Capn; Femenino; Cardiocomp;\n
-        RecPulso; CausaCardiaca; [Momento].\n\n
+
+        En este formato:\n
+        • Cardio_manual debe ser: Manual o Mecánica.\n
+        • Femenino, Causa_cardiaca y Recuperacion_pulso deben ser: Si/No.\n\n
+
+        2. CSV clásico (separado por punto y coma ";"):\n
+        Edad; Capnometria; Femenino; Cardio_manual;\n
+        Recuperacion_pulso; Causa_cardiaca; [Momento].\n\n
+
         Notas:\n
         • La columna "Momento" es opcional. Si no está, se asume\n
         "Después del procedimiento de RCP".\n
-        • Para los campos Sí/No utiliza: 1 = Sí, 0 = No.
+        • Para los campos binarios se aceptan:\n
+          - 1 = Sí, 0 = No\n
+          - Si / No\n
+          - true / false\n
+          - Manual / Mecánica (solo para Cardio_manual).
     </string>
+
 
     <!-- Cabecera -->
     <string name="header_numero">#</string>

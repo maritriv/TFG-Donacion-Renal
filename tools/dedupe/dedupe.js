@@ -86,3 +86,5 @@ main().catch((e) => {
   console.error("ERROR:", e);
   process.exit(1);
 });
+
+// para ejecutar: cd tools/dedupe; node dedupe.js

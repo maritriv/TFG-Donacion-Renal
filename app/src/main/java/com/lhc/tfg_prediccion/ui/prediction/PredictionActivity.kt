@@ -6,18 +6,15 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.lhc.tfg_prediccion.databinding.ActivityPredictionBinding
-import com.lhc.tfg_prediccion.ui.main.MainActivity
-
+import com.lhc.tfg_prediccion.util.PrediccionDedup
 
 class PredictionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPredictionBinding
     private var name: String? = null
     private var userUid: String? = null
-    private var mode: String = MODE_AFTER   // por defecto
+    private var mode: String = MODE_AFTER
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +64,7 @@ class PredictionActivity : AppCompatActivity() {
             intent.putExtra("userName", name)
             intent.putExtra("userUid", userUid)
             startActivity(intent)
-            finish() // opcional: evita que al pulsar atrás vuelva al formulario
+            finish() // evita que al pulsar atrás vuelva al formulario
         }
 
         // Botón realizar predicción
@@ -90,7 +87,7 @@ class PredictionActivity : AppCompatActivity() {
                     causacardiaca = causacardiaca,
                     cardiomanual = cardioManual,
                     recuperacionPulso = recuperacionPulso,
-                    tiempoMin = 0 // si luego añades este campo, pásalo aquí
+                    tiempoMin = 0
                 )
             }
         }
@@ -129,76 +126,51 @@ class PredictionActivity : AppCompatActivity() {
 
         Log.d("PRED", "calc[$mode] -> idx=$indice esValido=$esValido")
 
-        // 3) Flujo igual que tenías, pero pasando también 'indice' y 'prediction_mode'
-        if (esValido) {
-            actualizarNumeroPredicciones(true) {
-                Toast.makeText(this, "DONANTE VALIDO", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, ValidActivity::class.java).apply {
-                    putExtra("prediction_mode", mode)
-                    putExtra("indice", indice)
-                    putExtra("edad", edad.toString())
-                    putExtra("fem", femenino)
-                    putExtra("capnometria", capnometria.toString())
-                    putExtra("causa_cardiaca", causacardiaca)
-                    putExtra("cardio_manual", cardiomanual)
-                    putExtra("rec_pulso", recuperacionPulso)
-                    putExtra("username", name)
-                    putExtra("userUid", userUid)
-                }
-                startActivity(intent)
-            }
-        } else {
-            actualizarNumeroPredicciones(false) {
-                Toast.makeText(this, "DONANTE NO VALIDO", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, NonValidActivity::class.java).apply {
-                    putExtra("prediction_mode", mode)
-                    putExtra("indice", indice)
-                    putExtra("edad", edad.toString())
-                    putExtra("fem", femenino)
-                    putExtra("capnometria", capnometria.toString())
-                    putExtra("causa_cardiaca", causacardiaca)
-                    putExtra("cardio_manual", cardiomanual)
-                    putExtra("rec_pulso", recuperacionPulso)
-                    putExtra("username", name)
-                    putExtra("userUid", userUid)
-                }
-                startActivity(intent)
-            }
-        }
-    }
+        // 3) Calcular docId determinista para deduplicación (se usará al guardar en Firestore)
+        val docId = PrediccionDedup.docId(
+            predictionMode = mode,
+            edad = edad.toString(),
+            femenino = femenino,                 // "Hombre" / "Mujer"
+            capnometria = capnometria.toString(),
+            causaCardiaca = causacardiaca,   // "Si" / "No"
+            cardioManual = cardiomanual,     // "Manual" / "Mecánica"
+            recPulso = recuperacionPulso,    // "Si" / "No"
+            valido = if (esValido) "Si" else "No"
+        )
 
-    private fun actualizarNumeroPredicciones(esValido: Boolean, callback: () -> Unit) {
-        val db = FirebaseFirestore.getInstance()
-        userUid?.let { uid ->
-            val userRef = db.collection("users").document(uid)
-            userRef.get().addOnSuccessListener { document ->
-                if (document.exists()) {
-                    // Incrementar contadores
-                    userRef.update("numeroPredicciones", (document.getLong("numeroPredicciones") ?: 0) + 1)
-                    if (esValido) {
-                        userRef.update("predicciones_validas", (document.getLong("predicciones_validas") ?: 0) + 1)
-                    } else {
-                        userRef.update("predicciones_no_validas", (document.getLong("predicciones_no_validas") ?: 0) + 1)
-                    }.addOnSuccessListener { callback() }
-                        .addOnFailureListener { e ->
-                            Toast.makeText(this, "Error al actualizar predicciones: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                } else {
-                    // Crear campos si no existen
-                    val initialData = mapOf(
-                        "numeroPredicciones" to 1,
-                        "predicciones_validas" to (if (esValido) 1 else 0),
-                        "predicciones_no_validas" to (if (esValido) 0 else 1)
-                    )
-                    userRef.set(initialData, SetOptions.merge())
-                        .addOnSuccessListener { callback() }
-                        .addOnFailureListener { e ->
-                            Toast.makeText(this, "Error al crear los campos: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                }
-            }.addOnFailureListener { e ->
-                Toast.makeText(this, "Error al obtener el documento: ${e.message}", Toast.LENGTH_SHORT).show()
+        // 4) Ir a la pantalla de resultado
+        if (esValido) {
+            Toast.makeText(this, "DONANTE VALIDO", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ValidActivity::class.java).apply {
+                putExtra("prediction_mode", mode)
+                putExtra("indice", indice)
+                putExtra("edad", edad.toString())
+                putExtra("fem", femenino)
+                putExtra("capnometria", capnometria.toString())
+                putExtra("causa_cardiaca", causacardiaca)
+                putExtra("cardio_manual", cardiomanual)
+                putExtra("rec_pulso", recuperacionPulso)
+                putExtra("username", name)
+                putExtra("userUid", userUid)
+                putExtra("docId", docId)
             }
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, "DONANTE NO VALIDO", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, NonValidActivity::class.java).apply {
+                putExtra("prediction_mode", mode)
+                putExtra("indice", indice)
+                putExtra("edad", edad.toString())
+                putExtra("fem", femenino)
+                putExtra("capnometria", capnometria.toString())
+                putExtra("causa_cardiaca", causacardiaca)
+                putExtra("cardio_manual", cardiomanual)
+                putExtra("rec_pulso", recuperacionPulso)
+                putExtra("username", name)
+                putExtra("userUid", userUid)
+                putExtra("docId", docId)
+            }
+            startActivity(intent)
         }
     }
 }

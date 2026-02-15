@@ -25,6 +25,18 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
+        <item name="materialAlertDialogTheme">@style/CustomAlertDialog</item>
+
+    </style>
+
+    <!-- Dialogos redondeados Material3 -->
+    <style name="CustomAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/CustomDialogShape</item>
+    </style>
+
+    <style name="CustomDialogShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
     </style>
 
 

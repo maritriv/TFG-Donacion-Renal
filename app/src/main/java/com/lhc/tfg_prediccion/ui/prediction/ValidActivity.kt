@@ -2,12 +2,14 @@ package com.lhc.tfg_prediccion.ui.prediction
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.SetOptions
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityValidBinding
 import com.lhc.tfg_prediccion.ui.main.MainActivity
@@ -21,7 +23,7 @@ class ValidActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityValidBinding
 
-    // Nombre + apellidos (se rellena asíncronamente)
+    // Nombre + apellidos
     private var fullName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +45,11 @@ class ValidActivity : AppCompatActivity() {
         val userUid           = intent.getStringExtra("userUid") ?: ""
         val name              = intent.getStringExtra("username") ?: "Desconocido"
         val modeCode          = intent.getStringExtra("prediction_mode") ?: "AFTER_RCP"
+        val docId             = intent.getStringExtra("docId") ?: ""
         val indiceExtra       = intent.getDoubleExtra("indice", Double.NaN)
         val indice: Double?   = if (indiceExtra.isNaN()) null else indiceExtra
 
-        // Carga del nombre completo (asíncrono, con fallback al name del intent)
+        // Carga del nombre completo
         UserUtils.cargarNombreCompleto(
             db = FirebaseFirestore.getInstance(),
             uid = userUid,
@@ -59,7 +62,7 @@ class ValidActivity : AppCompatActivity() {
         val momentoCanonico = modeToLabel(modeCode)
         val femenino = if (auxFem == "Mujer") "Si" else "No"
 
-        // Guardar predicción en Firestore (usa fullName si ya llegó; si no, name)
+        // Guardar predicción en Firestore (sin duplicados)
         guardarPrediccion(
             edad = edad,
             femenino = femenino,
@@ -70,7 +73,8 @@ class ValidActivity : AppCompatActivity() {
             userUid = userUid,
             nameOrFullName = (fullName ?: name),
             predictionMode = modeCode,
-            indice = indice
+            indice = indice,
+            docId = docId
         )
 
         // Volver a menú
@@ -83,24 +87,24 @@ class ValidActivity : AppCompatActivity() {
                 putExtra("cardio_manual", cardio_manual)
                 putExtra("rec_pulso", recuperacionPulso)
                 putExtra("userUid", userUid)
-                putExtra("userName", fullName ?: name) // nombre completo si ya lo tenemos
+                putExtra("userName", fullName ?: name)
             })
         }
 
-        // Descargar PDF (usa fullName si ya cargó; si no, fallback a name)
+        // Descargar PDF
         binding.downloadPDF.setOnClickListener {
             val pdfData = PdfPrediction(
-                doctorName     = (fullName ?: name),
-                fecha          = Timestamp.now(),
+                doctorName      = (fullName ?: name),
+                fecha           = Timestamp.now(),
                 momentoCanonico = momentoCanonico,
-                edad           = edad,
-                femenino       = femenino,
-                capnometria    = capnometria,
-                causaCardiaca  = causa_cardiaca,
-                cardioManual   = cardio_manual,
-                recPulso       = recuperacionPulso,
-                valido         = true,
-                indice         = indice
+                edad            = edad,
+                femenino        = femenino,
+                capnometria     = capnometria,
+                causaCardiaca   = causa_cardiaca,
+                cardioManual    = cardio_manual,
+                recPulso        = recuperacionPulso,
+                valido          = true,
+                indice          = indice
             )
             generatePredictionPdf(this, pdfData)
         }
@@ -114,14 +118,20 @@ class ValidActivity : AppCompatActivity() {
         cardio_manual: String,
         recuperacionPulso: String,
         userUid: String,
-        nameOrFullName: String,  // nombre completo si está disponible
+        nameOrFullName: String,
         predictionMode: String,
-        indice: Double?
+        indice: Double?,
+        docId: String
     ) {
+        if (docId.isBlank()) {
+            Toast.makeText(this, "Error: docId vacío (no se puede deduplicar)", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val fecha = Timestamp.now()
         val db = FirebaseFirestore.getInstance()
         val prediccion = hashMapOf(
-            "nombre_medico" to nameOrFullName, // guardamos nombre completo
+            "nombre_medico" to nameOrFullName,
             "uid_medico" to userUid,
             "edad" to edad,
             "femenino" to femenino,
@@ -139,13 +149,37 @@ class ValidActivity : AppCompatActivity() {
 
         indice?.let { prediccion["indice"] = it }
 
-        db.collection("predicciones")
-            .add(prediccion)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Predicción guardada", Toast.LENGTH_SHORT).show()
+        val docRef = db.collection("predicciones").document(docId)
+
+        // Guardado si no hay duplicados
+        db.runTransaction { tx ->
+            val snap = tx.get(docRef)
+            if (snap.exists()) {
+                throw FirebaseFirestoreException("ALREADY_EXISTS", FirebaseFirestoreException.Code.ALREADY_EXISTS)
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al guardar en Firestore", Toast.LENGTH_SHORT).show()
+            tx.set(docRef, prediccion)
+            null
+        }.addOnSuccessListener {
+            incrementarContadoresUsuario(userUid)
+            Toast.makeText(this, "Predicción guardada", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e ->
+            val fe = e as? FirebaseFirestoreException
+            if (fe?.code == FirebaseFirestoreException.Code.ALREADY_EXISTS) {
+                Toast.makeText(this, "Predicción duplicada: no se guarda", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Error al guardar en Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun incrementarContadoresUsuario(uid: String) {
+        val db = FirebaseFirestore.getInstance()
+        val inc = hashMapOf<String, Any>(
+            "numeroPredicciones" to FieldValue.increment(1)
+        )
+        inc["predicciones_validas"] = FieldValue.increment(1)
+
+        db.collection("users").document(uid)
+            .set(inc, SetOptions.merge())
     }
 }
