@@ -54,6 +54,10 @@ object UserUtils {
 data class PdfPrediction(
     val doctorName: String,
     val fecha: Timestamp,
+
+    // NUEVO: modo (BEFORE_RCP / MID_RCP / AFTER_RCP)
+    val predictionMode: String? = null,
+
     val momentoCanonico: String,
     val edad: String,
     val femenino: String,
@@ -62,7 +66,12 @@ data class PdfPrediction(
     val cardioManual: String,
     val recPulso: String,
     val valido: Boolean,
-    val indice: Double? = null
+    val indice: Double? = null,
+
+    // NUEVOS: solo se muestran si aplica
+    val colesterol: String? = null,
+    val adrenalinaN: String? = null,
+    val imc: String? = null
 )
 
 // ====================== Helpers ======================
@@ -100,7 +109,6 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 MediaStore.Downloads.EXTERNAL_CONTENT_URI
             } else {
-                // En < Q, usamos el mismo endpoint aunque RELATIVE_PATH no aplique.
                 MediaStore.Files.getContentUri("external")
             }
 
@@ -109,7 +117,7 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-                put(MediaStore.MediaColumns.IS_PENDING, 1) // marcado mientras escribimos
+                put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
         }
 
@@ -152,7 +160,7 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             doc.add(Paragraph("\n"))
 
             // =============================================================
-            // DATOS DEL POSIBLE DONANTE
+            // DATOS DEL POSIBLE DONANTE (según modo)
             // =============================================================
             doc.add(
                 Paragraph("DATOS DEL POSIBLE DONANTE:")
@@ -160,24 +168,70 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
                     .setFontSize(14f)
             )
 
-            val sexo = if (data.femenino == "Si") "Femenino" else "Masculino"
+            fun dashIfBlank(s: String?): String = if (s.isNullOrBlank()) "—" else s
 
+            // Colesterol puede venir como "0/1" o "Si/No"
+            fun colesterolToText(v: String?): String {
+                val t = (v ?: "").trim()
+                return when (t) {
+                    "1" -> "Sí"
+                    "0" -> "No"
+                    else -> dashIfBlank(t)
+                }
+            }
+
+            val mode = (data.predictionMode ?: "").trim()
+            val isBefore = mode == "BEFORE_RCP"
+            val isMid = mode == "MID_RCP"
+            val isAfter = (mode == "AFTER_RCP" || mode.isBlank()) // fallback por compatibilidad
+
+            // Siempre mostramos el momento canónico
             doc.add(Paragraph("Momento de la predicción: ${data.momentoCanonico}"))
-            doc.add(Paragraph("Edad: ${data.edad} años"))
-            doc.add(Paragraph("Sexo: $sexo"))
-            doc.add(Paragraph("Capnometría: ${data.capnometria}"))
 
-            val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
-            doc.add(Paragraph("Causa principal del evento: $causa"))
+            when {
+                // ---------------- BEFORE ----------------
+                isBefore -> {
+                    doc.add(Paragraph("Edad: ${dashIfBlank(data.edad)} años"))
+                    doc.add(Paragraph("Capnometría (inicio): ${dashIfBlank(data.capnometria)}"))
+                    doc.add(Paragraph("Colesterol: ${colesterolToText(data.colesterol)}"))
+                }
 
-            val cardio = if (data.cardioManual == "Manual") "Manual" else "Mecánica"
-            doc.add(Paragraph("RCP extrahospitalaria: $cardio"))
+                // ---------------- MID ----------------
+                isMid -> {
+                    doc.add(Paragraph("Capnometría (punto medio): ${dashIfBlank(data.capnometria)}"))
+                    doc.add(Paragraph("Colesterol: ${colesterolToText(data.colesterol)}"))
+                    doc.add(Paragraph("Adrenalina (n): ${dashIfBlank(data.adrenalinaN)}"))
+                    doc.add(Paragraph("IMC: ${dashIfBlank(data.imc)}"))
 
-            val rec = if (data.recPulso == "Si") "Sí" else "No"
-            doc.add(Paragraph("Recuperación de la circulación espontánea (ROSC): $rec"))
+                    val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
+                    doc.add(Paragraph("Causa principal del evento: $causa"))
+
+                    val cardio = if (data.cardioManual == "Manual") "Manual" else "Mecánica"
+                    doc.add(Paragraph("RCP extrahospitalaria: $cardio"))
+                }
+
+                // ---------------- AFTER ----------------
+                else -> {
+                    doc.add(Paragraph("Edad: ${dashIfBlank(data.edad)} años"))
+
+                    val sexo = if (data.femenino == "Si" || data.femenino.equals("Mujer", true)) "Femenino" else "Masculino"
+                    doc.add(Paragraph("Sexo: $sexo"))
+
+                    doc.add(Paragraph("Capnometría (transferencia): ${dashIfBlank(data.capnometria)}"))
+
+                    val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
+                    doc.add(Paragraph("Causa principal del evento: $causa"))
+
+                    val cardio = if (data.cardioManual == "Manual") "Manual" else "Mecánica"
+                    doc.add(Paragraph("RCP extrahospitalaria: $cardio"))
+
+                    val rec = if (data.recPulso == "Si") "Sí" else "No"
+                    doc.add(Paragraph("Recuperación de la circulación espontánea (ROSC): $rec"))
+                }
+            }
 
             data.indice?.let {
-                doc.add(Paragraph("Índice calculado: ${String.format("%.3f", it)}"))
+                doc.add(Paragraph("Índice calculado: ${String.format(Locale.US, "%.3f", it)}"))
             }
 
             doc.add(Paragraph("\n"))
@@ -199,7 +253,6 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             doc.close()
         }
 
-        // Finaliza IS_PENDING para que aparezca en Downloads inmediatamente
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val done = ContentValues().apply {
                 put(MediaStore.MediaColumns.IS_PENDING, 0)

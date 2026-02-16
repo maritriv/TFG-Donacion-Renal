@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
+import java.util.Locale
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
@@ -104,13 +105,17 @@ class AdminPredictionsActivity : AppCompatActivity() {
         return predictions.filter { it.matchesFilter(filter) }
     }
 
+    private fun dashIfBlank(s: String?): String = if (s.isNullOrBlank()) "—" else s
+
+    private fun formatIndice(d: Double?): String =
+        if (d == null) "—" else String.format(Locale.US, "%.3f", d)
+
     // -------------------------------------------------------------
     // Pintar tabla
     // -------------------------------------------------------------
     private fun renderPredictions(list: List<Prediccion>) {
         val table = binding.tablePredictions
 
-        // Eliminar filas de datos, mantener solo cabecera
         if (table.childCount > 1) {
             table.removeViews(1, table.childCount - 1)
         }
@@ -130,9 +135,7 @@ class AdminPredictionsActivity : AppCompatActivity() {
         val params = TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
             TableRow.LayoutParams.WRAP_CONTENT
-        ).apply {
-            setMargins(8, 16, 8, 16)
-        }
+        ).apply { setMargins(8, 16, 8, 16) }
 
         fun TableRow.addCell(text: String) {
             TextView(this@AdminPredictionsActivity).apply {
@@ -147,20 +150,35 @@ class AdminPredictionsActivity : AppCompatActivity() {
         list.forEach { pred ->
             val fila = TableRow(this)
 
-            fila.addCell(contador.toString())
-            fila.addCell(pred.edad ?: "")
-            fila.addCell(mapSexo(pred.femenino))
-            fila.addCell(pred.capnometria ?: "")
-            fila.addCell(pred.causa_cardiaca ?: "")
-            fila.addCell(pred.cardio_manual ?: "")
-            fila.addCell(pred.rec_pulso ?: "")
-
+            // Momento canónico
             val mode = pred.prediction_mode
                 ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
             val moment = modeToLabel(mode)
-            fila.addCell(moment)
 
-            fila.addCell(mapResultado(pred.valido))
+            // Nuevos campos + índice
+            val colesterol = dashIfBlank(pred.colesterol)
+            val adrenalinaN = dashIfBlank(pred.adrenalina_n)
+            val imc = dashIfBlank(pred.imc)
+            val indiceStr = formatIndice(pred.indice)
+
+            // ---- columnas (MISMO ORDEN QUE EL XML) ----
+            fila.addCell(contador.toString())                 // #
+            fila.addCell(dashIfBlank(pred.edad))              // Edad
+            fila.addCell(mapSexo(pred.femenino))              // Sexo
+            fila.addCell(dashIfBlank(pred.capnometria))       // Capnometría
+
+            fila.addCell(colesterol)                          // Colesterol
+            fila.addCell(adrenalinaN)                         // Adrenalina (n)
+            fila.addCell(imc)                                 // IMC
+
+            fila.addCell(dashIfBlank(pred.causa_cardiaca))    // Causa cardiaca
+            fila.addCell(dashIfBlank(pred.cardio_manual))     // Cardiocompresión
+            fila.addCell(dashIfBlank(pred.rec_pulso))         // Rec pulso
+
+            fila.addCell(moment)                              // Momento
+            fila.addCell(mapResultado(pred.valido))           // Resultado
+
+            fila.addCell(indiceStr)                           // Índice
 
             // PDF
             TextView(this).apply {
@@ -176,6 +194,7 @@ class AdminPredictionsActivity : AppCompatActivity() {
                         PdfPrediction(
                             doctorName = "Desconocido",
                             fecha = pred.fecha,
+                            predictionMode = pred.prediction_mode,
                             momentoCanonico = moment,
                             edad = pred.edad ?: "",
                             femenino = pred.femenino ?: "",
@@ -184,11 +203,14 @@ class AdminPredictionsActivity : AppCompatActivity() {
                             cardioManual = pred.cardio_manual ?: "",
                             recPulso = pred.rec_pulso ?: "",
                             valido = pred.valido.equals("Si", ignoreCase = true),
-                            indice = pred.indice
+                            indice = pred.indice,
+
+                            colesterol = pred.colesterol,
+                            adrenalinaN = pred.adrenalina_n,
+                            imc = pred.imc
                         )
                     )
                 }
-
                 fila.addView(this)
             }
 

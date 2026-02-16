@@ -9,20 +9,16 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import com.lhc.tfg_prediccion.data.model.Prediccion
+import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
+import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
 import com.lhc.tfg_prediccion.ui.prediction.modeFromLabelLoose
 import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
 import java.io.OutputStreamWriter
+import java.text.Normalizer
+import java.util.Locale
 
 object PredictionCsvExporter {
 
-    /**
-     * Exporta una lista de predicciones a CSV en Descargas y lo intenta abrir.
-     *
-     * @param activity  Activity desde la que se llama (para contentResolver y startActivity)
-     * @param predictions lista de Prediccion a exportar
-     * @param doctorName nombre que aparecerá en el nombre del archivo (puede ser null)
-     * @param userUid uid del médico (puede ser null)
-     */
     fun exportCsv(
         activity: Activity,
         predictions: List<Prediccion>,
@@ -62,36 +58,90 @@ object PredictionCsvExporter {
             resolver.openOutputStream(uri)?.use { outputStream ->
                 val writer = OutputStreamWriter(outputStream, Charsets.UTF_8)
 
-                // Cabecera (formato app, re-importable)
+                // Cabecera
                 writer.write(
-                    "Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual," +
-                            "Recuperacion_pulso,Momento,Valido,UID_medico,Fecha\n"
+                    "Edad,Femenino,Capnometria,Colesterol,Adrenalina_n,IMC," +
+                            "Causa_cardiaca,Cardio_manual,Recuperacion_pulso," +
+                            "Prediction_mode,Momento,Valido,Indice,UID_medico,Fecha\n"
                 )
 
+                fun stripAccents(s: String): String {
+                    val normalized = Normalizer.normalize(s, Normalizer.Form.NFD)
+                    return normalized.replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+                }
+
+                // CSV RFC4180 simple: quita saltos, quita tildes, y si hay coma/quote -> comillas
+                fun csv(value: String?): String {
+                    val raw = (value ?: "")
+                        .replace("\r", " ")
+                        .replace("\n", " ")
+                        .trim()
+
+                    val noAccents = stripAccents(raw)
+
+                    val mustQuote = noAccents.contains(',') || noAccents.contains('"')
+                    return if (!mustQuote) {
+                        noAccents
+                    } else {
+                        "\"" + noAccents.replace("\"", "\"\"") + "\""
+                    }
+                }
+
+                fun formatIndice(d: Double?): String =
+                    if (d == null) "" else String.format(Locale.US, "%.3f", d)
+
                 predictions.forEach { pred ->
-                    val canonicalMoment = modeToLabel(
-                        pred.prediction_mode
-                            ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
-                    )
+                    val mode = pred.prediction_mode
+                        ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
+
+                    // Etiqueta canónica (del ModelCoefficients) + sin tildes
+                    val canonicalMomentLabel = modeToLabel(mode)
+
+                    // Variables por modo (vacías si no aplican)
+                    val col = when (mode) {
+                        MODE_BEFORE, MODE_MID -> pred.colesterol ?: ""
+                        else -> ""
+                    }
+                    val adrenalina = when (mode) {
+                        MODE_MID -> pred.adrenalina_n ?: ""
+                        else -> ""
+                    }
+                    val imc = when (mode) {
+                        MODE_MID -> pred.imc ?: ""
+                        else -> ""
+                    }
+
+                    val uidOut = pred.uid_medico.ifBlank { userUid ?: "" }
 
                     val row = listOf(
-                        pred.edad ?: "",
-                        pred.femenino ?: "",
-                        pred.capnometria ?: "",
-                        pred.causa_cardiaca ?: "",
-                        pred.cardio_manual ?: "",
-                        pred.rec_pulso ?: "",
-                        canonicalMoment,
-                        pred.valido ?: "",
-                        pred.uid_medico ?: (userUid ?: ""),
-                        formatDisplayDate(pred.fecha)  // ya lo usabas en Historial
+                        csv(pred.edad),
+                        csv(pred.femenino),
+                        csv(pred.capnometria),
+
+                        csv(col),
+                        csv(adrenalina),
+                        csv(imc),
+
+                        csv(pred.causa_cardiaca),
+                        csv(pred.cardio_manual),
+                        csv(pred.rec_pulso),
+
+                        csv(mode),                 // BEFORE_RCP / MID_RCP / AFTER_RCP
+                        csv(canonicalMomentLabel), // "Inicio..." / "Mitad..." / "Despues..." (sin tildes)
+                        csv(pred.valido),
+                        csv(formatIndice(pred.indice)),
+
+                        csv(uidOut),
+                        csv(formatDisplayDate(pred.fecha))
                     ).joinToString(",")
 
-                    writer.write("$row\n")
+                    writer.write(row)
+                    writer.write("\n")
                 }
 
                 writer.flush()
                 writer.close()
+
                 Toast.makeText(activity, "CSV guardado en Descargas", Toast.LENGTH_SHORT).show()
                 openCsvFile(activity, uri)
             }
@@ -108,7 +158,7 @@ object PredictionCsvExporter {
         }
         try {
             activity.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             Toast.makeText(activity, "No hay aplicación para abrir archivos CSV", Toast.LENGTH_SHORT).show()
         }
     }

@@ -14,15 +14,16 @@ import com.lhc.tfg_prediccion.data.model.Prediccion
 import com.lhc.tfg_prediccion.databinding.ActivityHistorialBinding
 import com.lhc.tfg_prediccion.ui.prediction.modeFromLabelLoose
 import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
-import com.lhc.tfg_prediccion.util.PdfPrediction
-import com.lhc.tfg_prediccion.util.PredictionCsvExporter
-import com.lhc.tfg_prediccion.util.generatePredictionPdf
 import com.lhc.tfg_prediccion.ui.util.HistorialFilter
 import com.lhc.tfg_prediccion.ui.util.mapResultado
 import com.lhc.tfg_prediccion.ui.util.mapSexo
 import com.lhc.tfg_prediccion.ui.util.matchesFilter
 import com.lhc.tfg_prediccion.ui.util.showFilterDialog
 import com.lhc.tfg_prediccion.ui.util.showSortDialog
+import com.lhc.tfg_prediccion.util.PdfPrediction
+import com.lhc.tfg_prediccion.util.PredictionCsvExporter
+import com.lhc.tfg_prediccion.util.generatePredictionPdf
+import java.util.Locale
 
 class HistorialActivity : AppCompatActivity() {
 
@@ -30,10 +31,7 @@ class HistorialActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    // Lista en memoria para poder ordenar/filtrar sin volver a Firestore
     private val predictions = mutableListOf<Prediccion>()
-
-    // Filtro actual (null = sin filtros)
     private var currentFilter: HistorialFilter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,27 +39,22 @@ class HistorialActivity : AppCompatActivity() {
         binding = ActivityHistorialBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Título barra
         binding.tvProfileTitle.text = getString(R.string.historial_predicciones)
 
-        // Navegación
         binding.backRow.setOnClickListener { finish() }
         binding.btnBack.setOnClickListener { finish() }
 
-        // Cargar SOLO las predicciones del médico logueado
         loadPredictions()
 
-        // Botón "Ordenar" usando util
         binding.btnSort.setOnClickListener {
             showSortDialog(
                 activity = this,
-                baseListProvider = { getFilteredList() }   // lo que está visible ahora
+                baseListProvider = { getFilteredList() }
             ) { listaOrdenada ->
                 renderPredictions(listaOrdenada)
             }
         }
 
-        // Botón "Filtrar" usando util
         binding.btnFilter.setOnClickListener {
             showFilterDialog(
                 activity = this,
@@ -72,7 +65,6 @@ class HistorialActivity : AppCompatActivity() {
             }
         }
 
-        // Botón "Exportar"
         binding.btnExport.setOnClickListener {
             val doctorName = auth.currentUser?.displayName
                 ?: auth.currentUser?.email
@@ -80,16 +72,13 @@ class HistorialActivity : AppCompatActivity() {
 
             PredictionCsvExporter.exportCsv(
                 activity = this,
-                predictions = getFilteredList(), // exportamos lo que se ve
+                predictions = getFilteredList(),
                 doctorName = doctorName,
                 userUid = auth.currentUser?.uid
             )
         }
     }
 
-    // -------------------------------------------------------------
-    // Cargar predicciones del médico actual
-    // -------------------------------------------------------------
     private fun loadPredictions() {
         val uid = auth.currentUser?.uid
         if (uid == null) {
@@ -103,11 +92,8 @@ class HistorialActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { snapshot ->
                 val docs = snapshot.documents
-
                 predictions.clear()
                 predictions.addAll(docs.mapNotNull { it.toObject(Prediccion::class.java) })
-
-                // Pintamos inicial aplicando filtro actual (si lo hubiera)
                 renderPredictions(getFilteredList())
             }
             .addOnFailureListener { e ->
@@ -116,19 +102,15 @@ class HistorialActivity : AppCompatActivity() {
             }
     }
 
-    // Devuelve la lista filtrada según currentFilter (o todas si es null)
     private fun getFilteredList(): List<Prediccion> {
         val filter = currentFilter ?: return predictions.toList()
         return predictions.filter { it.matchesFilter(filter) }
     }
 
-    // -------------------------------------------------------------
-    // Pintar tabla
-    // -------------------------------------------------------------
     private fun renderPredictions(list: List<Prediccion>) {
         val table = binding.tablePredictions
 
-        // Eliminar filas de datos, mantener cabecera (fila 0)
+        // Mantener cabecera (fila 0)
         if (table.childCount > 1) {
             table.removeViews(1, table.childCount - 1)
         }
@@ -159,59 +141,60 @@ class HistorialActivity : AppCompatActivity() {
                 setPadding(16, 24, 16, 24)
                 typeface = android.graphics.Typeface.create(
                     "sans-serif-condensed",
-                    if (bold) android.graphics.Typeface.BOLD
-                    else android.graphics.Typeface.NORMAL
+                    if (bold) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL
                 )
                 layoutParams = params
                 this@addCell.addView(this)
             }
         }
 
+        fun dashIfBlank(s: String?): String = if (s.isNullOrBlank()) "—" else s
+
+        fun formatIndice(d: Double?): String =
+            if (d == null) "—" else String.format(Locale.US, "%.3f", d)
+
         list.forEach { pred ->
             val fila = TableRow(this)
 
-            // #
-            fila.addCell(contador.toString())
-
-            // Edad
-            fila.addCell(pred.edad ?: "")
-
-            // Sexo (util compartido)
-            fila.addCell(mapSexo(pred.femenino))
-
-            // Capnometría
-            fila.addCell(pred.capnometria ?: "")
-
-            // Causa cardiaca
-            fila.addCell(pred.causa_cardiaca ?: "")
-
-            // Cardiocompresión
-            fila.addCell(pred.cardio_manual ?: "")
-
-            // Rec. del pulso
-            fila.addCell(pred.rec_pulso ?: "")
-
-            // Momento — frase canónica
+            // Modo canónico
             val mode = pred.prediction_mode
                 ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
             val canonicalMoment = modeToLabel(mode)
-            fila.addCell(canonicalMoment)
+            val colesterol = dashIfBlank(pred.colesterol)
+            val adrenalinaN = dashIfBlank(pred.adrenalina_n)
+            val imc = dashIfBlank(pred.imc)
+            val indiceStr = formatIndice(pred.indice)
 
-            // Resultado (util compartido)
+            // ---- columnas ----
+            fila.addCell(contador.toString())
+
+            fila.addCell(dashIfBlank(pred.edad))
+            fila.addCell(mapSexo(pred.femenino))
+            fila.addCell(dashIfBlank(pred.capnometria))
+
+            // Nuevas
+            fila.addCell(colesterol)
+            fila.addCell(adrenalinaN)
+            fila.addCell(imc)
+
+            // Clásicas
+            fila.addCell(dashIfBlank(pred.causa_cardiaca))
+            fila.addCell(dashIfBlank(pred.cardio_manual))
+            fila.addCell(dashIfBlank(pred.rec_pulso))
+
+            fila.addCell(canonicalMoment)
             fila.addCell(mapResultado(pred.valido))
 
-            // Informe (PDF)
+            // Nueva: índice
+            fila.addCell(indiceStr)
+
+            // Informe PDF
             TextView(this).apply {
                 text = "PDF"
                 textSize = 12f
                 setPadding(16, 24, 16, 24)
                 layoutParams = params
-                setTextColor(
-                    ContextCompat.getColor(
-                        this@HistorialActivity,
-                        R.color.dark_blue
-                    )
-                )
+                setTextColor(ContextCompat.getColor(this@HistorialActivity, R.color.dark_blue))
 
                 setOnClickListener {
                     val doctorName = auth.currentUser?.displayName
@@ -223,6 +206,7 @@ class HistorialActivity : AppCompatActivity() {
                         PdfPrediction(
                             doctorName = doctorName,
                             fecha = pred.fecha,
+                            predictionMode = pred.prediction_mode,
                             momentoCanonico = canonicalMoment,
                             edad = pred.edad ?: "",
                             femenino = pred.femenino ?: "",
@@ -231,9 +215,13 @@ class HistorialActivity : AppCompatActivity() {
                             cardioManual = pred.cardio_manual ?: "",
                             recPulso = pred.rec_pulso ?: "",
                             valido = pred.valido.equals("Si", ignoreCase = true),
-                            indice = pred.indice
+                            indice = pred.indice,
+                            colesterol = pred.colesterol,
+                            adrenalinaN = pred.adrenalina_n,
+                            imc = pred.imc
                         )
                     )
+
                 }
 
                 fila.addView(this)

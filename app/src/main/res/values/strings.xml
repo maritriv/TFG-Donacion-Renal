@@ -1,6 +1,6 @@
 <resources>
     <!-- Login -->
-    <string name="app_name">RENAL-DANC</string>
+    <string name="app_name">RENAL-DCD</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Contraseña</string>
@@ -115,6 +115,18 @@
     <string name="ordenar">Ordenar</string>
     <string name="filtrar">Filtrar</string>
     <string name="exportar">Exportar</string>
+    <string name="formulario">Formulario</string>
+    <string name="edad">Edad</string>
+    <string name="sexo">Sexo</string>
+    <string name="capnometria">Capnometría</string>
+    <string name="colesterol_pregunta">¿Colesterol?</string>
+    <string name="adrenalina_dosis">Adrenalina (nº dosis)</string>
+    <string name="imc">IMC</string>
+    <string name="causa_cardiaca_pregunta">¿Causa Cardiaca?</string>
+    <string name="cardiocompresion_pregunta">¿Cardiocompresión extrahospitalaria?</string>
+    <string name="recuperacion_pregunta">¿Recuperación de la circulación?</string>
+    <string name="desplegar">Desplegar</string>
+
 
 
 
@@ -141,30 +153,27 @@
 
     <!-- Texto de ayuda -->
     <string name="csv_help_body">
-        Se aceptan estos formatos de archivo:\n\n
+    Solo se acepta el CSV exportado desde la app.\n\n
 
-        1. CSV exportado desde la app (10 columnas, separadas por comas):\n
-        Edad, Femenino, Capnometria, Causa_cardiaca,\n
-        Cardio_manual, Recuperacion_pulso, Momento,\n
-        Valido, UID_medico, Fecha.\n\n
+    Formato (15 columnas, separadas por comas):\n
+    Edad,Femenino,Capnometria,Colesterol,Adrenalina_n,IMC,\n
+    Causa_cardiaca,Cardio_manual,Recuperacion_pulso,\n
+    Prediction_mode,Momento,Valido,Indice,UID_medico,Fecha\n\n
 
-        En este formato:\n
-        • Cardio_manual debe ser: Manual o Mecánica.\n
-        • Femenino, Causa_cardiaca y Recuperacion_pulso deben ser: Si/No.\n\n
+    Reglas:\n
+    • Cardio_manual debe ser: Manual o Mecánica.\n
+    • Femenino, Causa_cardiaca y Recuperacion_pulso deben ser: Si/No (también se acepta 1/0 y true/false).\n
+    • Prediction_mode debe ser: BEFORE_RCP, MID_RCP o AFTER_RCP.\n\n
 
-        2. CSV clásico (separado por punto y coma ";"):\n
-        Edad; Capnometria; Femenino; Cardio_manual;\n
-        Recuperacion_pulso; Causa_cardiaca; [Momento].\n\n
+    Variables según el modo:\n
+    • BEFORE_RCP: requiere Colesterol.\n
+    • MID_RCP: requiere Colesterol, Adrenalina_n e IMC.\n
+    • AFTER_RCP: Colesterol, Adrenalina_n e IMC pueden ir vacías.\n\n
 
-        Notas:\n
-        • La columna "Momento" es opcional. Si no está, se asume\n
-        "Después del procedimiento de RCP".\n
-        • Para los campos binarios se aceptan:\n
-          - 1 = Sí, 0 = No\n
-          - Si / No\n
-          - true / false\n
-          - Manual / Mecánica (solo para Cardio_manual).
-    </string>
+    Nota:\n
+    • Si falta alguna columna o algún valor obligatorio según el modo, el archivo no se importará.
+</string>
+
 
 
     <!-- Cabecera -->
@@ -178,6 +187,10 @@
     <string name="header_momento">Momento</string>
     <string name="header_resultado">Resultado</string>
     <string name="header_informe">Informe</string>
+    <string name="header_indice">Indice</string>
+    <string name="header_imc">IMC</string>
+    <string name="header_colesterol">Colesterol</string>
+    <string name="header_adrenalina">Adrenalina (n)</string>
 
 
 

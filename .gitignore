@@ -16,9 +16,6 @@
 local.properties
 serviceAccountKey.json
 tools/dedupe/serviceAccountKey.json
-tools/dedupe/recount_users.cjs
-tools/dedupe/migrate_predicciones.cjs
-node_modules/
-tools/dedupe/node_modules/
+tools/dedupe/
 
 

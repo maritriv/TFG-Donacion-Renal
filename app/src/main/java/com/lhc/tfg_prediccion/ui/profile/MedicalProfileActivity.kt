@@ -235,6 +235,12 @@ class MedicalProfileActivity : AppCompatActivity() {
         return predictions.filter { it.matchesFilter(filter) }
     }
 
+    private fun dashIfBlank(s: String?): String = if (s.isNullOrBlank()) "—" else s
+
+    private fun formatIndice(d: Double?): String =
+        if (d == null) "—" else String.format(Locale.US, "%.3f", d)
+
+
     // -------------------------------------------------------------
     // Pintar tabla (manteniendo cabecera XML)
     // -------------------------------------------------------------
@@ -284,35 +290,36 @@ class MedicalProfileActivity : AppCompatActivity() {
         list.forEach { pred ->
             val fila = TableRow(this)
 
-            // #
-            fila.addCell(contador.toString())
-
-            // Edad
-            fila.addCell(pred.edad ?: "")
-
-            // Sexo (util compartido)
-            fila.addCell(mapSexo(pred.femenino))
-
-            // Capnometría
-            fila.addCell(pred.capnometria ?: "")
-
-            // Causa cardiaca
-            fila.addCell(pred.causa_cardiaca ?: "")
-
-            // Cardiocompresión
-            fila.addCell(pred.cardio_manual ?: "")
-
-            // Rec. del pulso
-            fila.addCell(pred.rec_pulso ?: "")
-
-            // Momento — SIEMPRE frase canónica
+            // Momento canónico
             val mode = pred.prediction_mode
                 ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
             val canonicalMoment = modeToLabel(mode)
-            fila.addCell(canonicalMoment)
 
-            // Resultado (util compartido)
-            fila.addCell(mapResultado(pred.valido))
+            // Nuevos campos (si vienen vacíos → "—")
+            val colesterol = dashIfBlank(pred.colesterol)
+            val adrenalinaN = dashIfBlank(pred.adrenalina_n)
+            val imc = dashIfBlank(pred.imc)
+
+            // Índice
+            val indiceStr = formatIndice(pred.indice)
+
+            // ---- columnas ----
+            fila.addCell(contador.toString())                 // #
+            fila.addCell(dashIfBlank(pred.edad))              // Edad
+            fila.addCell(mapSexo(pred.femenino))    // Sexo
+            fila.addCell(dashIfBlank(pred.capnometria))       // Capnometría
+
+            fila.addCell(colesterol)                          // Colesterol
+            fila.addCell(adrenalinaN)                         // Adrenalina (n)
+            fila.addCell(imc)                                 // IMC
+
+            fila.addCell(dashIfBlank(pred.causa_cardiaca))     // Causa cardiaca
+            fila.addCell(dashIfBlank(pred.cardio_manual))      // Cardiocompresión
+            fila.addCell(dashIfBlank(pred.rec_pulso))          // Rec pulso
+
+            fila.addCell(canonicalMoment)                     // Momento
+            fila.addCell(mapResultado(pred.valido))   // Resultado
+            fila.addCell(indiceStr)                           // Índice
 
             // Informe (PDF)
             TextView(this).apply {
@@ -320,12 +327,7 @@ class MedicalProfileActivity : AppCompatActivity() {
                 textSize = 12f
                 setPadding(16, 24, 16, 24)
                 layoutParams = params
-                setTextColor(
-                    ContextCompat.getColor(
-                        this@MedicalProfileActivity,
-                        R.color.dark_blue
-                    )
-                )
+                setTextColor(ContextCompat.getColor(this@MedicalProfileActivity, R.color.dark_blue))
 
                 setOnClickListener {
                     val doctorName = "${binding.etName.text} ${binding.etLastname.text}"
@@ -337,6 +339,7 @@ class MedicalProfileActivity : AppCompatActivity() {
                         PdfPrediction(
                             doctorName = doctorName,
                             fecha = pred.fecha,
+                            predictionMode = pred.prediction_mode,
                             momentoCanonico = canonicalMoment,
                             edad = pred.edad ?: "",
                             femenino = pred.femenino ?: "",
@@ -345,7 +348,10 @@ class MedicalProfileActivity : AppCompatActivity() {
                             cardioManual = pred.cardio_manual ?: "",
                             recPulso = pred.rec_pulso ?: "",
                             valido = pred.valido.equals("Si", ignoreCase = true),
-                            indice = pred.indice
+                            indice = pred.indice,
+                            colesterol = pred.colesterol,
+                            adrenalinaN = pred.adrenalina_n,
+                            imc = pred.imc
                         )
                     )
                 }
@@ -356,6 +362,7 @@ class MedicalProfileActivity : AppCompatActivity() {
             table.addView(fila)
             contador++
         }
+
 
         adjustPredictionsHeight(list.size)
     }

@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/beige">
 
-    <!-- CARD PRINCIPAL BLANCA, ESTILO REGISTRO -->
     <androidx.cardview.widget.CardView
         android:id="@+id/card_form"
         android:layout_width="0dp"
@@ -21,7 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Scroll general dentro de la card -->
         <ScrollView
             android:id="@+id/scroll_form"
             android:layout_width="match_parent"
@@ -29,7 +27,6 @@
             android:padding="16dp"
             android:fillViewport="true">
 
-            <!-- CONTENIDO DEL FORMULARIO (IGUAL QUE TU CÓDIGO) -->
             <LinearLayout
                 android:id="@+id/panel_form"
                 android:layout_width="match_parent"
@@ -37,13 +34,14 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Fila “Volver” (icono + texto) -->
                 <LinearLayout
                     android:id="@+id/btnBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:gravity="center_vertical"
-                    android:paddingBottom="8dp"
+                    android:paddingVertical="8dp"
+                    android:paddingEnd="8dp"
                     android:clickable="true"
                     android:focusable="true">
 
@@ -52,58 +50,66 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_arrow_back_24"
-                        android:contentDescription="@string/navigation_drawer_close"
+                        android:contentDescription="@string/volver"
                         app:tint="@color/dark_blue" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="  Volver"
+                        android:text="@string/volver"
                         android:textColor="@color/dark_blue"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:paddingStart="6dp"/>
                 </LinearLayout>
 
-                <!-- TÍTULO -->
                 <TextView
+                    android:id="@+id/tv_form_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="12dp"
-                    android:text="Formulario"
+                    android:text="@string/formulario"
                     android:textColor="@color/dark_blue"
                     android:textSize="34sp"
                     android:textStyle="bold" />
 
                 <!-- EDAD -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_edad"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="8dp"
-                    android:hint="Edad"
+                    android:hint="@string/edad"
                     app:boxStrokeWidth="0dp"
-                    app:boxBackgroundMode="filled">
+                    app:boxBackgroundMode="filled"
+                    android:visibility="visible">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_edad"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:background="@drawable/camposform"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:contentDescription="@string/edad" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- SEXO -->
+                <!-- SEXO (AFTER: VISIBLE como el antiguo) -->
                 <TextView
+                    android:id="@+id/tv_sexo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Sexo"
+                    android:text="@string/sexo"
                     android:textColor="@color/dark_blue"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:visibility="visible" />
 
                 <RelativeLayout
+                    android:id="@+id/container_sexo"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
 
                     <Spinner
                         android:id="@+id/sp_sexo_femenino"
@@ -119,7 +125,8 @@
                         android:layout_marginTop="20dp"
                         android:src="@drawable/arrow_down_ic"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/desplegar" />
                 </RelativeLayout>
 
                 <!-- CAPNOMETRÍA -->
@@ -128,30 +135,112 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:hint="@string/capnometria"
                     app:boxStrokeWidth="0dp"
-                    app:boxBackgroundMode="filled">
+                    app:boxBackgroundMode="filled"
+                    android:visibility="visible">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_capnometria"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:background="@drawable/camposform"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:contentDescription="@string/capnometria" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- CAUSA CARDIACA -->
+                <!-- COLESTEROL (AFTER: OCULTO) -->
                 <TextView
+                    android:id="@+id/tv_colesterol"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="¿Causa Cardiaca?"
+                    android:text="@string/colesterol_pregunta"
                     android:textColor="@color/dark_blue"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:visibility="gone"/>
 
                 <RelativeLayout
+                    android:id="@+id/container_colesterol"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <Spinner
+                        android:id="@+id/sp_colesterol"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:popupBackground="@drawable/camposform" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/arrow_down_ic"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/desplegar" />
+                </RelativeLayout>
+
+                <!-- ADRENALINA (solo MID) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_adrenalina"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/adrenalina_dosis"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundMode="filled"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_adrenalina_n"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:inputType="number"
+                        android:contentDescription="@string/adrenalina_dosis" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- IMC (solo MID) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_imc"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/imc"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundMode="filled"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_imc"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/camposform"
+                        android:inputType="numberDecimal"
+                        android:contentDescription="@string/imc" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- CAUSA CARDIACA (AFTER: VISIBLE) -->
+                <TextView
+                    android:id="@+id/tv_causa_cardiaca"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/causa_cardiaca_pregunta"
+                    android:textColor="@color/dark_blue"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+
+                <RelativeLayout
+                    android:id="@+id/container_causa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
 
                     <Spinner
                         android:id="@+id/sp_causa_cardiaca"
@@ -166,22 +255,27 @@
                         android:layout_marginTop="20dp"
                         android:src="@drawable/arrow_down_ic"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/desplegar" />
                 </RelativeLayout>
 
-                <!-- CARDIOCOMPRESIÓN EXTRAHOSPITALARIA -->
+                <!-- CARDIOCOMPRESIÓN (AFTER: VISIBLE) -->
                 <TextView
+                    android:id="@+id/tv_cardio_manual"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="¿Cardiocompresión extrahospitalaria?"
+                    android:text="@string/cardiocompresion_pregunta"
                     android:textColor="@color/dark_blue"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:visibility="visible" />
 
                 <RelativeLayout
+                    android:id="@+id/container_cardio"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
 
                     <Spinner
                         android:id="@+id/sp_cardio_manual"
@@ -196,22 +290,27 @@
                         android:layout_marginTop="20dp"
                         android:src="@drawable/arrow_down_ic"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/desplegar" />
                 </RelativeLayout>
 
-                <!-- RECUPERACIÓN CIRCULACIÓN -->
+                <!-- RECUPERACIÓN (AFTER: VISIBLE) -->
                 <TextView
+                    android:id="@+id/tv_recuperacion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="¿Recuperación de la circulación?"
+                    android:text="@string/recuperacion_pregunta"
                     android:textColor="@color/dark_blue"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:visibility="visible" />
 
                 <RelativeLayout
+                    android:id="@+id/container_recuperacion"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
 
                     <Spinner
                         android:id="@+id/sp_recuperacion"
@@ -226,23 +325,23 @@
                         android:layout_marginTop="20dp"
                         android:src="@drawable/arrow_down_ic"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/desplegar" />
                 </RelativeLayout>
 
-                <!-- BOTÓN REALIZAR PREDICCIÓN -->
+                <!-- BOTÓN -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_predic"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:layout_marginTop="24dp"
-                    android:text="REALIZAR PREDICCIÓN"
+                    android:text="@string/realizar_prediccion"
                     android:textColor="@color/beige"
                     android:textSize="16sp"
                     android:textAllCaps="false"
                     app:backgroundTint="@color/dark_blue"
                     app:cornerRadius="50dp" />
 
-                <!-- Un poco de espacio al final -->
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="24dp" />
