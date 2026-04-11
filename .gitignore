@@ -17,5 +17,6 @@ local.properties
 serviceAccountKey.json
 tools/dedupe/serviceAccountKey.json
 tools/dedupe/
+tools/
 
 
