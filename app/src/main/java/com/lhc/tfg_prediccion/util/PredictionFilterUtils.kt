@@ -1,7 +1,10 @@
 package com.lhc.tfg_prediccion.ui.util
 
 import android.view.Gravity
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
@@ -9,7 +12,6 @@ import androidx.core.content.ContextCompat
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.data.model.Prediccion
 import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
-import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
 import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
 import com.lhc.tfg_prediccion.ui.prediction.modeFromLabelLoose
 import java.util.Locale
@@ -22,7 +24,7 @@ data class HistorialFilter(
     val minCapno: Int? = null,
     val maxCapno: Int? = null,
     val causaCardiaca: Boolean? = null,
-    val cardioManual: Boolean? = null,
+    val cardioManual: Boolean? = null, // true = Manual, false = Mecánica
     val recPulso: Boolean? = null,
     val valido: Boolean? = null
 )
@@ -32,8 +34,8 @@ data class HistorialFilter(
 fun mapSexo(femenino: String?): String {
     val value = femenino?.trim()?.lowercase(Locale.getDefault()) ?: return ""
     return when (value) {
-        "si", "1", "true", "f", "femenino", "mujer" -> "M" // Mujer
-        "no", "0", "false", "masculino", "hombre" -> "H"  // Hombre
+        "si", "1", "true", "f", "femenino", "mujer" -> "M"
+        "no", "0", "false", "masculino", "hombre" -> "H"
         else -> femenino ?: ""
     }
 }
@@ -56,21 +58,28 @@ private fun stringSiNoToBool(value: String?): Boolean? {
     }
 }
 
+private fun stringCardioToBool(value: String?): Boolean? {
+    val v = value?.trim()?.lowercase(Locale.getDefault()) ?: return null
+    return when (v) {
+        "manual", "si", "sí", "true", "1" -> true
+        "mecánica", "mecanica", "no", "false", "0" -> false
+        else -> null
+    }
+}
+
 // -------------------- FILTRADO --------------------
 
 fun Prediccion.matchesFilter(f: HistorialFilter): Boolean {
-    // Edad
+
     val edadInt = this.edad?.toIntOrNull()
     if (f.minEdad != null && (edadInt == null || edadInt < f.minEdad)) return false
     if (f.maxEdad != null && (edadInt == null || edadInt > f.maxEdad)) return false
 
-    // Sexo
     if (f.sexo != null) {
         val sexoCanonico = mapSexo(this.femenino)
         if (sexoCanonico != f.sexo) return false
     }
 
-    // Capnometría
     val capnoInt = this.capnometria?.toIntOrNull()
     if (f.minCapno != null && (capnoInt == null || capnoInt < f.minCapno)) return false
     if (f.maxCapno != null && (capnoInt == null || capnoInt > f.maxCapno)) return false
@@ -81,8 +90,14 @@ fun Prediccion.matchesFilter(f: HistorialFilter): Boolean {
         return v != null && v == filterVal
     }
 
+    fun matchesCardioField(filterVal: Boolean?, fieldStr: String?): Boolean {
+        if (filterVal == null) return true
+        val v = stringCardioToBool(fieldStr)
+        return v != null && v == filterVal
+    }
+
     if (!matchesBoolField(f.causaCardiaca, this.causa_cardiaca)) return false
-    if (!matchesBoolField(f.cardioManual, this.cardio_manual)) return false
+    if (!matchesCardioField(f.cardioManual, this.cardio_manual)) return false
     if (!matchesBoolField(f.recPulso, this.rec_pulso)) return false
     if (!matchesBoolField(f.valido, this.valido)) return false
 
@@ -94,17 +109,19 @@ fun Prediccion.matchesFilter(f: HistorialFilter): Boolean {
 fun sortPredictions(base: List<Prediccion>, orden: String): List<Prediccion> {
     return when (orden) {
         "Edad" -> base.sortedBy { it.edad?.toIntOrNull() ?: 0 }
+
         "Capnometría" -> base.sortedBy { it.capnometria?.toIntOrNull() ?: 0 }
+
         "Momento" -> base.sortedBy {
             val mode = it.prediction_mode
                 ?: modeFromLabelLoose(it.momento_prediccion_legible ?: "")
             when (mode) {
-                MODE_BEFORE -> 0   // Antes de la RCP
-                MODE_MID    -> 1   // A los 20 minutos
-                MODE_AFTER  -> 2   // Después
-                else        -> 3
+                MODE_MID -> 0
+                MODE_AFTER -> 1
+                else -> 2
             }
         }
+
         else -> base
     }
 }
@@ -126,16 +143,10 @@ fun showSortDialog(
         )
         this.adapter = adapter
 
-        background = ContextCompat.getDrawable(
-            activity,
-            R.drawable.bg_input
-        )
+        background = ContextCompat.getDrawable(activity, R.drawable.bg_input)
 
         setPopupBackgroundDrawable(
-            ContextCompat.getDrawable(
-                activity,
-                R.drawable.bg_panel_full_rounded
-            )
+            ContextCompat.getDrawable(activity, R.drawable.bg_panel_full_rounded)
         )
 
         setPadding(32, 16, 32, 16)
@@ -162,10 +173,7 @@ fun showSortDialog(
 
     dialog.setOnShowListener {
         dialog.window?.setBackgroundDrawable(
-            ContextCompat.getDrawable(
-                activity,
-                R.drawable.bg_panel_full_rounded
-            )
+            ContextCompat.getDrawable(activity, R.drawable.bg_panel_full_rounded)
         )
     }
 
@@ -181,11 +189,9 @@ fun showFilterDialog(
 ) {
     val view = activity.layoutInflater.inflate(R.layout.dialog_filter_historial, null)
 
-    // Edad
     val etEdadMin = view.findViewById<EditText>(R.id.etEdadMin)
     val etEdadMax = view.findViewById<EditText>(R.id.etEdadMax)
 
-    // Sexo
     val spSexo = view.findViewById<Spinner>(R.id.spSexo)
     val sexoOpciones = arrayOf("Cualquiera", "Hombre", "Mujer")
     spSexo.adapter = ArrayAdapter(
@@ -194,11 +200,9 @@ fun showFilterDialog(
         sexoOpciones
     )
 
-    // Capnometría
     val etCapnoMin = view.findViewById<EditText>(R.id.etCapnoMin)
     val etCapnoMax = view.findViewById<EditText>(R.id.etCapnoMax)
 
-    // Spinners Sí/No/Cualquiera
     val siNoOpciones = arrayOf("Cualquiera", "Sí", "No")
     val validoNoValido = arrayOf("Cualquiera", "Válido", "No válido")
 
@@ -230,7 +234,6 @@ fun showFilterDialog(
         validoNoValido
     )
 
-    // Rellenar con currentFilter si ya hubiera uno
     currentFilter?.let { f ->
         etEdadMin.setText(f.minEdad?.toString() ?: "")
         etEdadMax.setText(f.maxEdad?.toString() ?: "")
@@ -264,6 +267,7 @@ fun showFilterDialog(
         .setTitle("Filtrar predicciones")
         .setView(view)
         .setPositiveButton("Aplicar") { _, _ ->
+
             fun EditText.toIntOrNullTrimmed(): Int? {
                 val txt = text.toString().trim()
                 return if (txt.isEmpty()) null else txt.toIntOrNull()
@@ -289,7 +293,7 @@ fun showFilterDialog(
 
             fun spinnerValidoToBool(sp: Spinner): Boolean? = when (sp.selectedItem.toString()) {
                 "Válido" -> true
-                "No Válido", "No válido" -> false
+                "No válido", "No Válido" -> false
                 else -> null
             }
 
@@ -315,10 +319,7 @@ fun showFilterDialog(
 
     dialog.setOnShowListener {
         dialog.window?.setBackgroundDrawable(
-            ContextCompat.getDrawable(
-                activity,
-                R.drawable.bg_panel_full_rounded
-            )
+            ContextCompat.getDrawable(activity, R.drawable.bg_panel_full_rounded)
         )
     }
 

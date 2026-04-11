@@ -31,20 +31,15 @@ class ImportActivity : AppCompatActivity() {
 
     private val rowsReady = mutableListOf<RowParsed>()
     private var currentCsvUri: Uri? = null
-    private var fecha = Timestamp.now()
 
     private data class RowParsed(
         val edad: Int,
         val capno: Int,
         val fem: Int,      // 0/1
-        val cardio: Int,   // 0/1 (Manual=1, Mecánica=0)
+        val cardio: Int,   // 0/1 -> Manual=1, Mecánica=0
         val rec: Int,      // 0/1
         val causa: Int,    // 0/1
-        val mode: String,  // MODE_BEFORE / MODE_MID / MODE_AFTER
-
-        val colesterol: Int?,     // BEFORE + MID
-        val adrenalinaN: Int?,    // MID
-        val imc: Double?          // MID
+        val mode: String   // MODE_MID / MODE_AFTER
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,20 +89,17 @@ class ImportActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
-        val uri = result.data?.data ?: return@registerForActivityResult
 
+        val uri = result.data?.data ?: return@registerForActivityResult
         currentCsvUri = uri
 
         val docFile = DocumentFile.fromSingleUri(this, uri)
-        val displayName = docFile?.name ?: "Archivo CSV seleccionado"
-        binding.tvFileName.text = displayName
-
+        binding.tvFileName.text = docFile?.name ?: "Archivo CSV seleccionado"
         binding.btnClearFile.visibility = View.VISIBLE
 
         validarYParsearCSV(uri)
     }
 
-    // ------------ Validación + parseo (SOLO NUEVO FORMATO) ------------
     private fun validarYParsearCSV(uri: Uri) {
         try {
             rowsReady.clear()
@@ -117,13 +109,11 @@ class ImportActivity : AppCompatActivity() {
                 ?.readLines()
                 ?: run {
                     toast("CSV inválido: no se pudo abrir el archivo.")
-                    binding.btnClearFile.visibility = View.VISIBLE
                     return
                 }
 
             if (allLines.isEmpty()) {
                 toast("CSV inválido: archivo vacío.")
-                binding.btnClearFile.visibility = View.VISIBLE
                 return
             }
 
@@ -131,113 +121,104 @@ class ImportActivity : AppCompatActivity() {
             val header = allLines.first().split(sep).map { it.trim() }
             val dataLines = allLines.drop(1)
 
-            val expectedCols = listOf(
-                "Edad","Femenino","Capnometria","Colesterol","Adrenalina_n","IMC",
-                "Causa_cardiaca","Cardio_manual","Recuperacion_pulso",
-                "Prediction_mode","Momento","Valido","Indice","UID_medico","Fecha"
+            val requiredCols = listOf(
+                "Edad",
+                "Femenino",
+                "Capnometria",
+                "Causa_cardiaca",
+                "Cardio_manual",
+                "Recuperacion_pulso",
+                "Prediction_mode"
             )
 
             fun idx(name: String) = header.indexOfFirst { it.equals(name, ignoreCase = true) }
 
-            val missing = expectedCols.filter { idx(it) == -1 }
+            val missing = requiredCols.filter { idx(it) == -1 }
             if (missing.isNotEmpty()) {
                 toast("CSV inválido: faltan columnas: ${missing.joinToString(", ")}")
-                binding.btnClearFile.visibility = View.VISIBLE
                 return
             }
 
-            val idxEdad  = idx("Edad")
-            val idxFem   = idx("Femenino")
-            val idxCap   = idx("Capnometria")
-            val idxCol   = idx("Colesterol")
-            val idxAdr   = idx("Adrenalina_n")
-            val idxImc   = idx("IMC")
+            val idxEdad = idx("Edad")
+            val idxFem = idx("Femenino")
+            val idxCap = idx("Capnometria")
             val idxCausa = idx("Causa_cardiaca")
-            val idxCard  = idx("Cardio_manual")
-            val idxRec   = idx("Recuperacion_pulso")
-            val idxMode  = idx("Prediction_mode")
+            val idxCard = idx("Cardio_manual")
+            val idxRec = idx("Recuperacion_pulso")
+            val idxMode = idx("Prediction_mode")
 
-            fun col(cols: List<String>, i: Int) = cols.getOrNull(i)?.trim().orEmpty()
+            fun col(cols: List<String>, i: Int): String =
+                cols.getOrNull(i)?.trim().orEmpty()
 
             fun to01(text: String): Int? {
-                val t = text.trim().lowercase()
+                val t = normalize(text)
                 return when (t) {
-                    "1", "si", "sí", "true" -> 1
+                    "1", "si", "true" -> 1
                     "0", "no", "false" -> 0
-                    else -> text.toIntOrNull()
+                    else -> text.trim().toIntOrNull()
                 }
             }
 
             fun femeninoTo01(text: String): Int? {
-                val t = text.trim().lowercase()
+                val t = normalize(text)
                 return when (t) {
-                    "si", "sí", "1", "true" -> 1
-                    "no", "0", "false" -> 0
-                    "mujer", "femenino" -> 1
-                    "hombre", "masculino" -> 0
-                    else -> text.toIntOrNull()
+                    "si", "1", "true", "mujer", "femenino" -> 1
+                    "no", "0", "false", "hombre", "masculino" -> 0
+                    else -> text.trim().toIntOrNull()
                 }
             }
 
             fun cardioTo01(text: String): Int? {
-                // Acepta "mecanica" sin tilde, "mecánica" con tilde, 0/1, etc.
-                val t = text.trim().lowercase(Locale.getDefault())
+                val t = normalize(text)
                 return when (t) {
-                    "manual" -> 1
-                    "mecanica", "mecánica" -> 0
-                    "1", "si", "sí", "true" -> 1
-                    "0", "no", "false" -> 0
-                    else -> text.toIntOrNull()
+                    "manual", "1", "si", "true" -> 1
+                    "mecanica", "0", "no", "false" -> 0
+                    else -> text.trim().toIntOrNull()
                 }
             }
 
             fun parseMode(text: String): String {
-                val t = text.trim()
-                return when (t.uppercase(Locale.getDefault())) {
-                    MODE_BEFORE, MODE_MID, MODE_AFTER -> t.uppercase(Locale.getDefault())
-                    else -> modeFromLabelLoose(t)
+                val t = text.trim().uppercase(Locale.getDefault())
+                return when (t) {
+                    MODE_MID, MODE_AFTER -> t
+                    else -> {
+                        when (modeFromLabelLoose(text)) {
+                            MODE_MID -> MODE_MID
+                            else -> MODE_AFTER
+                        }
+                    }
                 }
             }
 
-            fun parseIntOrNull(s: String): Int? =
-                s.trim().takeIf { it.isNotBlank() }?.toIntOrNull()
-
-            fun parseDoubleOrNull(s: String): Double? =
-                s.trim().takeIf { it.isNotBlank() }?.replace(",", ".")?.toDoubleOrNull()
-
             var pocasCols = false
             var valoresInvalidos = false
-            var faltanVariablesModo = false
 
             dataLines.forEach { raw ->
                 if (raw.isBlank()) return@forEach
-                val cols = raw.split(sep).map { it.trim() }
-                if (cols.size < header.size) { pocasCols = true; return@forEach }
 
-                val edad   = col(cols, idxEdad).toIntOrNull()
-                val capno  = col(cols, idxCap).toIntOrNull()
-                val fem    = femeninoTo01(col(cols, idxFem))
+                val cols = raw.split(sep).map { it.trim() }
+
+                if (cols.size < header.size) {
+                    pocasCols = true
+                    return@forEach
+                }
+
+                val edad = col(cols, idxEdad).toIntOrNull()
+                val capno = col(cols, idxCap).toIntOrNull()
+                val fem = femeninoTo01(col(cols, idxFem))
                 val cardio = cardioTo01(col(cols, idxCard))
-                val rec    = to01(col(cols, idxRec))
-                val causa  = to01(col(cols, idxCausa))
-                val mode   = parseMode(col(cols, idxMode))
+                val rec = to01(col(cols, idxRec))
+                val causa = to01(col(cols, idxCausa))
+                val mode = parseMode(col(cols, idxMode))
 
                 if (edad == null || capno == null || fem == null || cardio == null || rec == null || causa == null) {
                     valoresInvalidos = true
                     return@forEach
                 }
 
-                val colesterol = parseIntOrNull(col(cols, idxCol))
-                val adrenalinaN = parseIntOrNull(col(cols, idxAdr))
-                val imc = parseDoubleOrNull(col(cols, idxImc))
-
-                when (mode) {
-                    MODE_BEFORE -> if (colesterol == null) { faltanVariablesModo = true; return@forEach }
-                    MODE_MID -> if (colesterol == null || adrenalinaN == null || imc == null) {
-                        faltanVariablesModo = true; return@forEach
-                    }
-                    MODE_AFTER -> Unit
-                    else -> { valoresInvalidos = true; return@forEach }
+                if (mode != MODE_MID && mode != MODE_AFTER) {
+                    valoresInvalidos = true
+                    return@forEach
                 }
 
                 rowsReady += RowParsed(
@@ -247,139 +228,87 @@ class ImportActivity : AppCompatActivity() {
                     cardio = cardio,
                     rec = rec,
                     causa = causa,
-                    mode = mode,
-                    colesterol = colesterol,
-                    adrenalinaN = adrenalinaN,
-                    imc = imc
+                    mode = mode
                 )
             }
 
             when {
                 rowsReady.isEmpty() && pocasCols ->
                     toast("CSV inválido: columnas insuficientes. Revisa el formato.")
-                rowsReady.isEmpty() && faltanVariablesModo ->
-                    toast("CSV inválido: faltan variables requeridas según el modo (BEFORE/MID).")
                 rowsReady.isEmpty() && valoresInvalidos ->
                     toast("CSV inválido: valores no válidos.")
                 rowsReady.isEmpty() ->
                     toast("CSV inválido: error desconocido. Selecciona otro archivo.")
                 else -> {
-                    binding.btnAddPredictions.apply {
-                        visibility = View.VISIBLE
-                        isEnabled = true
-                        text = "AÑADIR ${rowsReady.size} FILAS"
-                    }
-                    binding.btnClearFile.visibility = View.VISIBLE
+                    binding.btnAddPredictions.visibility = View.VISIBLE
+                    binding.btnAddPredictions.isEnabled = true
+                    binding.btnAddPredictions.text = "AÑADIR ${rowsReady.size} FILAS"
                     toast("CSV válido")
                 }
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
-            toast("CSV inválido: error desconocido. Selecciona otro archivo.")
-            binding.btnClearFile.visibility = View.VISIBLE
+            toast("CSV inválido: error al leer el archivo.")
         }
     }
 
-    // ---------- Canonizadores para guardar con tildes ----------
-    private fun cardioLabel(cardio01: Int): String = if (cardio01 == 1) "Manual" else "Mecánica"
-    private fun yesNoLabel(v01: Int): String = if (v01 == 1) "Si" else "No"   // OJO: en tu BD es "Si/No" sin tilde
-    private fun sexoLabel(fem01: Int): String = if (fem01 == 1) "Si" else "No"
-
-    // ---------- Normalización para dedupe lógico ----------
-    private fun norm(v: String?): String {
-        val s = (v ?: "").trim().lowercase()
-        val noAccents = Normalizer.normalize(s, Normalizer.Form.NFD)
-            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
-        return noAccents
-    }
-
-    private fun buildDupKey(
-        uidMedico: String?,
-        mode: String,
-        edad: String,
-        femenino: String,
-        capno: String,
-        causa: String,
-        cardio: String,
-        rec: String,
-        valido: String
-    ): String {
-        return listOf(
-            norm(uidMedico),
-            norm(mode),
-            norm(edad),
-            norm(femenino),
-            norm(capno),
-            norm(causa),
-            norm(cardio),
-            norm(rec),
-            norm(valido),
-        ).joinToString("|")
-    }
-
-    // ------------ Importar en Firestore lo ya parseado ------------
     private fun importarFilasEnFirestore(rows: List<RowParsed>) {
-        if (rows.isEmpty()) { toast("No hay filas para importar"); return }
+        if (rows.isEmpty()) {
+            toast("No hay filas para importar")
+            return
+        }
 
         val db = FirebaseFirestore.getInstance()
-        val uid = userUid ?: run { toast("Usuario desconocido"); return }
+        val uid = userUid ?: run {
+            toast("Usuario desconocido")
+            return
+        }
 
         startImportUI()
 
         db.collection("predicciones")
             .whereEqualTo("uid_medico", uid)
             .get()
-            .addOnSuccessListener { snap ->
+            .addOnSuccessListener { snapshot ->
 
-                val existingKeys = HashSet<String>(snap.size())
-                snap.documents.forEach { d ->
+                val existingKeys = HashSet<String>(snapshot.size())
+
+                snapshot.documents.forEach { d ->
                     val data = d.data ?: return@forEach
+
                     val key = buildDupKey(
                         uidMedico = data["uid_medico"] as? String,
-                        mode      = data["prediction_mode"] as? String ?: "",
-                        edad      = data["edad"] as? String ?: "",
-                        femenino  = data["femenino"] as? String ?: "",
-                        capno     = data["capnometria"] as? String ?: "",
-                        causa     = data["causa_cardiaca"] as? String ?: "",
-                        cardio    = data["cardio_manual"] as? String ?: "",
-                        rec       = data["rec_pulso"] as? String ?: "",
-                        valido    = data["valido"] as? String ?: "",
+                        mode = data["prediction_mode"] as? String ?: "",
+                        edad = data["edad"] as? String ?: "",
+                        femenino = data["femenino"] as? String ?: "",
+                        capno = data["capnometria"] as? String ?: "",
+                        causa = data["causa_cardiaca"] as? String ?: "",
+                        cardio = data["cardio_manual"] as? String ?: "",
+                        rec = data["rec_pulso"] as? String ?: "",
+                        valido = data["valido"] as? String ?: ""
                     )
                     existingKeys.add(key)
                 }
 
-                // 1) Calcular valido/indice usando variables reales del CSV
                 val computed = rows.map { r ->
-
-                    val femTxt    = sexoLabel(r.fem)
+                    val femTxt = sexoLabel(r.fem)
                     val cardioTxt = cardioLabel(r.cardio)
-                    val recTxt    = yesNoLabel(r.rec)
-                    val causaTxt  = yesNoLabel(r.causa)
+                    val recTxt = yesNoLabel(r.rec)
+                    val causaTxt = yesNoLabel(r.causa)
 
                     val (valido, indice) = when (r.mode) {
-
-                        MODE_BEFORE -> calcularIndiceYValidez(
-                            mode = MODE_BEFORE,
-                            inicio = InputsInicio(
-                                edad = r.edad,
-                                capnoInicio = r.capno,
-                                colesterol = r.colesterol ?: 0
-                            )
-                        )
-
                         MODE_MID -> calcularIndiceYValidez(
                             mode = MODE_MID,
                             mitad = InputsMitad(
-                                capnoMedio = r.capno,
-                                colesterol = r.colesterol ?: 0,
-                                adrenalinaN = r.adrenalinaN ?: 0,
+                                edad = r.edad,
+                                femenino = r.fem,
+                                capnometria = r.capno,
                                 causaCardiaca = r.causa,
-                                imc = r.imc ?: 0.0,
-                                cardioExtraManual = r.cardio
+                                cardioManual = r.cardio,
+                                recuperacion = r.rec
                             )
                         )
-
                         else -> calcularIndiceYValidez(
                             mode = MODE_AFTER,
                             after = InputsAfter(
@@ -422,16 +351,15 @@ class ImportActivity : AppCompatActivity() {
                     Triple(r, docId, Triple(valido, indice, dupKey))
                 }
 
-                // 2) Duplicados dentro del CSV (por dupKey)
                 val groupedCsv = computed.groupBy { it.third.third }
                 val uniqueCsv = mutableListOf<Triple<RowParsed, String, Triple<Boolean, Double, String>>>()
                 var duplicatesInCsv = 0
+
                 groupedCsv.values.forEach { list ->
                     uniqueCsv += list.first()
                     duplicatesInCsv += (list.size - 1)
                 }
 
-                // 3) Duplicados contra Firestore (por dupKey)
                 val toImport = mutableListOf<Triple<RowParsed, String, Pair<Boolean, Double>>>()
                 var duplicatesInFirestore = 0
 
@@ -483,11 +411,15 @@ class ImportActivity : AppCompatActivity() {
     }
 
     private fun importarFilasNoDuplicadas(rows: List<Triple<RowParsed, String, Pair<Boolean, Double>>>) {
-        if (rows.isEmpty()) { toast("No hay filas para importar"); return }
+        if (rows.isEmpty()) {
+            toast("No hay filas para importar")
+            return
+        }
 
         startImportUI()
 
         val db = FirebaseFirestore.getInstance()
+        val fechaImport = Timestamp.now()
 
         var processed = 0
         var importadas = 0
@@ -497,10 +429,10 @@ class ImportActivity : AppCompatActivity() {
         rows.forEach { (r, docId, result) ->
             val (valido, indice) = result
 
-            val femTxt    = sexoLabel(r.fem)
+            val femTxt = sexoLabel(r.fem)
             val cardioTxt = cardioLabel(r.cardio)
-            val recTxt    = yesNoLabel(r.rec)
-            val causaTxt  = yesNoLabel(r.causa)
+            val recTxt = yesNoLabel(r.rec)
+            val causaTxt = yesNoLabel(r.causa)
             val validoTxt = if (valido) "Si" else "No"
 
             val pred = hashMapOf<String, Any>(
@@ -513,35 +445,25 @@ class ImportActivity : AppCompatActivity() {
                 "causa_cardiaca" to causaTxt,
                 "cardio_manual" to cardioTxt,
                 "rec_pulso" to recTxt,
-                "fecha" to fecha,
+                "fecha" to fechaImport,
                 "valido" to validoTxt,
                 "indice" to indice,
                 "prediction_mode" to r.mode,
                 "momento_prediccion_legible" to modeToLabel(r.mode),
                 "modelos" to mutableListOf<String>(),
-                "no_modelos" to mutableListOf("Modelo1","Modelo2","Modelo3","Modelo4")
+                "no_modelos" to mutableListOf("Modelo1", "Modelo2", "Modelo3", "Modelo4")
             )
-
-            // Guardar extras por modo
-            when (r.mode) {
-                MODE_BEFORE -> {
-                    r.colesterol?.let { pred["colesterol"] = it.toString() }
-                    pred["capnometria_inicio"] = r.capno.toString()
-                }
-                MODE_MID -> {
-                    r.colesterol?.let { pred["colesterol"] = it.toString() }
-                    r.adrenalinaN?.let { pred["adrenalina_n"] = it.toString() }
-                    r.imc?.let { pred["imc"] = it.toString() }
-                    pred["capnometria_medio"] = r.capno.toString()
-                }
-                else -> Unit
-            }
 
             val docRef = db.collection("predicciones").document(docId)
 
             db.runTransaction { tx ->
                 val snap = tx.get(docRef)
-                if (snap.exists()) false else { tx.set(docRef, pred); true }
+                if (snap.exists()) {
+                    false
+                } else {
+                    tx.set(docRef, pred)
+                    true
+                }
             }.addOnSuccessListener { created ->
                 if (created) {
                     importadas++
@@ -572,6 +494,7 @@ class ImportActivity : AppCompatActivity() {
             finImportUI()
             return
         }
+
         db.collection("users").document(uid).update(
             mapOf(
                 "numeroPredicciones" to FieldValue.increment(total.toLong()),
@@ -584,7 +507,9 @@ class ImportActivity : AppCompatActivity() {
         }.addOnFailureListener {
             toast("Importadas $total filas, pero no se pudieron actualizar los contadores")
             resetUI()
-        }.addOnCompleteListener { finImportUI() }
+        }.addOnCompleteListener {
+            finImportUI()
+        }
     }
 
     private fun resetUI() {
@@ -613,15 +538,59 @@ class ImportActivity : AppCompatActivity() {
         binding.btnAddPredictions.isEnabled = rowsReady.isNotEmpty()
     }
 
+    private fun normalize(value: String?): String {
+        val s = (value ?: "").trim().lowercase(Locale.getDefault())
+        return Normalizer.normalize(s, Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+    }
+
+    private fun cardioLabel(cardio01: Int): String =
+        if (cardio01 == 1) "Manual" else "Mecánica"
+
+    private fun yesNoLabel(value01: Int): String =
+        if (value01 == 1) "Si" else "No"
+
+    private fun sexoLabel(fem01: Int): String =
+        if (fem01 == 1) "Si" else "No"
+
+    private fun buildDupKey(
+        uidMedico: String?,
+        mode: String,
+        edad: String,
+        femenino: String,
+        capno: String,
+        causa: String,
+        cardio: String,
+        rec: String,
+        valido: String
+    ): String {
+        return listOf(
+            normalize(uidMedico),
+            normalize(mode),
+            normalize(edad),
+            normalize(femenino),
+            normalize(capno),
+            normalize(causa),
+            normalize(cardio),
+            normalize(rec),
+            normalize(valido)
+        ).joinToString("|")
+    }
+
     private fun toast(msg: String) =
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
     private fun mostrarAyudaCsv() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_csv_help, null)
-        val dialog = AlertDialog.Builder(this).setView(dialogView).create()
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
         dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
-        val btnOk = dialogView.findViewById<MaterialButton>(R.id.btnEntendido)
-        btnOk.setOnClickListener { dialog.dismiss() }
+
+        dialogView.findViewById<MaterialButton>(R.id.btnEntendido)
+            .setOnClickListener { dialog.dismiss() }
+
         dialog.show()
     }
 }

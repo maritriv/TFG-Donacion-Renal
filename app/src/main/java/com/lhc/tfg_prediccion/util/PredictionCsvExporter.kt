@@ -9,8 +9,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import com.lhc.tfg_prediccion.data.model.Prediccion
-import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
-import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
 import com.lhc.tfg_prediccion.ui.prediction.modeFromLabelLoose
 import com.lhc.tfg_prediccion.ui.prediction.modeToLabel
 import java.io.OutputStreamWriter
@@ -58,11 +56,10 @@ object PredictionCsvExporter {
             resolver.openOutputStream(uri)?.use { outputStream ->
                 val writer = OutputStreamWriter(outputStream, Charsets.UTF_8)
 
-                // Cabecera
+                // Cabecera actual
                 writer.write(
-                    "Edad,Femenino,Capnometria,Colesterol,Adrenalina_n,IMC," +
-                            "Causa_cardiaca,Cardio_manual,Recuperacion_pulso," +
-                            "Prediction_mode,Momento,Valido,Indice,UID_medico,Fecha\n"
+                    "Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual," +
+                            "Recuperacion_pulso,Prediction_mode,Momento,Valido,Indice,UID_medico,Fecha\n"
                 )
 
                 fun stripAccents(s: String): String {
@@ -70,7 +67,6 @@ object PredictionCsvExporter {
                     return normalized.replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
                 }
 
-                // CSV RFC4180 simple: quita saltos, quita tildes, y si hay coma/quote -> comillas
                 fun csv(value: String?): String {
                     val raw = (value ?: "")
                         .replace("\r", " ")
@@ -78,8 +74,8 @@ object PredictionCsvExporter {
                         .trim()
 
                     val noAccents = stripAccents(raw)
-
                     val mustQuote = noAccents.contains(',') || noAccents.contains('"')
+
                     return if (!mustQuote) {
                         noAccents
                     } else {
@@ -94,43 +90,20 @@ object PredictionCsvExporter {
                     val mode = pred.prediction_mode
                         ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
 
-                    // Etiqueta canónica (del ModelCoefficients) + sin tildes
                     val canonicalMomentLabel = modeToLabel(mode)
-
-                    // Variables por modo (vacías si no aplican)
-                    val col = when (mode) {
-                        MODE_BEFORE, MODE_MID -> pred.colesterol ?: ""
-                        else -> ""
-                    }
-                    val adrenalina = when (mode) {
-                        MODE_MID -> pred.adrenalina_n ?: ""
-                        else -> ""
-                    }
-                    val imc = when (mode) {
-                        MODE_MID -> pred.imc ?: ""
-                        else -> ""
-                    }
-
                     val uidOut = pred.uid_medico.ifBlank { userUid ?: "" }
 
                     val row = listOf(
                         csv(pred.edad),
                         csv(pred.femenino),
                         csv(pred.capnometria),
-
-                        csv(col),
-                        csv(adrenalina),
-                        csv(imc),
-
                         csv(pred.causa_cardiaca),
                         csv(pred.cardio_manual),
                         csv(pred.rec_pulso),
-
-                        csv(mode),                 // BEFORE_RCP / MID_RCP / AFTER_RCP
-                        csv(canonicalMomentLabel), // "Inicio..." / "Mitad..." / "Despues..." (sin tildes)
+                        csv(mode),
+                        csv(canonicalMomentLabel),
                         csv(pred.valido),
                         csv(formatIndice(pred.indice)),
-
                         csv(uidOut),
                         csv(formatDisplayDate(pred.fecha))
                     ).joinToString(",")

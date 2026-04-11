@@ -96,8 +96,7 @@ class HistorialActivity : AppCompatActivity() {
                 predictions.addAll(docs.mapNotNull { it.toObject(Prediccion::class.java) })
                 renderPredictions(getFilteredList())
             }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
+            .addOnFailureListener {
                 Toast.makeText(this, "Error al cargar las predicciones", Toast.LENGTH_SHORT).show()
             }
     }
@@ -108,9 +107,9 @@ class HistorialActivity : AppCompatActivity() {
     }
 
     private fun renderPredictions(list: List<Prediccion>) {
+
         val table = binding.tablePredictions
 
-        // Mantener cabecera (fila 0)
         if (table.childCount > 1) {
             table.removeViews(1, table.childCount - 1)
         }
@@ -127,12 +126,11 @@ class HistorialActivity : AppCompatActivity() {
         }
 
         var contador = 1
+
         val params = TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
             TableRow.LayoutParams.WRAP_CONTENT
-        ).apply {
-            setMargins(8, 16, 8, 16)
-        }
+        ).apply { setMargins(8, 16, 8, 16) }
 
         fun TableRow.addCell(text: String, bold: Boolean = false) {
             TextView(this@HistorialActivity).apply {
@@ -154,42 +152,29 @@ class HistorialActivity : AppCompatActivity() {
             if (d == null) "—" else String.format(Locale.US, "%.3f", d)
 
         list.forEach { pred ->
+
             val fila = TableRow(this)
 
-            // Modo canónico
             val mode = pred.prediction_mode
                 ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
+
             val canonicalMoment = modeToLabel(mode)
-            val colesterol = dashIfBlank(pred.colesterol)
-            val adrenalinaN = dashIfBlank(pred.adrenalina_n)
-            val imc = dashIfBlank(pred.imc)
+
             val indiceStr = formatIndice(pred.indice)
 
-            // ---- columnas ----
             fila.addCell(contador.toString())
-
             fila.addCell(dashIfBlank(pred.edad))
             fila.addCell(mapSexo(pred.femenino))
             fila.addCell(dashIfBlank(pred.capnometria))
-
-            // Nuevas
-            fila.addCell(colesterol)
-            fila.addCell(adrenalinaN)
-            fila.addCell(imc)
-
-            // Clásicas
             fila.addCell(dashIfBlank(pred.causa_cardiaca))
             fila.addCell(dashIfBlank(pred.cardio_manual))
             fila.addCell(dashIfBlank(pred.rec_pulso))
-
             fila.addCell(canonicalMoment)
             fila.addCell(mapResultado(pred.valido))
-
-            // Nueva: índice
             fila.addCell(indiceStr)
 
-            // Informe PDF
             TextView(this).apply {
+
                 text = "PDF"
                 textSize = 12f
                 setPadding(16, 24, 16, 24)
@@ -197,6 +182,7 @@ class HistorialActivity : AppCompatActivity() {
                 setTextColor(ContextCompat.getColor(this@HistorialActivity, R.color.dark_blue))
 
                 setOnClickListener {
+
                     val doctorName = auth.currentUser?.displayName
                         ?: auth.currentUser?.email
                         ?: "Médico actual"
@@ -215,19 +201,16 @@ class HistorialActivity : AppCompatActivity() {
                             cardioManual = pred.cardio_manual ?: "",
                             recPulso = pred.rec_pulso ?: "",
                             valido = pred.valido.equals("Si", ignoreCase = true),
-                            indice = pred.indice,
-                            colesterol = pred.colesterol,
-                            adrenalinaN = pred.adrenalina_n,
-                            imc = pred.imc
+                            indice = pred.indice
                         )
                     )
-
                 }
 
                 fila.addView(this)
             }
 
             table.addView(fila)
+
             contador++
         }
     }

@@ -20,13 +20,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-// ====================== Nombre completo ======================
 object UserUtils {
-    /**
-     * Carga el nombre completo desde Firestore con los mismos campos que usas:
-     *  - "name" + "lastname"
-     * Si falla, usa el fallback.
-     */
     fun cargarNombreCompleto(
         db: FirebaseFirestore,
         uid: String?,
@@ -34,14 +28,17 @@ object UserUtils {
         onResult: (String) -> Unit
     ) {
         val uidSafe = uid ?: return onResult(nameFallback ?: "")
+
         db.collection("users").document(uidSafe).get()
             .addOnSuccessListener { doc ->
                 val n = doc.getString("name") ?: nameFallback ?: ""
                 val ap = doc.getString("lastname") ?: ""
+
                 val full = listOf(n, ap)
                     .filter { it.isNotBlank() }
                     .joinToString(" ")
                     .ifBlank { n }
+
                 onResult(full)
             }
             .addOnFailureListener {
@@ -50,14 +47,10 @@ object UserUtils {
     }
 }
 
-// ====================== Modelo de datos PDF ======================
 data class PdfPrediction(
     val doctorName: String,
     val fecha: Timestamp,
-
-    // NUEVO: modo (BEFORE_RCP / MID_RCP / AFTER_RCP)
     val predictionMode: String? = null,
-
     val momentoCanonico: String,
     val edad: String,
     val femenino: String,
@@ -66,15 +59,9 @@ data class PdfPrediction(
     val cardioManual: String,
     val recPulso: String,
     val valido: Boolean,
-    val indice: Double? = null,
-
-    // NUEVOS: solo se muestran si aplica
-    val colesterol: String? = null,
-    val adrenalinaN: String? = null,
-    val imc: String? = null
+    val indice: Double? = null
 )
 
-// ====================== Helpers ======================
 fun formatFilenameDate(ts: Timestamp): String {
     val sdf = SimpleDateFormat("dd-MM-yyyy_HH-mm", Locale.getDefault())
     return sdf.format(ts.toDate())
@@ -87,9 +74,9 @@ fun formatDisplayDate(ts: Timestamp): String {
 
 fun cleanDoctorName(name: String): String {
     var result = Normalizer.normalize(name, Normalizer.Form.NFD)
-    result = result.replace("[\\p{InCombiningDiacriticalMarks}]".toRegex(), "") // quita tildes
-    result = result.replace("[^A-Za-z0-9_ ]".toRegex(), "") // símbolos raros
-    result = result.trim().replace("\\s+".toRegex(), "_")   // espacios → _
+    result = result.replace("[\\p{InCombiningDiacriticalMarks}]".toRegex(), "")
+    result = result.replace("[^A-Za-z0-9_ ]".toRegex(), "")
+    result = result.trim().replace("\\s+".toRegex(), "_")
     return result.ifBlank { "Medico" }
 }
 
@@ -99,7 +86,6 @@ private fun safeFileName(base: String, doctorName: String, ts: Timestamp): Strin
     return "${base}_${date}_$doc.pdf"
 }
 
-// ====================== Generación PDF ======================
 fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
     return try {
         val fileName = safeFileName("Reporte", data.doctorName, data.fecha)
@@ -131,9 +117,6 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             val pdf = PdfDocument(PdfWriter(os))
             val doc = Document(pdf, PageSize.A4)
 
-            // =============================================================
-            // TÍTULO PRINCIPAL
-            // =============================================================
             doc.add(
                 Paragraph("RESULTADOS DE LA PREDICCIÓN DE DONANTE DE RIÑÓN")
                     .setBold()
@@ -142,10 +125,8 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             )
             doc.add(Paragraph("\n"))
 
-            // =============================================================
-            // DATOS DEL PROFESIONAL
-            // =============================================================
             val displayDate = formatDisplayDate(data.fecha)
+
             doc.add(
                 Paragraph("DATOS DEL PROFESIONAL SANITARIO RESPONSABLE:")
                     .setBold()
@@ -159,64 +140,46 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             )
             doc.add(Paragraph("\n"))
 
-            // =============================================================
-            // DATOS DEL POSIBLE DONANTE (según modo)
-            // =============================================================
             doc.add(
                 Paragraph("DATOS DEL POSIBLE DONANTE:")
                     .setBold()
                     .setFontSize(14f)
             )
 
-            fun dashIfBlank(s: String?): String = if (s.isNullOrBlank()) "—" else s
-
-            // Colesterol puede venir como "0/1" o "Si/No"
-            fun colesterolToText(v: String?): String {
-                val t = (v ?: "").trim()
-                return when (t) {
-                    "1" -> "Sí"
-                    "0" -> "No"
-                    else -> dashIfBlank(t)
-                }
-            }
+            fun dashIfBlank(s: String?): String =
+                if (s.isNullOrBlank()) "—" else s
 
             val mode = (data.predictionMode ?: "").trim()
-            val isBefore = mode == "BEFORE_RCP"
             val isMid = mode == "MID_RCP"
-            val isAfter = (mode == "AFTER_RCP" || mode.isBlank()) // fallback por compatibilidad
+            val isAfter = (mode == "AFTER_RCP" || mode.isBlank())
 
-            // Siempre mostramos el momento canónico
             doc.add(Paragraph("Momento de la predicción: ${data.momentoCanonico}"))
+            doc.add(Paragraph("Edad: ${dashIfBlank(data.edad)} años"))
+
+            val sexo = if (
+                data.femenino == "Si" || data.femenino.equals("Mujer", ignoreCase = true)
+            ) {
+                "Femenino"
+            } else {
+                "Masculino"
+            }
+            doc.add(Paragraph("Sexo: $sexo"))
 
             when {
-                // ---------------- BEFORE ----------------
-                isBefore -> {
-                    doc.add(Paragraph("Edad: ${dashIfBlank(data.edad)} años"))
-                    doc.add(Paragraph("Capnometría (inicio): ${dashIfBlank(data.capnometria)}"))
-                    doc.add(Paragraph("Colesterol: ${colesterolToText(data.colesterol)}"))
-                }
-
-                // ---------------- MID ----------------
                 isMid -> {
-                    doc.add(Paragraph("Capnometría (punto medio): ${dashIfBlank(data.capnometria)}"))
-                    doc.add(Paragraph("Colesterol: ${colesterolToText(data.colesterol)}"))
-                    doc.add(Paragraph("Adrenalina (n): ${dashIfBlank(data.adrenalinaN)}"))
-                    doc.add(Paragraph("IMC: ${dashIfBlank(data.imc)}"))
+                    doc.add(Paragraph("Capnometría (mejor valor a los 20 min): ${dashIfBlank(data.capnometria)}"))
 
                     val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
                     doc.add(Paragraph("Causa principal del evento: $causa"))
 
                     val cardio = if (data.cardioManual == "Manual") "Manual" else "Mecánica"
-                    doc.add(Paragraph("RCP extrahospitalaria: $cardio"))
+                    doc.add(Paragraph("Cardiocompresión extrahospitalaria: $cardio"))
+
+                    val rec = if (data.recPulso == "Si") "Sí" else "No"
+                    doc.add(Paragraph("Recuperación de pulso en algún momento: $rec"))
                 }
 
-                // ---------------- AFTER ----------------
-                else -> {
-                    doc.add(Paragraph("Edad: ${dashIfBlank(data.edad)} años"))
-
-                    val sexo = if (data.femenino == "Si" || data.femenino.equals("Mujer", true)) "Femenino" else "Masculino"
-                    doc.add(Paragraph("Sexo: $sexo"))
-
+                isAfter -> {
                     doc.add(Paragraph("Capnometría (transferencia): ${dashIfBlank(data.capnometria)}"))
 
                     val causa = if (data.causaCardiaca == "Si") "Cardíaca" else "No cardiaca"
@@ -231,18 +194,20 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
             }
 
             data.indice?.let {
-                doc.add(Paragraph("Índice calculado: ${String.format(Locale.US, "%.3f", it)}"))
+                doc.add(
+                    Paragraph(
+                        "Índice calculado: ${String.format(Locale.US, "%.3f", it)}"
+                    )
+                )
             }
 
             doc.add(Paragraph("\n"))
 
-            // =============================================================
-            // RESULTADO FINAL
-            // =============================================================
-            val resultado = if (data.valido)
+            val resultado = if (data.valido) {
                 "RESULTADO DE LA PREDICCIÓN: DONANTE VÁLIDO"
-            else
+            } else {
                 "RESULTADO DE LA PREDICCIÓN: DONANTE NO VÁLIDO"
+            }
 
             doc.add(
                 Paragraph(resultado)
@@ -262,18 +227,19 @@ fun generatePredictionPdf(context: Context, data: PdfPrediction): Uri? {
 
         Toast.makeText(context, "PDF guardado en Descargas", Toast.LENGTH_SHORT).show()
 
-        // Abrir el PDF
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(itemUri, "application/pdf")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             })
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
 
         itemUri
+
     } catch (e: Exception) {
         e.printStackTrace()
         Toast.makeText(context, "Error al generar el PDF", Toast.LENGTH_SHORT).show()
-        return null
+        null
     }
 }

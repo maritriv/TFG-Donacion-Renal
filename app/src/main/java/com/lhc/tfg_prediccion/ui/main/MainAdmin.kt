@@ -7,7 +7,12 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -24,16 +29,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.lhc.tfg_prediccion.R
 import com.lhc.tfg_prediccion.databinding.ActivityMainadminBinding
-import com.lhc.tfg_prediccion.ui.profile.AdminPredictionsActivity
+import com.lhc.tfg_prediccion.ui.control.ViewUsersActivity
 import com.lhc.tfg_prediccion.ui.edit.EditProfileActivity
 import com.lhc.tfg_prediccion.ui.login.LoginActivity
-import com.lhc.tfg_prediccion.ui.control.ViewUsersActivity
-import com.lhc.tfg_prediccion.ui.prediction.LBL_BEFORE
-import com.lhc.tfg_prediccion.ui.prediction.LBL_MID
 import com.lhc.tfg_prediccion.ui.prediction.LBL_AFTER
-import com.lhc.tfg_prediccion.ui.prediction.MODE_BEFORE
-import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
+import com.lhc.tfg_prediccion.ui.prediction.LBL_MID
 import com.lhc.tfg_prediccion.ui.prediction.MODE_AFTER
+import com.lhc.tfg_prediccion.ui.prediction.MODE_MID
+import com.lhc.tfg_prediccion.ui.profile.AdminPredictionsActivity
 import kotlin.math.roundToInt
 
 class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -51,7 +54,6 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         binding = ActivityMainadminBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ----- Toolbar + Drawer -----
         val toolbar: Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -66,21 +68,16 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         )
         drawer.addDrawerListener(toggle)
         toggle.syncState()
-        // color del icono hamburguesa
-        toggle.drawerArrowDrawable.color =
-            ContextCompat.getColor(this, R.color.white)
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.white)
 
-        // ----- Datos de usuario llegados por Intent -----
         name = intent.getStringExtra("userName")
         userUid = intent.getStringExtra("userUid")
 
-        // ----- Menú lateral -----
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
         headerView.findViewById<TextView>(R.id.nav_header_textView).text = name ?: ""
         navigationView.setNavigationItemSelectedListener(this)
 
-        // botón X para cerrar el drawer
         val cierreMenu = headerView.findViewById<ImageView>(R.id.btn_close_nav)
         cierreMenu.isClickable = true
         cierreMenu.isFocusable = true
@@ -88,16 +85,13 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
             drawer.closeDrawer(GravityCompat.START)
         }
 
-        // ----- Views del dashboard -----
         val centerValue = findViewById<TextView>(R.id.center_value)
         val centerLabel = findViewById<TextView>(R.id.center_label)
         val pieChart = findViewById<PieChart>(R.id.pie_chart)
         val spinnerMode = findViewById<Spinner>(R.id.spinner_mode)
 
-        // Opciones de modo
         val opciones = arrayOf(
             "Todos los momentos",
-            LBL_BEFORE,
             LBL_MID,
             LBL_AFTER
         )
@@ -120,10 +114,10 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
                 return view
             }
         }
+
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_mode_dropdown_item)
         spinnerMode.adapter = spinnerAdapter
 
-        // Cuando se selecciona un modo, recargamos las estadísticas (para TODOS los médicos)
         spinnerMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -133,18 +127,17 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
             ) {
                 val seleccion = opciones[position]
                 val mode: String? = when (seleccion) {
-                    LBL_BEFORE -> MODE_BEFORE
                     LBL_MID -> MODE_MID
                     LBL_AFTER -> MODE_AFTER
-                    else -> null   // "Todos los momentos"
+                    else -> null
                 }
+
                 cargarEstadisticasPorModo(mode, pieChart, centerValue, centerLabel)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // ----- Botones inferiores -----
         binding.btnViewUsers.setOnClickListener {
             val intent = Intent(this, ViewUsersActivity::class.java)
             startActivity(intent)
@@ -154,12 +147,8 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
             val intent = Intent(this, AdminPredictionsActivity::class.java)
             startActivity(intent)
         }
-
     }
 
-    // -------------------------------------------------------------------------
-    // Navegación del Drawer
-    // -------------------------------------------------------------------------
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_item_one -> {
@@ -169,12 +158,14 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
                 intent.putExtra("name", name)
                 startActivity(intent)
             }
+
             R.id.nav_item_two -> {
                 Toast.makeText(this, getString(R.string.toast_logging_out), Toast.LENGTH_SHORT).show()
                 FirebaseAuth.getInstance().signOut()
                 startActivity(Intent(this, LoginActivity::class.java))
             }
         }
+
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
@@ -196,16 +187,12 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         return super.onOptionsItemSelected(item)
     }
 
-    // -------------------------------------------------------------------------
-    // Estadísticas globales para el ADMIN (todas las predicciones de todos los médicos)
-    // -------------------------------------------------------------------------
     private fun cargarEstadisticasPorModo(
-        mode: String?,           // null = todos los momentos
+        mode: String?,
         pieChart: PieChart,
         centerValue: TextView,
         centerLabel: TextView
     ) {
-        // Colección completa de predicciones (no filtramos por uid_medico)
         var query: Query = db.collection("predicciones")
 
         if (mode != null) {
@@ -284,12 +271,12 @@ class MainAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
 
         pieChart.legend.isEnabled = false
         pieChart.setDrawEntryLabels(false)
-
         pieChart.data = data
         pieChart.description.isEnabled = false
         pieChart.isDrawHoleEnabled = true
         pieChart.holeRadius = 70f
         pieChart.transparentCircleRadius = 75f
         pieChart.animateY(1000)
+        pieChart.invalidate()
     }
 }

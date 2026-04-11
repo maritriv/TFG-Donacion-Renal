@@ -151,27 +151,22 @@
     <string name="reset_password_error">No se ha podido enviar el correo. Inténtalo de nuevo.</string>
 
 
-    <!-- Texto de ayuda -->
     <string name="csv_help_body">
     Solo se acepta el CSV exportado desde la app.\n\n
 
-    Formato (15 columnas, separadas por comas):\n
-    Edad,Femenino,Capnometria,Colesterol,Adrenalina_n,IMC,\n
-    Causa_cardiaca,Cardio_manual,Recuperacion_pulso,\n
-    Prediction_mode,Momento,Valido,Indice,UID_medico,Fecha\n\n
+    Formato (7 columnas, separadas por comas):\n
+    Edad,Femenino,Capnometria,Causa_cardiaca,Cardio_manual,Recuperacion_pulso,Prediction_mode\n\n
 
     Reglas:\n
     • Cardio_manual debe ser: Manual o Mecánica.\n
-    • Femenino, Causa_cardiaca y Recuperacion_pulso deben ser: Si/No (también se acepta 1/0 y true/false).\n
-    • Prediction_mode debe ser: BEFORE_RCP, MID_RCP o AFTER_RCP.\n\n
+    • Femenino, Causa_cardiaca y Recuperacion_pulso deben ser: Si/No.\n
+    • También se aceptan 1/0, true/false y, en Femenino, Hombre/Mujer.\n
+    • Prediction_mode debe ser: MID_RCP o AFTER_RCP.\n\n
 
-    Variables según el modo:\n
-    • BEFORE_RCP: requiere Colesterol.\n
-    • MID_RCP: requiere Colesterol, Adrenalina_n e IMC.\n
-    • AFTER_RCP: Colesterol, Adrenalina_n e IMC pueden ir vacías.\n\n
-
-    Nota:\n
-    • Si falta alguna columna o algún valor obligatorio según el modo, el archivo no se importará.
+    Notas:\n
+    • MID_RCP corresponde a la predicción a los 20 minutos de RCP.\n
+    • AFTER_RCP corresponde a la predicción después del procedimiento de RCP.\n
+    • Si falta alguna columna obligatoria o algún valor no es válido, el archivo no se importará.
 </string>
 
 

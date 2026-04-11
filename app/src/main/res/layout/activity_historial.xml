@@ -182,9 +182,6 @@
                                     <TextView android:text="@string/header_edad"            android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_sexo"            android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_capnometria"     android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="@string/header_colesterol"      android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="@string/header_adrenalina"      android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
-                                    <TextView android:text="@string/header_imc"             android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_causa_cardiaca"  android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_cardiocomp"      android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_rec_pulso"       android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
@@ -192,6 +189,7 @@
                                     <TextView android:text="@string/header_resultado"       android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_indice"          android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
                                     <TextView android:text="@string/header_informe"         android:padding="8dp" android:textStyle="bold" android:textSize="12sp"/>
+
                                 </TableRow>
 
                             </TableLayout>

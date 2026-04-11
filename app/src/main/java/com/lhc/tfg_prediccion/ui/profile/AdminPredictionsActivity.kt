@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
-import java.util.Locale
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,16 +22,14 @@ import com.lhc.tfg_prediccion.ui.util.showSortDialog
 import com.lhc.tfg_prediccion.util.PdfPrediction
 import com.lhc.tfg_prediccion.util.PredictionCsvExporter
 import com.lhc.tfg_prediccion.util.generatePredictionPdf
+import java.util.Locale
 
 class AdminPredictionsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminPredictionsBinding
     private val db = FirebaseFirestore.getInstance()
 
-    // Lista completa en memoria para ordenar/filtrar
     private val predictions = mutableListOf<Prediccion>()
-
-    // Filtro actual (null = sin filtros)
     private var currentFilter: HistorialFilter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,17 +37,13 @@ class AdminPredictionsActivity : AppCompatActivity() {
         binding = ActivityAdminPredictionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Título barra azul
         binding.tvProfileTitle.text = getString(R.string.historial_predicciones)
 
-        // Navegación
         binding.backRow.setOnClickListener { finish() }
         binding.btnBack.setOnClickListener { finish() }
 
-        // Cargar TODAS las predicciones
         loadPredictions()
 
-        // Ordenar (util compartido)
         binding.btnSort.setOnClickListener {
             showSortDialog(
                 activity = this,
@@ -60,7 +53,6 @@ class AdminPredictionsActivity : AppCompatActivity() {
             }
         }
 
-        // Filtrar (util compartido)
         binding.btnFilter.setOnClickListener {
             showFilterDialog(
                 activity = this,
@@ -71,7 +63,6 @@ class AdminPredictionsActivity : AppCompatActivity() {
             }
         }
 
-        // Exportar CSV (lista visible)
         binding.btnExport.setOnClickListener {
             PredictionCsvExporter.exportCsv(
                 activity = this,
@@ -82,16 +73,14 @@ class AdminPredictionsActivity : AppCompatActivity() {
         }
     }
 
-    // -------------------------------------------------------------
-    // Cargar todas las predicciones
-    // -------------------------------------------------------------
     private fun loadPredictions() {
         db.collection("predicciones")
             .get()
             .addOnSuccessListener { snapshot ->
                 predictions.clear()
-                predictions.addAll(snapshot.documents.mapNotNull { it.toObject(Prediccion::class.java) })
-
+                predictions.addAll(
+                    snapshot.documents.mapNotNull { it.toObject(Prediccion::class.java) }
+                )
                 renderPredictions(getFilteredList())
             }
             .addOnFailureListener {
@@ -99,20 +88,17 @@ class AdminPredictionsActivity : AppCompatActivity() {
             }
     }
 
-    // Devuelve la lista filtrada (si hay filtro) o todas
     private fun getFilteredList(): List<Prediccion> {
         val filter = currentFilter ?: return predictions
         return predictions.filter { it.matchesFilter(filter) }
     }
 
-    private fun dashIfBlank(s: String?): String = if (s.isNullOrBlank()) "—" else s
+    private fun dashIfBlank(s: String?): String =
+        if (s.isNullOrBlank()) "—" else s
 
     private fun formatIndice(d: Double?): String =
         if (d == null) "—" else String.format(Locale.US, "%.3f", d)
 
-    // -------------------------------------------------------------
-    // Pintar tabla
-    // -------------------------------------------------------------
     private fun renderPredictions(list: List<Prediccion>) {
         val table = binding.tablePredictions
 
@@ -135,7 +121,9 @@ class AdminPredictionsActivity : AppCompatActivity() {
         val params = TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
             TableRow.LayoutParams.WRAP_CONTENT
-        ).apply { setMargins(8, 16, 8, 16) }
+        ).apply {
+            setMargins(8, 16, 8, 16)
+        }
 
         fun TableRow.addCell(text: String) {
             TextView(this@AdminPredictionsActivity).apply {
@@ -150,43 +138,33 @@ class AdminPredictionsActivity : AppCompatActivity() {
         list.forEach { pred ->
             val fila = TableRow(this)
 
-            // Momento canónico
             val mode = pred.prediction_mode
                 ?: modeFromLabelLoose(pred.momento_prediccion_legible ?: "")
             val moment = modeToLabel(mode)
-
-            // Nuevos campos + índice
-            val colesterol = dashIfBlank(pred.colesterol)
-            val adrenalinaN = dashIfBlank(pred.adrenalina_n)
-            val imc = dashIfBlank(pred.imc)
             val indiceStr = formatIndice(pred.indice)
 
-            // ---- columnas (MISMO ORDEN QUE EL XML) ----
-            fila.addCell(contador.toString())                 // #
-            fila.addCell(dashIfBlank(pred.edad))              // Edad
-            fila.addCell(mapSexo(pred.femenino))              // Sexo
-            fila.addCell(dashIfBlank(pred.capnometria))       // Capnometría
+            fila.addCell(contador.toString())
+            fila.addCell(dashIfBlank(pred.edad))
+            fila.addCell(mapSexo(pred.femenino))
+            fila.addCell(dashIfBlank(pred.capnometria))
+            fila.addCell(dashIfBlank(pred.causa_cardiaca))
+            fila.addCell(dashIfBlank(pred.cardio_manual))
+            fila.addCell(dashIfBlank(pred.rec_pulso))
+            fila.addCell(moment)
+            fila.addCell(mapResultado(pred.valido))
+            fila.addCell(indiceStr)
 
-            fila.addCell(colesterol)                          // Colesterol
-            fila.addCell(adrenalinaN)                         // Adrenalina (n)
-            fila.addCell(imc)                                 // IMC
-
-            fila.addCell(dashIfBlank(pred.causa_cardiaca))    // Causa cardiaca
-            fila.addCell(dashIfBlank(pred.cardio_manual))     // Cardiocompresión
-            fila.addCell(dashIfBlank(pred.rec_pulso))         // Rec pulso
-
-            fila.addCell(moment)                              // Momento
-            fila.addCell(mapResultado(pred.valido))           // Resultado
-
-            fila.addCell(indiceStr)                           // Índice
-
-            // PDF
             TextView(this).apply {
                 text = "PDF"
                 textSize = 12f
                 setPadding(16, 24, 16, 24)
                 layoutParams = params
-                setTextColor(ContextCompat.getColor(this@AdminPredictionsActivity, R.color.dark_blue))
+                setTextColor(
+                    ContextCompat.getColor(
+                        this@AdminPredictionsActivity,
+                        R.color.dark_blue
+                    )
+                )
 
                 setOnClickListener {
                     generatePredictionPdf(
@@ -203,14 +181,11 @@ class AdminPredictionsActivity : AppCompatActivity() {
                             cardioManual = pred.cardio_manual ?: "",
                             recPulso = pred.rec_pulso ?: "",
                             valido = pred.valido.equals("Si", ignoreCase = true),
-                            indice = pred.indice,
-
-                            colesterol = pred.colesterol,
-                            adrenalinaN = pred.adrenalina_n,
-                            imc = pred.imc
+                            indice = pred.indice
                         )
                     )
                 }
+
                 fila.addView(this)
             }
 

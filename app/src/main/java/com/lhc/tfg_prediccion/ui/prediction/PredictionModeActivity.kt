@@ -14,9 +14,8 @@ class PredictionModeActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_MODE = "prediction_mode"
-        const val MODE_BEFORE = "BEFORE_RCP"
-        const val MODE_MID    = "MID_RCP"
-        const val MODE_AFTER  = "AFTER_RCP"
+        const val MODE_MID = "MID_RCP"
+        const val MODE_AFTER = "AFTER_RCP"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +23,6 @@ class PredictionModeActivity : AppCompatActivity() {
         binding = ActivityPredictionModeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Recuperamos los extras que ya pasabas entre pantallas
         name = intent.getStringExtra("userName")
         userUid = intent.getStringExtra("userUid")
 
@@ -36,20 +34,15 @@ class PredictionModeActivity : AppCompatActivity() {
             startActivity(i)
         }
 
-        binding.btnBefore.setOnClickListener { goToPrediction(MODE_BEFORE) }
-        binding.btnMid.setOnClickListener    { goToPrediction(MODE_MID) }
-        binding.btnAfter.setOnClickListener  { goToPrediction(MODE_AFTER) }
+        binding.btnMid.setOnClickListener { goToPrediction(MODE_MID) }
+        binding.btnAfter.setOnClickListener { goToPrediction(MODE_AFTER) }
 
-        // Botón para volver al menú principal
         binding.btnBackToMain.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("userName", name)
             intent.putExtra("userUid", userUid)
             startActivity(intent)
-            finish() // opcional: evita volver atrás a esta pantalla
+            finish()
         }
-
     }
 }
-
-
