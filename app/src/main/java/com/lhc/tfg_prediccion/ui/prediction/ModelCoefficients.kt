@@ -123,7 +123,7 @@ fun calcularIndiceYValidez(
 // ===================== ETIQUETAS =====================
 
 const val LBL_MID = "Mitad del procedimiento de RCP (20 min)"
-const val LBL_AFTER = "Después del procedimiento de RCP"
+const val LBL_AFTER = "Transferencia hospitalaria"
 
 fun modeToLabel(mode: String?): String = when (mode) {
     MODE_MID -> LBL_MID

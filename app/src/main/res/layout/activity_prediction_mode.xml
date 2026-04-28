@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginBottom="26dp"
-                android:text="DESPUÉS DE LA RCP"
+                android:text="TRANSFERENCIA"
                 android:textAllCaps="false"
                 android:textColor="@color/dark_blue"
                 android:textSize="16sp"

@@ -13,7 +13,7 @@ class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // layout icono + texto RENAL-DCD
+        // layout icono + texto RENAL-uDCD
         setContentView(R.layout.activity_splash)
 
         // Navega a Login tras una pequeña espera
