@@ -1,52 +1,84 @@
 # TFG-Donacion-Renal
 
-
 ## Descripción
-Proyecto TFG - Aplicación móvil para la **predicción de donantes renales válidos en asistolia no controlada (uDCD)** usando **capnometría** (EtCO₂ al inicio y en el punto medio) y variables clínicas mínimas.
+
+Aplicación móvil Android desarrollada como parte del Trabajo de Fin de Grado **“Aplicación móvil para la predicción de donantes renales válidos en asistolia no controlada y desarrollo de una plataforma web con modelos de aprendizaje automático”**.
+
+La aplicación actúa como una herramienta de apoyo a la decisión clínica para la evaluación de posibles donantes renales en asistolia no controlada (uDCD). Permite introducir variables clínicas disponibles durante el proceso asistencial y obtener una predicción basada en reglas clínicas derivadas de modelos médicos previamente definidos.
+
+El sistema está orientado a personal sanitario y busca facilitar una evaluación rápida, estructurada y trazable en escenarios de urgencia.
+
 ---
 
 ## Objetivo
-Construir un **MVP** que:
-- Registre datos esenciales del caso uDCD de forma **rápida y usable**.
-- Calcule una **probabilidad de validez** del donante renal (modelo local).
-- Genere un **informe PDF** con resultados y trazabilidad (versión de modelo, fecha).
-- Funcione **sin conexión** y respete **privacidad** (datos pseudonimizados, cifrado local).
 
+El objetivo principal de la aplicación es proporcionar una herramienta móvil que permita:
 
-## Funcionalidades
-- **Usuarios y roles** (coordinador / médico) con permisos:
-  - Coordinador: ve **todos** los casos.
-  - Médico: ve **solo** sus pacientes/asignados.
-- **Registro de caso**: EtCO₂_inicio, EtCO₂_medio, tiempos (RCP, isquemia), edad, etc.
-- **Predicción**: probabilidad (%) + etiqueta (Válido / No válido) con **umbral configurable**.
-- **Historial**: lista de casos, filtros y detalle.
-- **Informe**: **descarga en PDF** del caso y resultado.
-- **Modo offline**: todo usable sin red; exportación cuando haya conexión.
-- **Seguridad**: almacenamiento local **cifrado**; sin identificadores personales.
+- Registrar datos clínicos esenciales de un posible donante renal en asistolia no controlada.
+- Aplicar modelos clínicos basados en reglas para estimar la validez del donante.
+- Realizar predicciones en dos momentos del proceso:
+  - Punto medio de la reanimación cardiopulmonar.
+  - Fase posterior a la RCP o transferencia.
+- Gestionar usuarios y roles mediante Firebase.
+- Almacenar y consultar predicciones realizadas.
+- Exportar resultados para su revisión posterior.
 
-> Futuro (no bloqueante para el MVP): sincronización servidor/hospital, dashboard web, i18n.
+---
+
+## Funcionalidades principales
+
+- Registro e inicio de sesión de usuarios.
+- Gestión de roles de usuario.
+- Introducción de variables clínicas del caso.
+- Selección del momento de predicción:
+  - Modelo de punto medio de RCP.
+  - Modelo de transferencia.
+- Cálculo automático de la puntuación clínica.
+- Clasificación del donante como válido o no válido según el punto de corte correspondiente.
+- Almacenamiento de resultados en Firebase Firestore.
+- Consulta del historial de predicciones.
+- Exportación de resultados en formato CSV/PDF.
+
+---
+
+## Modelos clínicos implementados
+
+La aplicación implementa dos modelos basados en reglas clínicas. Estos modelos combinan distintas variables del paciente y del proceso asistencial mediante una fórmula ponderada y comparan la puntuación obtenida con un punto de corte.
+
+Los modelos disponibles son:
+
+- **Modelo de punto medio de RCP**: utilizado durante una fase intermedia del proceso de reanimación.
+- **Modelo de transferencia**: utilizado en la fase posterior a la reanimación, incorporando información adicional del proceso.
+
+Estos modelos no corresponden a modelos de aprendizaje automático entrenados dentro de la aplicación móvil, sino a reglas clínicas implementadas directamente en la lógica de la app.
+
+---
+
+## Tecnologías utilizadas
+
+- Kotlin
+- Android Studio
+- Android SDK
+- Firebase Authentication
+- Firebase Firestore
+- Gradle
 
 ---
 
 ## Estructura general del repositorio
-```
+
+```text
 .
-├── README.md
-├── docs/
-│   ├── SRS.md              # Documento maestro de requisitos (formal)
-│   ├── anexos/             # Material de apoyo (glosario, casos de uso, refs…)
-│   ├── figuras/            # Diagramas, mockups, esquemas
-│   └── entregas/           # Lo que prepares para enviar al profesor
-├── project/
-│   └── roadmap.md          # Plan de hitos y tareas principales
-├── src/                    # Código de la app / modelo (más adelante)
-├── notebooks/              # Exploración de datos y pruebas (más adelante)
-└── data/                   # Solo datasets sintéticos / de ejemplo
+├── app/                         # Módulo principal de la aplicación Android
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/            # Código fuente en Kotlin (activities, lógica, modelos)
+│   │   │   ├── res/             # Recursos de la app (layouts XML, strings, estilos, imágenes)
+│   │   │   └── AndroidManifest.xml  # Configuración principal de la aplicación (permisos, actividades)
+│   ├── build.gradle.kts         # Configuración de compilación del módulo app
+│   └── google-services.json     # Configuración de Firebase (Auth, Firestore, etc.)
+├── gradle/                      # Scripts y configuración del sistema de build Gradle
+├── build.gradle.kts             # Configuración global del proyecto
+├── settings.gradle.kts          # Definición de módulos del proyecto
+└── README.md                    # Documentación principal del repositorio
 ```
----
-
-##  Instalación del entorno
-
-Pasos necesarios para instalar el proyecto. Descripción paso a paso de cómo poner en funcionamiento el entorno de desarrollo.
-
-----
