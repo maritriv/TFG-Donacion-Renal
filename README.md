@@ -249,23 +249,6 @@ El sistema completo incluye:
 - Pipeline de datos y modelos de machine learning  
 - Plataforma web para comparación de modelos  
 
-Repositorio relacionado:
-
-- ML + Web: https://github.com/maritriv/TFG-Donacion-Renal-ml-web  
-
----
-
-## Estado del proyecto
-
-- [x] desarrollo de la aplicación móvil  
-- [x] implementación de modelos clínicos  
-- [x] integración con Firebase  
-- [x] gestión de usuarios y predicciones  
-- [x] exportación de resultados  
-- [ ] validación en entorno clínico real  
-- [ ] optimización de interfaz  
-- [ ] despliegue final  
-
 ---
 
 ## Consideraciones
