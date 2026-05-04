@@ -14,7 +14,6 @@ data class ModelCoefficients(
     val causaCardiaca: Double,
     val cardioManual: Double,
     val recuperacion: Double,
-    val tiempoLlegadaInicioPcrMin: Double,
     val corte: Double
 )
 
@@ -26,7 +25,6 @@ val COEFS_AFTER = ModelCoefficients(
     causaCardiaca = -0.5245,
     cardioManual = -2.6349,
     recuperacion = 2.8971,
-    tiempoLlegadaInicioPcrMin = -0.0003,
     corte = 4.625
 )
 
@@ -100,8 +98,7 @@ fun calcularAfter(i: InputsAfter): Pair<Boolean, Double> {
                 (i.capnometria * c.capnometria) +
                 (i.causaCardiaca * c.causaCardiaca) +
                 (i.cardioManual * c.cardioManual) +
-                (i.recuperacion * c.recuperacion) +
-                (i.tiempoMin * c.tiempoLlegadaInicioPcrMin)
+                (i.recuperacion * c.recuperacion)
 
     return (indice >= c.corte) to indice
 }
