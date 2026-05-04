@@ -318,7 +318,6 @@ class ImportActivity : AppCompatActivity() {
                                 causaCardiaca = r.causa,
                                 cardioManual = r.cardio,
                                 recuperacion = r.rec,
-                                tiempoMin = 0
                             )
                         )
                     }
