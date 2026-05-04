@@ -175,53 +175,103 @@ cd TFG-Donacion-Renal
 
 ---
 
-## Flujo de uso de la aplicación
+## Flujo de uso de la aplicación móvil
+
+La aplicación móvil permite gestionar usuarios y realizar predicciones clínicas en distintos momentos del proceso utilizando como modelo de predicción un modelo basado en reglas clínicas.
 
 ### 1. Autenticación
 
-El usuario puede:
+Al acceder a la aplicación, el usuario se encuentra con una pantalla de inicio de sesión donde puede:
 
-- iniciar sesión  
-- registrarse  
-- recuperar contraseña  
+- iniciar sesión con su cuenta,
+- registrarse si no dispone de una,
+- recuperar la contraseña en caso de olvido.
 
----
+Una vez autenticado, el usuario accede a la aplicación según su rol (Médico o Administrador).
+
 
 ### 2. Pantalla principal
 
-- Visualización de estadísticas básicas  
-- Acceso a funcionalidades principales  
+Existen dos tipos de usuarios:
 
----
+- **Médico**
+- **Administrador**
 
-### 3. Realizar predicción
+En ambos casos, la pantalla principal muestra:
+
+- un gráfico tipo *donut* con el número total de predicciones realizadas,
+- el porcentaje de predicciones válidas y no válidas,
+- un menú de usuario para editar datos personales o cerrar sesión.
+
+
+### 3. Funcionalidad para médicos
+
+Los usuarios con rol médico disponen de tres acciones principales:
+
+#### Función 1: Realizar predicción
 
 1. Selección del momento clínico:
-   - MID  
-   - TRANSFER  
+   - **Punto medio**
+   - **Transferencia**
 
-2. Introducción de datos clínicos  
+2. En función del momento seleccionado:
+   - se carga el modelo correspondiente,
+   - se muestra un formulario clínico para introducir los datos del paciente.
 
-3. Cálculo automático de la predicción  
+3. Tras enviar el formulario:
+   - se calcula la predicción,
+   - se muestran los resultados:
+     - resultado basado en reglas clínicas,
+     - indicación de si el donante es válido o no.
 
-4. Visualización del resultado  
+4. El usuario puede:
+   - exportar el resultado y los parámetros en PDF,
+   - volver a la pantalla principal.
 
----
 
-### 4. Historial
+#### Función 2: Historial de predicciones
 
-- Visualización de predicciones anteriores  
-- Filtrado y ordenación  
-- Exportación de resultados  
+Permite visualizar todas las predicciones realizadas por el médico en formato tabla.
 
----
+Incluye:
 
-### 5. Gestión de usuarios (admin)
+- ordenación por variables (edad, momento, capnometría),
+- filtrado y búsqueda de predicciones (por ejemplo, pacientes de cierta edad),
+- exportación individual de predicciones en PDF,
+- exportación completa del historial en formato CSV.
 
-- Visualización de usuarios  
-- Modificación de datos  
-- Eliminación de usuarios  
 
+#### Función 3: Importar predicciones
+
+Permite cargar un archivo CSV con nuevas predicciones. Tras validar los datos y comprobar que no existan duplicados entonces, las prediciones se incorporan al sistema.
+
+
+### 4. Funcionalidad para administradores
+
+Los usuarios con rol administrador disponen de funcionalidades adicionales:
+
+
+#### Función 1: Gestión de usuarios
+
+Permite:
+
+- visualizar todos los usuarios registrados (médicos y administradores),
+- consultar sus datos y predicciones,
+- modificar sus datos personales,
+- eliminar o dar de baja a usuarios.
+
+#### Función 2: Historial global
+
+- acceso a todas las predicciones realizadas por todos los médicos,
+- mismas capacidades de filtrado, ordenación y exportación que el rol médico.
+
+
+### 5. Persistencia de datos
+
+La gestión de usuarios y predicciones se realiza mediante **Firebase**, lo que permite:
+
+- mantener sincronizados los datos entre la aplicación web y la aplicación móvil,
+- garantizar que las predicciones y registros estén disponibles independientemente del dispositivo utilizado.
 ---
 
 ## Tecnologías utilizadas
